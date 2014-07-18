@@ -16,19 +16,36 @@ module.exports = function(grunt) {
     clean: ["tmp", "dist/*"],
     copy: {
       vendor: {
+        cwd: 'bower_components',
+        src: ['rsvp/rsvp.amd.js','oasis.js/dist/oasis.amd.js','conductor.js/dist/conductor-0.3.0.amd.js'],
+        dest: 'tmp/vendor/',
+        expand: true,
+        flatten: true
+      },
+      tests: {
         files: [{
-          cwd: 'bower_components',
-          src: ['oasis.js/dist/oasis.amd.js','conductor.js/dist/conductor-0.3.0.amd.js'],
-          dest: 'tmp/vendor/',
+          src: ['<%= browser.distNoVersion.dest %>'],
+          dest: 'tmp/public/',
           expand: true,
           flatten: true
         }, {
-          cwd: 'node_modules',
-          src: ['rsvp/dist/rsvp-3.0.9.amd.js'],
-          dest: 'tmp/vendor/',
-          expand: true,
-          flatten: true
+          cwd: 'test/',
+          src: ['index.html', 'fixtures/**'],
+          dest: 'tmp/public/',
+          expand: true
         }]
+      },
+
+      testsVendor: {
+        expand: true,
+        cwd: 'bower_components',
+        src: [
+          'mocha/mocha.{js,css}',
+          'chai/chai.js',
+          'conductor.js/dist/conductor-0.3.0.js'
+        ],
+        flatten: true,
+        dest: 'tmp/public/vendor/'
       }
     },
     concat: {
@@ -60,6 +77,10 @@ module.exports = function(grunt) {
           'tmp/<%= pkg.name %>.amd.js'
         ],
         dest: 'tmp/<%= pkg.name %>.browser1.js'
+      },
+      tests: {
+        src: ['test/helpers/*', 'test/tests/**/*.js'],
+        dest: 'tmp/public/sw_js_sdk_tests.js'
       }
     },
     browser: {
@@ -92,13 +113,25 @@ module.exports = function(grunt) {
     },
     jshint: {
       options: {
-        'jshintrc': '.jshintrc'
+        jshintrc: '.jshintrc'
       },
-      all: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
+      grunt: {
+        src: 'Gruntfile.js'
+      },
+      src: {
+        src: 'lib/**/*.js'
+      },
+      test: {
+        options: {
+          jshintrc: 'test/.jshintrc'
+        },
+        expand: true,
+        src: 'test/**/*.js'
+      }
     },
     mocha: {
       test: {
-        src: ['test/**/*.html'],
+        src: ['tmp/public/**/*.html'],
         options: {
           run: true,
           reporter: 'Nyan'
@@ -138,11 +171,12 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', ['mocha']);
+  grunt.registerTask('default', ['test']);
 
   // Specific tasks
   grunt.registerTask('build', ['clean', 'jshint', 'transpile', 'copy:vendor', 'concat', 'browser', 'uglify']);
-  grunt.registerTask('test', ['mocha']);
+  grunt.registerTask('prepare_test', "Setup the test environment", ['build', 'concat:tests', 'copy:tests', 'copy:testsVendor']);
+  grunt.registerTask('test', ['prepare_test', 'mocha']);
   grunt.registerTask('hint', ['jshint']);
 
 };
