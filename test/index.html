@@ -4,6 +4,13 @@
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <title>Example Mocha Test</title>
     <link rel="stylesheet" href="vendor/mocha.css" type="text/css" charset="utf-8" />
+
+    <style type="text/css">
+      /* hide iframe fixtures */
+      #mocha-fixture {
+        display: none;
+      }
+    </style>
 </head>
 <body>
     <!-- Required for browser reporter -->
@@ -23,14 +30,11 @@
     <script src="vendor/chai.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" charset="utf-8">
         // Setup chai
-        var expect = chai.expect;
+        var assert = chai.assert;
     </script>
 
-    <!-- Include conductor in the environment for loading cards -->
+    <!-- Include Conductor in the environment for loading cards -->
     <script src="vendor/conductor-0.3.0.js" type="text/javascript" charset="utf-8"></script>
-
-    <!-- Include anything you want to test -->
-    <script src="spiceworks-sdk.js" type="text/javascript" charset="utf-8"></script>
 
     <!-- Spec files -->
     <script src="sw_js_sdk_tests.js" type="text/javascript" charset="utf-8"></script>

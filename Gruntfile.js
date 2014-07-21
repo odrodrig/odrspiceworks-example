@@ -3,6 +3,15 @@ module.exports = function(grunt) {
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
+  var vendorSources = [
+    'UUID.js/dist/uuid.core.js',
+    'kamino.js/lib/kamino.js',
+    'MessageChannel.js/lib/message_channel.js',
+    'rsvp/rsvp.amd.js',
+    'oasis.js/dist/oasis.amd.js',
+    'conductor.js/dist/conductor-0.3.0.amd.js'
+  ];
+
   // Project configuration.
   grunt.initConfig({
     // Metadata.
@@ -17,7 +26,7 @@ module.exports = function(grunt) {
     copy: {
       vendor: {
         cwd: 'bower_components',
-        src: ['rsvp/rsvp.amd.js','oasis.js/dist/oasis.amd.js','conductor.js/dist/conductor-0.3.0.amd.js'],
+        src: vendorSources,
         dest: 'tmp/vendor/',
         expand: true,
         flatten: true
@@ -54,29 +63,16 @@ module.exports = function(grunt) {
         stripBanners: true
       },
       amd: {
-        src: [
-          'tmp/vendor/**/*.amd.js',
-          'tmp/<%= pkg.name %>/**/*.amd.js',
-          'tmp/<%= pkg.name %>.amd.js'
-        ],
+        src: ['tmp/amd/**/*.amd.js'],
         dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.amd.js'
       },
       amdNoVersion: {
-        src: [
-          'tmp/vendor/**/*.amd.js',
-          'tmp/<%= pkg.name %>/**/*.amd.js',
-          'tmp/<%= pkg.name %>.amd.js'
-        ],
+        src: ['tmp/amd/**/*.amd.js'],
         dest: 'dist/<%= pkg.name %>.amd.js'
       },
       browser: {
-        src: [
-          'vendor/loader.js',
-          'tmp/vendor/**/*.amd.js',
-          'tmp/<%= pkg.name %>/**/*.amd.js',
-          'tmp/<%= pkg.name %>.amd.js'
-        ],
-        dest: 'tmp/<%= pkg.name %>.browser1.js'
+        src: ['vendor/loader.js', 'tmp/vendor/**/*.js', 'tmp/amd/**/*.amd.js'],
+        dest: 'tmp/<%= pkg.name %>.browser.js'
       },
       tests: {
         src: ['test/helpers/*', 'test/tests/**/*.js'],
@@ -85,11 +81,11 @@ module.exports = function(grunt) {
     },
     browser: {
       dist: {
-        src: 'tmp/<%= pkg.name %>.browser1.js',
+        src: 'tmp/<%= pkg.name %>.browser.js',
         dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js'
       },
       distNoVersion: {
-        src: 'tmp/<%= pkg.name %>.browser1.js',
+        src: 'tmp/<%= pkg.name %>.browser.js',
         dest: 'dist/<%= pkg.name %>.js'
       }
     },
@@ -126,15 +122,15 @@ module.exports = function(grunt) {
           jshintrc: 'test/.jshintrc'
         },
         expand: true,
-        src: 'test/**/*.js'
+        src: 'test/tests/*.js'
       }
     },
     mocha: {
       test: {
-        src: ['tmp/public/**/*.html'],
         options: {
           run: true,
-          reporter: 'Nyan'
+          reporter: 'Nyan',
+          urls: [ 'http://localhost:8000/' ]
         }
       }
     },
@@ -145,14 +141,36 @@ module.exports = function(grunt) {
           expand: true,
           cwd: 'lib/',
           src: ['**/*.js'],
-          dest: 'tmp/',
+          dest: 'tmp/amd/',
           ext: '.amd.js'
         }]
       }
     },
     watch: {
-      files: ['**/*'],
-      tasks: ['jshint', 'mocha']
+      files: [
+        'lib/**/*.js',
+        'vendor/*',
+        'test/tests/*',
+        'test/helpers/*',
+        'test/fixtures/**/*'
+      ],
+      tasks: ['prepare_test']
+    },
+    connect: {
+      options: {
+        base: 'tmp/public',
+        hostname: '*'
+      },
+      server: {
+        options: {
+          port: 8000,
+        }
+      },
+      crossOriginServer: {
+        options: {
+          port: 8001,
+        }
+      }
     }
   });
 
@@ -176,7 +194,7 @@ module.exports = function(grunt) {
   // Specific tasks
   grunt.registerTask('build', ['clean', 'jshint', 'transpile', 'copy:vendor', 'concat', 'browser', 'uglify']);
   grunt.registerTask('prepare_test', "Setup the test environment", ['build', 'concat:tests', 'copy:tests', 'copy:testsVendor']);
-  grunt.registerTask('test', ['prepare_test', 'mocha']);
+  grunt.registerTask('test', ['prepare_test', 'connect', 'watch']);
   grunt.registerTask('hint', ['jshint']);
 
 };
