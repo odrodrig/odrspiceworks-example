@@ -42,10 +42,10 @@ describe('SW JS SDK', function() {
     });
 
     afterEach(function () {
-      window.oasis.log('Test finsihed');
+      window.oasis.log('Test finished');
     });
 
-    it("cards have access to services via `on`", function(done) {
+    it("gives cards access to services via `send`", function(done) {
       var sandbox = oasis.createSandbox({
         url: "fixtures/services_card.html",
         capabilities: ['assertions'],
@@ -55,6 +55,91 @@ describe('SW JS SDK', function() {
               ok: function (data) {
                 assert.ok(data.bool, data.message);
                 done();
+              }
+            }
+          })
+        }
+      });
+
+      mochaFixture.appendChild(sandbox.el);
+      // assertions in activated_card.js
+    });
+
+    it("gives cards access to service events via `on`", function(done) {
+      var AssertionsService = Oasis.Service.extend({
+        events: {
+          ok: function(data) {
+            assert.ok(data.bool, data.message);
+            this.send('ping');
+          },
+
+          pong: function(data) {
+            assert.ok(data.bool, data.message);
+            done();
+          }
+        }
+      });
+
+      var sandbox = oasis.createSandbox({
+        url: "fixtures/events_card.html",
+        capabilities: ['assertions'],
+        services: {
+          assertions: AssertionsService
+        }
+      });
+
+      mochaFixture.appendChild(sandbox.el);
+      // assertions in activated_card.js
+    });
+
+    it("gives cards access to service requests via `request`", function(done) {
+      var AssertionsService = Oasis.Service.extend({
+        events: {
+          ok: function(data) {
+            assert.ok(data.bool, data.message);
+            done();
+          }
+        },
+        requests: {
+          ping: function(data) {
+            return 'pong';
+          }
+        }
+      });
+
+      var sandbox = oasis.createSandbox({
+        url: "fixtures/requests_card.html",
+        capabilities: ['assertions'],
+        services: {
+          assertions: AssertionsService
+        }
+      });
+
+      mochaFixture.appendChild(sandbox.el);
+      // assertions in activated_card.js
+    });
+
+    it.skip('limits a cards capabilities', function(done) {
+      var sandbox = oasis.createSandbox({
+        url: "fixtures/limited_card.html",
+        capabilities: ['assertions'],
+        services: {
+          assertions: Oasis.Service.extend({
+            events: {
+              ok: function (data) {
+                assert.ok(data.bool, data.message);
+                done();
+              },
+              fail: function() {
+                assert.fail();
+                done();
+              }
+            }
+          }),
+          pong: Oasis.Service.extend({
+            requests: {
+              ping: function(data) {
+                return 'pong';
               }
             }
           })
@@ -75,25 +160,5 @@ describe('SW JS SDK', function() {
       // assertions in activated_card.js
     });
 
-    it.skip('gives a card capabilities', function(done) {
-      card = conductor.load("fixtures/capabilities/capabilities_card.html", 1, {
-        services: {
-          assertion: newAssertionService(done),
-          tickets: Conductor.Oasis.Service
-        }
-      });
-      card.appendTo(mochaFixture);
-      // assertions in activated_card.js
-    });
-
-    it.skip('limits a cards capabilities', function(done) {
-      card = conductor.load("fixtures/capabilities/limited_capabilities_card.html", 1, {
-        services: {
-          assertion: newAssertionService(done)
-        }
-      });
-      card.appendTo(mochaFixture);
-      // assertions in activated_card.js
-    });
   });
 });
