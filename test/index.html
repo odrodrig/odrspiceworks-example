@@ -33,8 +33,8 @@
         var assert = chai.assert;
     </script>
 
-    <!-- Include Conductor in the environment for loading cards -->
-    <script src="vendor/conductor-0.3.0.js" type="text/javascript" charset="utf-8"></script>
+    <!-- Include Oasis in the environment for connecting cards -->
+    <script src="vendor/oasis.js" type="text/javascript" charset="utf-8"></script>
 
     <!-- Spec files -->
     <script src="sw_js_sdk_tests.js" type="text/javascript" charset="utf-8"></script>
@@ -44,7 +44,15 @@
         // If tests run in a real browser
         // Can alternatively do a check on window.PHANTOMJS
         if (navigator.userAgent.indexOf('PhantomJS') < 0) {
-            mocha.run();
+          // load all tests
+          for (var moduleName in define.registry) {
+            if (!define.registry.hasOwnProperty(moduleName)) { continue; }
+
+            if (/_tests$/.test(moduleName)) {
+              requireModule(moduleName);
+            }
+          }
+          mocha.run();
         }
     </script>
 </body>

@@ -1,72 +1,56 @@
-var crossOrigin = window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port, 10) + 1),
-    convertUrl = function(url, jsUrl) {
-      if(!url.match(/^http/)) {
-        if(url[0] !== '/') {
-          url = '/' + url;
-        }
+import { a_forEach } from "oasis/shims";
 
-        url = crossOrigin + url;
-      }
+var sandboxes = [],
+    destinationUrl = window.location.protocol + "//" + window.location.hostname + ":" + (parseInt(window.location.port, 10) + 1);
 
-      if( !jsUrl ) {
-        url = url.replace(/\.js$/, ".html");
-      }
+function iframeOptions(options) {
+  if (options.adapter === undefined) { options.adapter = Oasis.adapters.iframe; }
+  options.url = options.url.replace(/\.js/, '.html');
 
-      return url;
-    };
-
-function newConductor( options, jsUrl ) {
-  var conductor;
-
-  options = options || {};
-  options.testing = true;
-  conductor = new Conductor( options );
-  conductor.oasis.logger.enable();
-
-  var originalLoad = conductor.load,
-      originalLoadData = conductor.loadData;
-
-  conductor.load = function() {
-    arguments[0] = convertUrl(arguments[0], jsUrl);
-
-    return originalLoad.apply(conductor, arguments);
-  };
-
-  conductor.loadData = function() {
-    arguments[0] = convertUrl(arguments[0], jsUrl);
-
-    return originalLoadData.apply(conductor, arguments);
-  };
-
-  return conductor;
+  if(!options.url.match(/^http/)) {
+    options.url = destinationUrl + '/' + options.url;
+  }
 }
 
-function isSandboxAttributeSupported() {
-  if( typeof Window === "undefined" ) { return false; }
-
-  var iframe = document.createElement('iframe');
-
-  return iframe.sandbox !== undefined;
+function createSandbox(options) {
+  var sandbox = window.oasis.createSandbox(options);
+  sandboxes.push(sandbox);
+  return sandbox;
 }
 
-function newAssertionService(callback) {
-  return Conductor.Oasis.Service.extend({
-    initialize: function(port) {
-      this.sandbox.assertionPort = port;
-    },
+function createIframeSandbox(options) {
+  iframeOptions(options);
+  return createSandbox(options);
+}
 
-    events: {
-      ok: function(data) {
-        assert.ok(data.bool, data.message);
-      },
 
-      equal: function (data) {
-        assert.equal(data.expected, data.actual, data.message);
-      },
+function registerIframe(options) {
+  iframeOptions(options);
+  window.oasis.register(options);
+}
 
-      done: function() {
-        callback();
-      }
-    }
+function configure() {
+  return window.oasis.configure.apply(window.oasis, arguments);
+}
+
+export function iframeOasis() {
+  return {
+    configure: configure,
+    register: registerIframe,
+    createSandbox: createIframeSandbox,
+  };
+}
+
+export function setup() {
+  window.oasis = new Oasis();
+  window.oasis.logger.enable();
+}
+
+export function teardown() {
+  a_forEach.call(sandboxes, function (sandbox) {
+    sandbox.terminate();
   });
+  sandboxes = [];
+
+  Oasis.reset();
 }

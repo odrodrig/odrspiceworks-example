@@ -4,12 +4,12 @@ module.exports = function(grunt) {
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
   var vendorSources = [
-    'UUID.js/dist/uuid.core.js',
-    'kamino.js/lib/kamino.js',
-    'MessageChannel.js/lib/message_channel.js',
-    'rsvp/rsvp.amd.js',
-    'oasis.js/dist/oasis.amd.js',
-    'conductor.js/dist/conductor-0.3.0.amd.js'
+    'vendor/loader.js',
+    'bower_components/UUID.js/dist/uuid.core.js',
+    'bower_components/kamino.js/lib/kamino.js',
+    'bower_components/MessageChannel.js/lib/message_channel.js',
+    'bower_components/rsvp/rsvp.amd.js',
+    'bower_components/oasis.js/dist/oasis.amd.js'
   ];
 
   // Project configuration.
@@ -24,13 +24,6 @@ module.exports = function(grunt) {
     // Task configuration.
     clean: ["tmp", "dist/*"],
     copy: {
-      vendor: {
-        cwd: 'bower_components',
-        src: vendorSources,
-        dest: 'tmp/vendor/',
-        expand: true,
-        flatten: true
-      },
       tests: {
         files: [{
           src: ['<%= browser.distNoVersion.dest %>'],
@@ -51,10 +44,17 @@ module.exports = function(grunt) {
         src: [
           'mocha/mocha.{js,css}',
           'chai/chai.js',
-          'conductor.js/dist/conductor-0.3.0.js'
+          'oasis.js/dist/oasis.js'
         ],
         flatten: true,
         dest: 'tmp/public/vendor/'
+      },
+
+      testSDK: {
+        expand: true,
+        cwd: 'dist',
+        src: ['spiceworks-sdk.js'],
+        dest: 'tmp/public/'
       }
     },
     concat: {
@@ -71,11 +71,11 @@ module.exports = function(grunt) {
         dest: 'dist/<%= pkg.name %>.amd.js'
       },
       browser: {
-        src: ['vendor/loader.js', 'tmp/vendor/**/*.js', 'tmp/amd/**/*.amd.js'],
+        src: vendorSources.concat(['tmp/amd/**/*.amd.js']),
         dest: 'tmp/<%= pkg.name %>.browser.js'
       },
       tests: {
-        src: ['test/helpers/*', 'test/tests/**/*.js'],
+        src: ['tmp/test/**/*.js'],
         dest: 'tmp/public/sw_js_sdk_tests.js'
       }
     },
@@ -122,7 +122,7 @@ module.exports = function(grunt) {
           jshintrc: 'test/.jshintrc'
         },
         expand: true,
-        src: 'test/tests/*.js'
+        src: 'test/*.js'
       }
     },
     mocha: {
@@ -144,17 +144,25 @@ module.exports = function(grunt) {
           dest: 'tmp/amd/',
           ext: '.amd.js'
         }]
+      },
+      test: {
+        type: "amd",
+        files: [{
+          expand: true,
+          src: ['test/*.js', 'test/helpers/**/*.js'],
+          dest: 'tmp',
+          ext: '.amd.js'
+        }]
       }
     },
     watch: {
       files: [
-        'lib/**/*.js',
-        'vendor/*',
-        'test/tests/*',
-        'test/helpers/*',
-        'test/fixtures/**/*'
+       'lib/**',
+        'test/**',
+        'bower_components/**/*.js',
+        'vendor/**'
       ],
-      tasks: ['prepare_test']
+      tasks: ['build']
     },
     connect: {
       options: {
@@ -192,9 +200,8 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['test']);
 
   // Specific tasks
-  grunt.registerTask('build', ['clean', 'jshint', 'transpile', 'copy:vendor', 'concat', 'browser', 'uglify']);
-  grunt.registerTask('prepare_test', "Setup the test environment", ['build', 'concat:tests', 'copy:tests', 'copy:testsVendor']);
-  grunt.registerTask('test', ['prepare_test', 'connect', 'watch']);
+  grunt.registerTask('build', ['clean', 'jshint', 'transpile', 'concat', 'browser', 'uglify', 'copy']);
+  grunt.registerTask('test', ['build', 'connect', 'watch']);
   grunt.registerTask('hint', ['jshint']);
 
 };

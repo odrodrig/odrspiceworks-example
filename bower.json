@@ -22,7 +22,7 @@
     "mocha": "~1.20.1"
   },
   "dependencies": {
-    "conductor.js": "https://github.com/spiceworks/conductor.js.git#c1dcdf9cb8d24f511da32f68c74b50b91bfbda68",
+    "oasis.js": "https://github.com/spiceworks/oasis.js.git#dbd4483403f359ccf8d2b768b29a97258246d4c8",
     "rsvp": "~2.0.3"
   },
   "private": true,

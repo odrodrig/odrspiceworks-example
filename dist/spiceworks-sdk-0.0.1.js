@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.1 - 2014-07-21
+/*! spiceworks-sdk - v0.0.1 - 2014-07-22
 * http://developers.spiceworks.com
 * Copyright (c) 2014 ; Licensed  */
 var define, require;
@@ -57,1425 +57,8 @@ var define, require;
   require.entries = registry;
 })();
 
-define("conductor", 
-  ["oasis","conductor/version","conductor/card_reference","conductor/card_dependencies","oasis/shims","oasis/util","conductor/capabilities","conductor/multiplex_service","conductor/adapters","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-    var Version = __dependency2__["default"];
-    var CardReference = __dependency3__["default"];
-    var CardDependencies = __dependency4__["default"];
-    var o_create = __dependency5__.o_create;
-    var a_forEach = __dependency5__.a_forEach;
-    var a_indexOf = __dependency5__.a_indexOf;
-    var delegate = __dependency6__.delegate;
-    var ConductorCapabilities = __dependency7__["default"];
-    var MultiplexService = __dependency8__["default"];
-    var adapters = __dependency9__["default"];
+function UUID(){}UUID.generate=function(){var a=UUID._gri,b=UUID._ha;return b(a(32),8)+"-"+b(a(16),4)+"-"+b(16384|a(12),4)+"-"+b(32768|a(14),4)+"-"+b(a(48),12)};UUID._gri=function(a){return 0>a?NaN:30>=a?0|Math.random()*(1<<a):53>=a?(0|1073741824*Math.random())+1073741824*(0|Math.random()*(1<<a-30)):NaN};UUID._ha=function(a,b){for(var c=a.toString(16),d=b-c.length,e="0";0<d;d>>>=1,e+=e)d&1&&(c=e+c);return c};
 
-    function Conductor(options) {
-      this.options = options || {};
-      this.oasis = new Oasis();
-
-      this.data = {};
-      this.cards = {};
-      this._capabilities = new ConductorCapabilities();
-      Conductor._dependencies = new CardDependencies();
-    }
-
-    Conductor.Version = Version;
-    Conductor.Oasis = Oasis;
-
-    Conductor._dependencies = new CardDependencies();
-    Conductor.require = function(url) { Conductor._dependencies.requireJavaScript(url); };
-    Conductor.requireCSS = function(url) { Conductor._dependencies.requireCSS(url); };
-
-    Conductor.MultiplexService = MultiplexService;
-    Conductor.adapters = adapters;
-
-    var RSVP = Conductor.Oasis.RSVP,
-        Promise = RSVP.Promise;
-
-    function coerceId(id) {
-      return id + '';
-    }
-
-    Conductor.prototype = {
-      configure: function (name, value) {
-        if ('eventCallback' === name || 'allowSameOrigin' === name) {
-          this.oasis.configure(name, value);
-        } else {
-          throw new Error("Unexpected Configuration `" + name + "` = `" + value + "`");
-        }
-      },
-
-      loadData: function(url, id, data) {
-        id = coerceId(id);
-
-        this.data[url] = this.data[url] || {};
-        this.data[url][id] = data;
-
-        var cards = this.cards[url] && this.cards[url][id];
-
-        if (!cards) { return; }
-
-        a_forEach.call(cards, function(card) {
-          card.updateData('*', data);
-        });
-      },
-
-      updateData: function(card, bucket, data) {
-        var url = card.url,
-            id = card.id;
-
-        this.data[url][id][bucket] = data;
-
-        var cards = this.cards[url][id].slice(),
-            index = a_indexOf.call(cards, card);
-
-        cards.splice(index, 1);
-
-        a_forEach.call(cards, function(card) {
-          card.updateData(bucket, data);
-        });
-      },
-
-      load: function(url, id, options) {
-        id = coerceId(id);
-
-        var datas = this.data[url],
-            data = datas && datas[id],
-            _options = options || {},
-            extraCapabilities = _options.capabilities || [],
-            capabilities = this.defaultCapabilities().slice(),
-            cardServices = o_create(this.defaultServices()),
-            adapter = _options.adapter,
-            prop;
-
-        capabilities.push.apply(capabilities, extraCapabilities);
-
-        // TODO: this should be a custom service provided in tests
-        if (this.options.testing) {
-          capabilities.unshift('assertion');
-        }
-
-        // It is possible to add services when loading the card
-        if( _options.services ) {
-          for( prop in _options.services) {
-            cardServices[prop] = _options.services[prop];
-          }
-        }
-
-        var sandbox = this.oasis.createSandbox({
-          url: url,
-          capabilities: capabilities,
-          services: cardServices,
-
-          adapter: adapter
-        });
-
-        sandbox.data = data;
-        sandbox.activateDefered = RSVP.defer();
-        sandbox.activatePromise = sandbox.activateDefered.promise;
-
-        var card = new CardReference(sandbox);
-
-        this.cards[url] = this.cards[url] || {};
-        var cards = this.cards[url][id] = this.cards[url][id] || [];
-        cards.push(card);
-
-        card.url = url;
-        card.id = id;
-
-        sandbox.conductor = this;
-        sandbox.card = card;
-
-        // TODO: it would be better to access the consumer from
-        // `conductor.parentCard` after the child card refactoring is in master.
-        if (this.oasis.consumers.nestedWiretapping) {
-          card.wiretap(function (service, messageEvent) {
-            this.oasis.consumers.nestedWiretapping.send(messageEvent.type, {
-              data: messageEvent.data,
-              service: service+"",
-              direction: messageEvent.direction,
-              url: url,
-              id: id
-            });
-          });
-        }
-
-        return card;
-      },
-
-      unload: function(card) {
-        var cardArray = this.cards[card.url][card.id],
-            cardIndex = a_indexOf.call(cardArray, card);
-
-        card.sandbox.conductor = null;
-
-        card.sandbox.terminate();
-        delete cardArray[cardIndex];
-        cardArray.splice(cardIndex, 1);
-      },
-
-      /**
-        @return array the default list of capabilities that will be included for all
-        cards.
-      */
-      defaultCapabilities: delegate('_capabilities', 'defaultCapabilities'),
-
-      /**
-        @return object the default services used for the default capabilities.
-      */
-      defaultServices: delegate('_capabilities', 'defaultServices'),
-
-      /**
-        Add a default capability that this conductor will provide to all cards,
-        unless the capability is not supported by the specified adapter.
-
-        @param {string} capability the capability to add
-        @param {Oasis.Service} [service=Oasis.Service] the default service to use
-        for `capability`.  Defaults to a plain `Oasis.Service`.
-      */
-      addDefaultCapability: delegate('_capabilities', 'addDefaultCapability'),
-
-      // Be careful with this: it does no safety checking, so things will break if
-      // one for example removes `data` or `xhr` as a default capability.
-      //
-      // It is however safe to remove `height`.
-      removeDefaultCapability: delegate('_capabilities', 'removeDefaultCapability')
-    };
-
-    __exports__["default"] = Conductor;
-  });
-define("conductor/adapters", 
-  ["oasis","conductor/inline_adapter","exports"],
-  function(__dependency1__, __dependency2__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-    var inlineAdapter = __dependency2__["default"];
-
-    var adapters = {
-      iframe: Oasis.adapters.iframe,
-      inline: inlineAdapter
-    };
-
-    __exports__["default"] = adapters;
-  });
-define("conductor/assertion_consumer", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var AssertionConsumer = Oasis.Consumer.extend({
-      initialize: function() {
-        var service = this;
-
-
-        window.ok = window.ok || function(bool, message) {
-          service.send('ok', { bool: bool, message: message });
-        };
-
-        window.equal = window.equal || function(expected, actual, message) {
-          service.send('equal', { expected: expected, actual: actual, message: message });
-        };
-
-        window.start = window.start || function() {
-          service.send('start');
-        };
-      },
-
-      events: {
-        instruct: function(info) {
-          this.card.instruct(info);
-        }
-      }
-    });
-
-    __exports__["default"] = AssertionConsumer;
-  });
-define("conductor/assertion_service", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var AssertionService = Oasis.Service.extend({
-      initialize: function(port) {
-        this.sandbox.assertionPort = port;
-      },
-
-      events: {
-        ok: function(data) {
-          ok(data.bool, data.message);
-        },
-
-        equal: function (data) {
-          equal(data.expected, data.actual, data.message);
-        },
-
-        start: function() {
-          start();
-        }
-      }
-    });
-
-    __exports__["default"] = AssertionService;
-  });
-define("conductor/capabilities", 
-  ["oasis","conductor/services","conductor/lang","oasis/shims","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-    var services = __dependency2__.services;
-    var copy = __dependency3__.copy;
-    var a_indexOf = __dependency4__.a_indexOf;
-
-    function ConductorCapabilities() {
-      this.capabilities = [
-        'xhr', 'metadata', 'render', 'data', 'lifecycle', 'height',
-        'nestedWiretapping' ];
-      this.services = copy(services);
-    }
-
-    ConductorCapabilities.prototype = {
-      defaultCapabilities: function () {
-        return this.capabilities;
-      },
-
-      defaultServices: function () {
-        return this.services;
-      },
-
-      addDefaultCapability: function (capability, service) {
-        if (!service) { service = Oasis.Service; }
-        this.capabilities.push(capability);
-        this.services[capability] = service;
-      },
-
-      removeDefaultCapability: function (capability) {
-        var index = a_indexOf.call(this.capabilities, capability);
-        if (index !== -1) {
-          return this.capabilities.splice(index, 1);
-        }
-      }
-    };
-
-    __exports__["default"] = ConductorCapabilities;
-  });
-define("conductor/card", 
-  ["conductor","oasis","conductor/assertion_consumer","conductor/xhr_consumer","conductor/render_consumer","conductor/metadata_consumer","conductor/data_consumer","conductor/lifecycle_consumer","conductor/height_consumer","conductor/nested_wiretapping_consumer","conductor/multiplex_service","oasis/shims"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __dependency12__) {
-    "use strict";
-    var Conductor = __dependency1__["default"];
-    var Oasis = __dependency2__["default"];
-    var AssertionConsumer = __dependency3__["default"];
-    var XhrConsumer = __dependency4__["default"];
-    var RenderConsumer = __dependency5__["default"];
-    var MetadataConsumer = __dependency6__["default"];
-    var DataConsumer = __dependency7__["default"];
-    var LifecycleConsumer = __dependency8__["default"];
-    var HeightConsumer = __dependency9__["default"];
-    var NestedWiretapping = __dependency10__["default"];
-    var MultiplexService = __dependency11__["default"];
-    var OasisShims = __dependency12__;
-
-    var RSVP = Oasis.RSVP,
-        Promise = RSVP.Promise,
-        o_create = OasisShims.o_create,
-        a_forEach = OasisShims.a_forEach,
-        a_map = OasisShims.a_map;
-
-    function extend(a, b) {
-      for (var key in b) {
-        if (b.hasOwnProperty(key)) {
-          a[key] = b[key];
-        }
-      }
-      return a;
-    }
-
-    function getBase () {
-      var link = document.createElement("a");
-      link.href = "!";
-      var base = link.href.slice(0, -1);
-
-      return base;
-    }
-
-    function Card(options, _oasis) {
-      var card = this,
-          prop,
-          oasis = _oasis || self.oasis;
-
-      for (prop in options) {
-        this[prop] = options[prop];
-      }
-
-      this.consumers = o_create(oasis.consumers);
-      this.options = options = options || {};
-
-      this.deferred = {
-        data: this.defer(),
-        xhr: this.defer()
-      };
-
-      options.events = options.events || {};
-      options.requests = options.requests || {};
-
-      this.activateWhen(this.deferred.data.promise, [ this.deferred.xhr.promise ]);
-
-      var cardOptions = {
-        consumers: extend({
-          // TODO: this should be a custom consumer provided in tests
-          assertion: AssertionConsumer,
-          xhr: XhrConsumer,
-          render: RenderConsumer,
-          metadata: MetadataConsumer,
-          data: DataConsumer,
-          lifecycle: LifecycleConsumer,
-          height: HeightConsumer,
-          nestedWiretapping: NestedWiretapping
-        }, options.consumers)
-      };
-
-      for (prop in cardOptions.consumers) {
-        cardOptions.consumers[prop] = cardOptions.consumers[prop].extend({card: this});
-      }
-
-      oasis.connect(cardOptions);
-    }
-
-    Card.prototype = {
-      waitForActivation: function () {
-        return this._waitForActivationDeferral().promise;
-      },
-
-      updateData: function(name, hash) {
-        oasis.portFor('data').send('updateData', { bucket: name, object: hash });
-      },
-
-      /**
-        A card can contain other cards.
-
-        `childCards` is an array of objects describing the differents cards. The accepted attributes are:
-        * `url` {String} the url of the card
-        * `id` {String} a unique identifier for this instance (per type)
-        * `options` {Object} Options passed to `Conductor.load` (optional)
-        * `data` {Object} passed to `Conductor.loadData`
-
-        Example:
-
-          Conductor.card({
-            childCards: [
-              { url: '../cards/survey', id: 1 , options: {}, data: '' }
-            ]
-          });
-
-        Any `Conductor.Oasis.Service` needed for a child card can be simply
-        declared with the `services` attribute.  A card can contain other cards.
-
-        Example:
-
-          Conductor.card({
-            services: {
-              survey: SurveyService
-            },
-            childCards: [
-              {url: 'survey', id: 1 , options: {capabilities: ['survey']} }
-            ]
-          });
-
-        `loadDataForChildCards` can be defined when a child card needs data passed
-        to the parent card.
-
-        Once `initializeChildCards` has been called, the loaded card can be
-        accessed through the `childCards` attribute.
-
-        Example:
-
-          var card = Conductor.card({
-            childCards: [
-              { url: '../cards/survey', id: 1 , options: {}, data: '' }
-            ]
-          });
-
-          // After `initializeChildCards` has been called
-          var surveyCard = card.childCards[0].card;
-
-        Child cards can be added to the DOM by overriding `initializeDOM`.  The
-        default behavior of `initializeDOM` is to add all child cards to the body
-        element.
-
-        You can pass the configuration to be used with Conductor on the instance used to load
-        the child cards. This will be passed to `conductor.configure`.
-
-        Example:
-
-          Conductor.card({
-            conductorConfiguration: { allowSameOrigin: true },
-            childCards: [
-              { url: '../cards/survey', id: 1 , options: {}, data: '' }
-            ]
-          });
-
-        If you use child cards and `allowSameOrigin`, you'll need to specify in the parent card
-        a different url for Conductor.js. This will ensure that the child cards can't access
-        their parent.
-
-        Example:
-
-          Conductor.card({
-            conductorConfiguration: {
-              allowSameOrigin: true
-            },
-            childCards: [
-              { url: '../cards/survey', id: 1 , options: {}, data: '' }
-            ]
-          });
-       */
-      initializeChildCards: function( data ) {
-        var prop,
-            conductorOptions = {};
-
-        if(this.childCards) {
-          this.conductor = new Conductor( conductorOptions );
-
-          if( this.conductorConfiguration ) {
-            for( prop in this.conductorConfiguration ) {
-              this.conductor.configure( prop, this.conductorConfiguration[prop] );
-            }
-          }
-
-          this.conductor.addDefaultCapability('xhr', MultiplexService.extend({
-            upstream: this.consumers.xhr,
-            transformRequest: function (requestEventName, data) {
-              var base = this.sandbox.options.url;
-              if (requestEventName === 'get') {
-                data.args = a_map.call(data.args, function (resourceUrl) {
-                  var url = PathUtils.cardResourceUrl(base, resourceUrl);
-                  return PathUtils.cardResourceUrl(getBase(), url);
-                });
-              }
-
-              return data;
-            }
-          }));
-
-          // A child card may not need new services
-          if( this.services ) {
-            for( prop in this.services) {
-              this.conductor.addDefaultCapability(prop, this.services[prop]);
-            }
-          }
-
-          // Hook if you want to initialize cards that are not yet instantiated
-          if( this.loadDataForChildCards ) {
-            this.loadDataForChildCards( data );
-          }
-
-          for( prop in this.childCards ) {
-            var childCardOptions = this.childCards[prop];
-
-            this.conductor.loadData(
-              childCardOptions.url,
-              childCardOptions.id,
-              childCardOptions.data
-            );
-
-            childCardOptions.card = this.conductor.load( childCardOptions.url, childCardOptions.id, childCardOptions.options );
-          }
-        }
-      },
-
-      initializeDOM: function () {
-        if (this.childCards) {
-          a_forEach.call(this.childCards, function(cardInfo) {
-            cardInfo.card.appendTo(document.body);
-          });
-        }
-      },
-
-      render: function () {},
-
-      //-----------------------------------------------------------------
-      // Internal
-
-      defer: function(callback) {
-        var defered = RSVP.defer();
-        if (callback) { defered.promise.then(callback).fail( RSVP.rethrow ); }
-        return defered;
-      },
-
-      activateWhen: function(dataPromise, otherPromises) {
-        var card = this;
-
-        return this._waitForActivationDeferral().resolve(RSVP.all([dataPromise].concat(otherPromises)).then(function(resolutions) {
-          // Need to think if this called at the right place/time
-          // My assumption for the moment is that
-          // we don't rely on some initializations done in activate
-          if (card.initializeChildCards) { card.initializeChildCards(resolutions[0]); }
-
-          if (card.activate) {
-            return card.activate(resolutions[0]);
-          }
-        }));
-      },
-
-      _waitForActivationDeferral: function () {
-        if (!this._activationDeferral) {
-          this._activationDeferral = RSVP.defer();
-          this._activationDeferral.promise.fail( RSVP.rethrow );
-        }
-        return this._activationDeferral;
-      }
-    };
-
-    Conductor.card = function(options) {
-      return new Card(options);
-    };
-  });
-define("conductor/card_dependencies", 
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    function CardDependencies() {
-      this.requiredJavaScriptURLs = [];
-      this.requiredCSSURLs = [];
-    }
-
-    CardDependencies.prototype = {
-      requireJavaScript: function(url) {
-        this.requiredJavaScriptURLs.push(url);
-      },
-      requireCSS: function(url) {
-        this.requiredCSSURLs.push(url);
-      }
-    };
-
-    __exports__["default"] = CardDependencies;
-  });
-define("conductor/card_reference", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var RSVP = Oasis.RSVP,
-        Promise = RSVP.Promise;
-
-    function CardReference(sandbox) {
-      this.sandbox = sandbox;
-      var card = this;
-
-      return this;
-    }
-
-    CardReference.prototype = {
-      waitForLoad: function() {
-        var card = this;
-        if (!this._loadPromise) {
-          this._loadPromise = this.sandbox.waitForLoad().then(function() {
-            return card;
-          }).fail(RSVP.rethrow);
-        }
-        return this._loadPromise;
-      },
-
-      metadataFor: function(name) {
-        return this.sandbox.metadataPort.request('metadataFor', name);
-      },
-
-      instruct: function(info) {
-        return this.sandbox.assertionPort.send('instruct', info);
-      },
-
-      appendTo: function(parent) {
-        if (typeof parent === 'string') {
-          var selector = parent;
-          parent = document.querySelector(selector);
-          if (!parent) { throw new Error("You are trying to append to '" + selector + "' but no element matching it was found"); }
-        }
-
-        parent.appendChild(this.sandbox.el);
-
-        return this.waitForLoad();
-      },
-
-      render: function(intent, dimensions) {
-        var card = this;
-
-        this.sandbox.activatePromise.then(function() {
-          card.sandbox.renderPort.send('render', [intent, dimensions]);
-        }).fail(RSVP.rethrow);
-      },
-
-      updateData: function(bucket, data) {
-        var sandbox = this.sandbox;
-        sandbox.activatePromise.then(function() {
-          sandbox.dataPort.send('updateData', { bucket: bucket, data: data });
-        }).fail(RSVP.rethrow);
-      },
-
-      wiretap: function(callback, binding) {
-        this.sandbox.wiretap(function() {
-          callback.apply(binding, arguments);
-        });
-      },
-
-      destroy: function() {
-        this.sandbox.conductor.unload(this);
-      }
-    };
-
-    Oasis.RSVP.EventTarget.mixin(CardReference.prototype);
-
-    __exports__["default"] = CardReference;
-  });
-define("conductor/data_consumer", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var DataConsumer = Oasis.Consumer.extend({
-      events: {
-        initializeData: function(data) {
-          this.card.data = data;
-          this.card.deferred.data.resolve(data);
-        },
-
-        updateData: function(data) {
-          if (data.bucket === '*') {
-            this.card.data = data.data;
-          } else {
-            this.card.data[data.bucket] = data.data;
-          }
-
-          if (this.card.didUpdateData) {
-            this.card.didUpdateData(data.bucket, data.data);
-          }
-        }
-      }
-    });
-
-    __exports__["default"] = DataConsumer;
-  });
-define("conductor/data_service", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var DataService = Oasis.Service.extend({
-      initialize: function(port) {
-        var data = this.sandbox.data;
-        this.send('initializeData', data);
-
-        this.sandbox.dataPort = port;
-      },
-
-      events: {
-        updateData: function(event) {
-          this.sandbox.conductor.updateData(this.sandbox.card, event.bucket, event.object);
-        }
-      }
-    });
-
-    __exports__["default"] = DataService;
-  });
-define("conductor/dom", 
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    /* global DomUtils:true */
-
-    var DomUtils = {};
-
-    if (typeof window !== "undefined") {
-      if (window.getComputedStyle) {
-        DomUtils.getComputedStyleProperty = function (element, property) {
-          return window.getComputedStyle(element)[property];
-        };
-      } else {
-        DomUtils.getComputedStyleProperty = function (element, property) {
-          var prop = property.replace(/-(\w)/g, function (_, letter) {
-            return letter.toUpperCase();
-          });
-          return element.currentStyle[prop];
-        };
-      }
-    }
-
-    DomUtils.createStyleElement = function(css) {
-      var style = document.createElement('style');
-
-      style.type = 'text/css';
-      if (style.styleSheet){
-        style.styleSheet.cssText = css;
-      } else {
-        style.appendChild(document.createTextNode(css));
-      }
-
-      return style;
-    };
-
-    __exports__["default"] = DomUtils;
-  });
-define("conductor/error", 
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    function error(exception) {
-      if (typeof console === 'object' && console.assert && console.error) {
-        // chrome does not (yet) link the URLs in `console.assert`
-        console.error(exception.stack);
-        console.assert(false, exception.message);
-      }
-      setTimeout( function () {
-        throw exception;
-      }, 1);
-      throw exception;
-    }
-
-    __exports__.error = error;function warn() {
-      if (console.warn) {
-        return console.warn.apply(this, arguments);
-      }
-    }
-
-    __exports__.warn = warn;
-  });
-define("conductor/height_consumer", 
-  ["oasis","conductor","conductor/dom","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
-    "use strict";
-    /*global MutationObserver:true */
-
-    /**
-      The height consumer reports changes to the `documentElement`'s element to its
-      parent environment.  This is obviated by the ALLOWSEAMLESS proposal, but no
-      browser supports it yet.
-
-      There are two mechanisms for reporting dimension changes: automatic (via DOM
-      mutation observers) and manual.  By default, height resizing is automatic.  It
-      must be disabled during card activation if `MutationObserver` is not
-      supported.  It may be disabled during card activation if manual updates are
-      preferred.
-
-      Automatic updating can be disabled as follows:
-
-      ```js
-      Conductor.card({
-        activate: function () {
-          this.consumers.height.autoUpdate = false;
-        }
-      })
-      ```
-
-      Manual updates can be done either with specific dimensions, or manual updating
-      can compute the dimensions.
-
-      ```js
-      card = Conductor.card({ ... });
-
-      card.consumers.height.update({ width: 200, height: 200 });
-
-      // dimensions of `document.body` will be computed.
-      card.consumers.height.update();
-      ```
-    */
-    var Oasis = __dependency1__["default"];
-    var Conductor = __dependency2__["default"];
-    var DomUtils = __dependency3__["default"];
-
-    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-
-    var HeightConsumer = Oasis.Consumer.extend({
-      autoUpdate: true,
-
-      // TODO: fix autoupdate
-      // initialize: function () {
-        // var consumer = this;
-
-        // this.card.waitForActivation().then(function () {
-          // if (!consumer.autoUpdate) {
-            // return;
-          // } else if (typeof MutationObserver === "undefined") {
-            // Conductor.warn("MutationObserver is not defined.  Height service cannot autoupdate.  You must manually call `update` for your height consumer.  You may want to disable autoupdate when your card activates with `this.consumers.height.autoUpdate = false;`");
-            // return;
-          // }
-
-          // consumer.setUpAutoupdate();
-        // });
-      // },
-
-      update: function (dimensions) {
-        if (typeof dimensions === "undefined") {
-          var width = 0,
-              height = 0,
-              childNodes = document.body.childNodes,
-              len = childNodes.length,
-              extraVSpace = 0,
-              extraHSpace = 0,
-              vspaceProps = ['marginTop', 'marginBottom', 'paddingTop', 'paddingBottom', 'borderTopWidth', 'borderBottomWidth'],
-              hspaceProps = ['marginLeft', 'marginRight', 'paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'],
-              i,
-              childNode;
-
-          for (i=0; i < vspaceProps.length; ++i) {
-            extraVSpace += parseInt(DomUtils.getComputedStyleProperty(document.body, vspaceProps[i]), 10);
-          }
-
-          for (i=0; i < hspaceProps.length; ++i) {
-            extraHSpace += parseInt(DomUtils.getComputedStyleProperty(document.body, hspaceProps[i]), 10);
-          }
-
-          for (i = 0; i < len; ++i) {
-            childNode = childNodes[i];
-            if (childNode.nodeType !== 1 /* Node.ELEMENT_NODE */ ) { continue; }
-
-            width = Math.max(width, childNode.clientWidth + extraHSpace);
-            height = Math.max(height, childNode.clientHeight + extraVSpace);
-          }
-
-          dimensions = {
-            width: width,
-            height: height
-          };
-        }
-
-        this.send('resize', dimensions);
-      },
-
-      setUpAutoupdate: function () {
-        var consumer = this;
-
-        var mutationObserver = new MutationObserver(function () {
-          consumer.update();
-        });
-
-        mutationObserver.observe(document.documentElement, {
-          childList: true,
-          attributes: true,
-          characterData: true,
-          subtree: true,
-          attributeOldValue: false,
-          characterDataOldValue: false,
-          attributeFilter: ['style', 'className']
-        });
-      }
-    });
-
-    __exports__["default"] = HeightConsumer;
-  });
-define("conductor/height_service", 
-  ["oasis","conductor/dom","exports"],
-  function(__dependency1__, __dependency2__, __exports__) {
-    "use strict";
-    /*global DomUtils*/
-    var Oasis = __dependency1__["default"];
-    var DomUtils = __dependency2__["default"];
-
-    function maxDim(element, dim) {
-      var max = DomUtils.getComputedStyleProperty(element, 'max' + dim);
-      return (max === "none") ? Infinity : parseInt(max, 10);
-    }
-
-    var HeightService = Oasis.Service.extend({
-      initialize: function (port) {
-        var el;
-        if (el = this.sandbox.el) {
-          Oasis.RSVP.EventTarget.mixin(el);
-        }
-        this.sandbox.heightPort = port;
-      },
-
-      events: {
-        resize: function (data) {
-          // height service is meaningless for DOMless sandboxes, eg sandboxed as
-          // web workers.
-          if (! this.sandbox.el) { return; }
-
-          var el = this.sandbox.el,
-              maxWidth = maxDim(el, 'Width'),
-              maxHeight = maxDim(el, 'Height'),
-              width = Math.min(data.width, maxWidth),
-              height = Math.min(data.height, maxHeight);
-
-          el.style.width = width + "px";
-          el.style.height = height + "px";
-
-          el.trigger('resize', { width: width, height: height });
-        }
-      }
-    });
-
-    __exports__["default"] = HeightService;
-  });
-define("conductor/inline_adapter", 
-  ["oasis/util","oasis/inline_adapter","exports"],
-  function(__dependency1__, __dependency2__, __exports__) {
-    "use strict";
-    var extend = __dependency1__.extend;
-    var OasisInlineAdapter = __dependency2__["default"];
-
-    var InlineAdapter = extend(OasisInlineAdapter, {
-      wrapResource: function (data, oasis) {
-        var functionDef = 
-          'var _globalOasis = window.oasis; window.oasis = oasis;' +
-          'try {' +
-          data +
-          ' } finally {' +
-          'window.oasis = _globalOasis;' +
-          '}';
-        return new Function("oasis", functionDef);
-        }
-    });
-
-    var inlineAdapter = new InlineAdapter();
-
-    inlineAdapter.addUnsupportedCapability('height');
-
-    __exports__["default"] = inlineAdapter;
-  });
-define("conductor/lang", 
-  ["oasis/shims","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var a_indexOf = __dependency1__.a_indexOf;
-    var a_filter = __dependency1__.a_filter;
-
-    function copy(a) {
-      var b = {};
-      for (var prop in a) {
-        if (!a.hasOwnProperty(prop)) { continue; }
-
-        b[prop] = a[prop];
-      }
-      return b;
-    }
-
-    __exports__.copy = copy;function setDiff(a, b) {
-      var differences  = [];
-
-      for(var prop in a) {
-        if( a[prop] !== b[prop] ) {
-          differences.push( prop );
-        }
-      }
-
-      return differences;
-    }
-
-    __exports__.setDiff = setDiff;
-  });
-define("conductor/lifecycle_consumer", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var LifecycleConsumer = Oasis.Consumer.extend({
-      initialize: function() {
-        var consumer = this;
-
-        this.card.waitForActivation().then(function() {
-          consumer.send('activated');
-        });
-      }
-    });
-
-    __exports__["default"] = LifecycleConsumer;
-  });
-define("conductor/lifecycle_service", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var LifecycleService = Oasis.Service.extend({
-      events: {
-        activated: function() {
-          this.sandbox.activateDefered.resolve();
-        }
-      }
-    });
-
-    __exports__["default"] = LifecycleService;
-  });
-define("conductor/metadata_consumer", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var MetadataConsumer = Oasis.Consumer.extend({
-      requests: {
-        metadataFor: function(name) {
-          if (name === '*') {
-            var values = [], names = [];
-
-            for (var metadataName in this.card.options.metadata) {
-              values.push(this.card.metadata[metadataName].call(this.card));
-              names.push(metadataName);
-            }
-
-            return Oasis.RSVP.all(values).then(function(sources) {
-              var metadata = {};
-
-              for (var i = 0; i < sources.length; i++) {
-                var name = names[i];
-                for (var key in sources[i]) {
-                  metadata[name+':'+key] = sources[i][key];
-                }
-              }
-
-              return metadata;
-            });
-
-          } else {
-            return this.card.metadata[name].call(this.card);
-          }
-        }
-      }
-    });
-
-    __exports__["default"] = MetadataConsumer;
-  });
-define("conductor/metadata_service", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var MetadataService = Oasis.Service.extend({
-      initialize: function(port) {
-        this.sandbox.metadataPort = port;
-      }
-    });
-
-    __exports__["default"] = MetadataService;
-  });
-define("conductor/multiplex_service", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    /**
-      Passes requests from each instance to `upstream`, a
-      `Conductor.Oasis.Consumer`, and sends the responses back to the instance.
-      This differs from simply passing `upstream`'s port to nested cards in two
-      ways:
-
-        1. `upstream` can still be used within the current card and
-        2. requests from multiple nested cards can be sent to `upstream`.
-
-      This is useful for cards who cannot fulfill dependency requests of its child
-      cards, but whose containing environment can.
-
-
-      Example:
-
-        Conductor.card({
-          activate: function () {
-            var conductor = new Conductor();
-
-            // nested conductor cannot load required resources, but its containing
-            // environment can (possibly by passing the request up through its own
-            // multiplex service).
-            conductor.addDefaultCapability('xhr', Conductor.MultiplexService.extend({
-                                                    upstream: this.consumers.xhr
-                                                  }));
-
-            // now the nested card can `Conductor.require` resources normally.
-            conductor.card.load("/nested/card/url.js");
-          }
-        });
-    */
-
-    var Oasis = __dependency1__["default"];
-
-    var MultiplexService = Oasis.Service.extend({
-      initialize: function () {
-        this.port.all(function (eventName, data) {
-          if (eventName.substr(0, "@request:".length) === "@request:") {
-            this.propagateRequest(eventName, data);
-          } else {
-            this.propagateEvent(eventName, data);
-          }
-        }, this);
-      },
-
-      propagateEvent: function (eventName, _data) {
-        var data = (typeof this.transformEvent === 'function') ? this.transformEvent(eventName, _data) : _data;
-        this.upstream.send(eventName, data);
-      },
-
-      propagateRequest: function (eventName, _data) {
-        var requestEventName = eventName.substr("@request:".length),
-            port = this.upstream.port,
-            data = (typeof this.transformRequest === 'function') ? this.transformRequest(requestEventName, _data) : _data,
-            requestId = data.requestId,
-            args = data.args,
-            self = this;
-
-        args.unshift(requestEventName);
-        port.request.apply(port, args).then(function (responseData) {
-          self.send('@response:' + requestEventName, {
-            requestId: requestId,
-            data: responseData
-          });
-        });
-      }
-    });
-
-    __exports__["default"] = MultiplexService;
-  });
-define("conductor/nested_wiretapping_consumer", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var NestedWiretapping = Oasis.Consumer;
-
-    __exports__["default"] = NestedWiretapping;
-  });
-define("conductor/nested_wiretapping_service", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var NestedWiretappingService = Oasis.Service.extend({
-      initialize: function (port) {
-        this.sandbox.nestedWiretappingPort = port;
-      }
-    });
-
-    __exports__["default"] = NestedWiretappingService;
-  });
-define("conductor/path", 
-  ["oasis/shims","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    /* global PathUtils:true */
-    var a_filter = __dependency1__.a_filter;
-
-    var PathUtils = window.PathUtils = {
-      dirname: function (path) {
-        return path.substring(0, path.lastIndexOf('/'));
-      },
-
-      expandPath: function (path) {
-        var parts = path.split('/');
-        for (var i = 0; i < parts.length; ++i) {
-          if (parts[i] === '..') {
-            for (var j = i-1; j >= 0; --j) {
-              if (parts[j] !== undefined) {
-                parts[i] = parts[j] = undefined;
-                break;
-              }
-            }
-          }
-        }
-        return a_filter.call(parts, function (part) { return part !== undefined; }).join('/');
-      },
-
-      cardResourceUrl: function(baseUrl, resourceUrl) {
-        var url;
-        if (/^((http(s?):)|\/)/.test(resourceUrl)) {
-          url = resourceUrl;
-        } else {
-          url = PathUtils.dirname(baseUrl) + '/' + resourceUrl;
-        }
-
-        return PathUtils.expandPath(url);
-      }
-    };
-
-    __exports__["default"] = PathUtils;
-  });
-define("conductor/render_consumer", 
-  ["oasis","conductor/dom","exports"],
-  function(__dependency1__, __dependency2__, __exports__) {
-    "use strict";
-    /*global DomUtils */
-
-    var Oasis = __dependency1__["default"];
-    var DomUtils = __dependency2__["default"];
-
-    var domInitialized = false;
-
-    function resetCSS() {
-      var head = document.head || document.documentElement.getElementsByTagName('head')[0],
-          css = "",
-          newStyle;
-
-      css += "body {";
-      css += "  margin: 0px;";
-      css += "  padding: 0px;";
-      css += "}";
-
-      css += "iframe {";
-      css += "  display: block;";
-      css += "}";
-
-      newStyle = DomUtils.createStyleElement(css);
-
-      head.insertBefore(newStyle, head.children[0]);
-    }
-
-    var RenderConsumer = Oasis.Consumer.extend({
-      events: {
-        render: function(args) {
-          if(!domInitialized) {
-            resetCSS();
-
-            if(this.card.initializeDOM) {
-              this.card.initializeDOM();
-            }
-
-            domInitialized = true;
-          }
-          this.card.render.apply(this.card, args);
-        }
-      }
-    });
-
-    __exports__["default"] = RenderConsumer;
-  });
-define("conductor/render_service", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var RenderService = Oasis.Service.extend({
-      initialize: function(port) {
-        this.sandbox.renderPort = port;
-      }
-    });
-
-    __exports__["default"] = RenderService;
-  });
-define("conductor/services", 
-  ["conductor/assertion_service","conductor/xhr_service","conductor/render_service","conductor/metadata_service","conductor/data_service","conductor/lifecycle_service","conductor/height_service","conductor/nested_wiretapping_service","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __exports__) {
-    "use strict";
-    var AssertionService = __dependency1__["default"];
-    var XhrService = __dependency2__["default"];
-    var RenderService = __dependency3__["default"];
-    var MetadataService = __dependency4__["default"];
-    var DataService = __dependency5__["default"];
-    var LifecycleService = __dependency6__["default"];
-    var HeightService = __dependency7__["default"];
-    var NestedWiretappingService = __dependency8__["default"];
-
-    /**
-      Default Conductor services provided to every conductor instance.
-    */
-    var services = {
-      xhr: XhrService,
-      metadata: MetadataService,
-      assertion: AssertionService,
-      render: RenderService,
-      lifecycle: LifecycleService,
-      data: DataService,
-      height: HeightService,
-      nestedWiretapping: NestedWiretappingService
-    };
-    __exports__.services = services;
-    var capabilities = [
-      'xhr', 'metadata', 'render', 'data', 'lifecycle', 'height',
-      'nestedWiretapping'
-    ];
-    __exports__.capabilities = capabilities;
-  });
-define("conductor/version", 
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    __exports__["default"] = '0.3.0';
-  });
-define("conductor/xhr_consumer", 
-  ["oasis","oasis/shims","conductor/dom","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-    var OasisShims = __dependency2__;
-    var DomUtils = __dependency3__["default"];
-
-    var a_forEach = OasisShims.a_forEach;
-
-    var XhrConsumer = Oasis.Consumer.extend({
-      initialize: function() {
-        var promises = [],
-            jsPromises = [],
-            port = this.port,
-            promise = this.card.deferred.xhr;
-
-        function loadURL(callback) {
-          return function(url) {
-            var promise = port.request('get', url);
-            promises.push(promise);
-            promise.then(callback);
-          };
-        }
-
-        function processJavaScript(data) {
-          var script = document.createElement('script');
-          var head = document.head || document.documentElement.getElementsByTagName('head')[0];
-          // textContent is ie9+
-          script.text = script.textContent = data;
-          head.appendChild(script);
-        }
-
-        function processCSS(data) {
-          var head = document.head || document.documentElement.getElementsByTagName('head')[0],
-              style = DomUtils.createStyleElement(data);
-          head.appendChild(style);
-        }
-
-        a_forEach.call(Conductor._dependencies.requiredJavaScriptURLs, function( url ) {
-          var promise = port.request('get', url);
-          jsPromises.push( promise );
-          promises.push(promise);
-        });
-        Oasis.RSVP.all(jsPromises).then(function(scripts) {
-          a_forEach.call(scripts, processJavaScript);
-        }).fail( Oasis.RSVP.rethrow );
-        a_forEach.call(Conductor._dependencies.requiredCSSURLs, loadURL(processCSS));
-
-        Oasis.RSVP.all(promises).then(function() { promise.resolve(); }).fail( Oasis.RSVP.rethrow );
-      }
-    });
-
-    __exports__["default"] = XhrConsumer;
-  });
-define("conductor/xhr_service", 
-  ["oasis","conductor/path","oasis/xhr","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
-    "use strict";
-    /*global PathUtils */
-    var Oasis = __dependency1__["default"];
-    var PathUtils = __dependency2__["default"];
-    var xhr = __dependency3__.xhr;
-
-    var XhrService = Oasis.Service.extend({
-      requests: {
-        get: function(url) {
-          var service = this;
-          var resourceUrl = PathUtils.cardResourceUrl(service.sandbox.options.url, url);
-
-          return xhr(resourceUrl);
-        }
-      }
-    });
-
-    __exports__["default"] = XhrService;
-  });
 /*! Kamino v0.0.1 | http://github.com/Cyril-sf/kamino.js | Copyright 2012, Kit Cambridge | http://kit.mit-license.org */
 (function(window) {
   // Convenience aliases.
@@ -2796,6 +1379,639 @@ define("conductor/xhr_service",
   }
 })(this);
 
+define("rsvp/all",
+  ["rsvp/promise","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Promise = __dependency1__.Promise;
+    /* global toString */
+
+
+    function all(promises) {
+      if (Object.prototype.toString.call(promises) !== "[object Array]") {
+        throw new TypeError('You must pass an array to all.');
+      }
+
+      return new Promise(function(resolve, reject) {
+        var results = [], remaining = promises.length,
+        promise;
+
+        if (remaining === 0) {
+          resolve([]);
+        }
+
+        function resolver(index) {
+          return function(value) {
+            resolveAll(index, value);
+          };
+        }
+
+        function resolveAll(index, value) {
+          results[index] = value;
+          if (--remaining === 0) {
+            resolve(results);
+          }
+        }
+
+        for (var i = 0; i < promises.length; i++) {
+          promise = promises[i];
+
+          if (promise && typeof promise.then === 'function') {
+            promise.then(resolver(i), reject);
+          } else {
+            resolveAll(i, promise);
+          }
+        }
+      });
+    }
+
+
+    __exports__.all = all;
+  });
+define("rsvp/async",
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    var browserGlobal = (typeof window !== 'undefined') ? window : {};
+    var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
+    var local = (typeof global !== 'undefined') ? global : this;
+
+    // node
+    function useNextTick() {
+      return function() {
+        process.nextTick(flush);
+      };
+    }
+
+    function useMutationObserver() {
+      var observer = new BrowserMutationObserver(flush);
+      var element = document.createElement('div');
+      observer.observe(element, { attributes: true });
+
+      // Chrome Memory Leak: https://bugs.webkit.org/show_bug.cgi?id=93661
+      window.addEventListener('unload', function(){
+        observer.disconnect();
+        observer = null;
+      }, false);
+
+      return function() {
+        element.setAttribute('drainQueue', 'drainQueue');
+      };
+    }
+
+    function useSetTimeout() {
+      return function() {
+        local.setTimeout(flush, 1);
+      };
+    }
+
+    var queue = [];
+    function flush() {
+      for (var i = 0; i < queue.length; i++) {
+        var tuple = queue[i];
+        var callback = tuple[0], arg = tuple[1];
+        callback(arg);
+      }
+      queue = [];
+    }
+
+    var scheduleFlush;
+
+    // Decide what async method to use to triggering processing of queued callbacks:
+    if (typeof process !== 'undefined' && {}.toString.call(process) === '[object process]') {
+      scheduleFlush = useNextTick();
+    } else if (BrowserMutationObserver) {
+      scheduleFlush = useMutationObserver();
+    } else {
+      scheduleFlush = useSetTimeout();
+    }
+
+    function async(callback, arg) {
+      var length = queue.push([callback, arg]);
+      if (length === 1) {
+        // If length is 1, that means that we need to schedule an async flush.
+        // If additional callbacks are queued before the queue is flushed, they
+        // will be processed by this flush that we are scheduling.
+        scheduleFlush();
+      }
+    }
+
+
+    __exports__.async = async;
+  });
+define("rsvp/config",
+  ["rsvp/async","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var async = __dependency1__.async;
+
+    var config = {};
+    config.async = async;
+
+
+    __exports__.config = config;
+  });
+define("rsvp/defer",
+  ["rsvp/promise","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Promise = __dependency1__.Promise;
+
+    function defer() {
+      var deferred = {
+        // pre-allocate shape
+        resolve: undefined,
+        reject:  undefined,
+        promise: undefined
+      };
+
+      deferred.promise = new Promise(function(resolve, reject) {
+        deferred.resolve = resolve;
+        deferred.reject = reject;
+      });
+
+      return deferred;
+    }
+
+
+    __exports__.defer = defer;
+  });
+define("rsvp/events",
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    var Event = function(type, options) {
+      this.type = type;
+
+      for (var option in options) {
+        if (!options.hasOwnProperty(option)) { continue; }
+
+        this[option] = options[option];
+      }
+    };
+
+    var indexOf = function(callbacks, callback) {
+      for (var i=0, l=callbacks.length; i<l; i++) {
+        if (callbacks[i][0] === callback) { return i; }
+      }
+
+      return -1;
+    };
+
+    var callbacksFor = function(object) {
+      var callbacks = object._promiseCallbacks;
+
+      if (!callbacks) {
+        callbacks = object._promiseCallbacks = {};
+      }
+
+      return callbacks;
+    };
+
+    var EventTarget = {
+      mixin: function(object) {
+        object.on = this.on;
+        object.off = this.off;
+        object.trigger = this.trigger;
+        return object;
+      },
+
+      on: function(eventNames, callback, binding) {
+        var allCallbacks = callbacksFor(this), callbacks, eventName;
+        eventNames = eventNames.split(/\s+/);
+        binding = binding || this;
+
+        while (eventName = eventNames.shift()) {
+          callbacks = allCallbacks[eventName];
+
+          if (!callbacks) {
+            callbacks = allCallbacks[eventName] = [];
+          }
+
+          if (indexOf(callbacks, callback) === -1) {
+            callbacks.push([callback, binding]);
+          }
+        }
+      },
+
+      off: function(eventNames, callback) {
+        var allCallbacks = callbacksFor(this), callbacks, eventName, index;
+        eventNames = eventNames.split(/\s+/);
+
+        while (eventName = eventNames.shift()) {
+          if (!callback) {
+            allCallbacks[eventName] = [];
+            continue;
+          }
+
+          callbacks = allCallbacks[eventName];
+
+          index = indexOf(callbacks, callback);
+
+          if (index !== -1) { callbacks.splice(index, 1); }
+        }
+      },
+
+      trigger: function(eventName, options) {
+        var allCallbacks = callbacksFor(this),
+            callbacks, callbackTuple, callback, binding, event;
+
+        if (callbacks = allCallbacks[eventName]) {
+          // Don't cache the callbacks.length since it may grow
+          for (var i=0; i<callbacks.length; i++) {
+            callbackTuple = callbacks[i];
+            callback = callbackTuple[0];
+            binding = callbackTuple[1];
+
+            if (typeof options !== 'object') {
+              options = { detail: options };
+            }
+
+            event = new Event(eventName, options);
+            callback.call(binding, event);
+          }
+        }
+      }
+    };
+
+
+    __exports__.EventTarget = EventTarget;
+  });
+define("rsvp/hash",
+  ["rsvp/defer","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var defer = __dependency1__.defer;
+
+    function size(object) {
+      var s = 0;
+
+      for (var prop in object) {
+        s++;
+      }
+
+      return s;
+    }
+
+    function hash(promises) {
+      var results = {}, deferred = defer(), remaining = size(promises);
+
+      if (remaining === 0) {
+        deferred.resolve({});
+      }
+
+      var resolver = function(prop) {
+        return function(value) {
+          resolveAll(prop, value);
+        };
+      };
+
+      var resolveAll = function(prop, value) {
+        results[prop] = value;
+        if (--remaining === 0) {
+          deferred.resolve(results);
+        }
+      };
+
+      var rejectAll = function(error) {
+        deferred.reject(error);
+      };
+
+      for (var prop in promises) {
+        if (promises[prop] && typeof promises[prop].then === 'function') {
+          promises[prop].then(resolver(prop), rejectAll);
+        } else {
+          resolveAll(prop, promises[prop]);
+        }
+      }
+
+      return deferred.promise;
+    }
+
+
+    __exports__.hash = hash;
+  });
+define("rsvp/node",
+  ["rsvp/promise","rsvp/all","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    var Promise = __dependency1__.Promise;
+    var all = __dependency2__.all;
+
+    function makeNodeCallbackFor(resolve, reject) {
+      return function (error, value) {
+        if (error) {
+          reject(error);
+        } else if (arguments.length > 2) {
+          resolve(Array.prototype.slice.call(arguments, 1));
+        } else {
+          resolve(value);
+        }
+      };
+    }
+
+    function denodeify(nodeFunc) {
+      return function()  {
+        var nodeArgs = Array.prototype.slice.call(arguments), resolve, reject;
+        var thisArg = this;
+
+        var promise = new Promise(function(nodeResolve, nodeReject) {
+          resolve = nodeResolve;
+          reject = nodeReject;
+        });
+
+        all(nodeArgs).then(function(nodeArgs) {
+          nodeArgs.push(makeNodeCallbackFor(resolve, reject));
+
+          try {
+            nodeFunc.apply(thisArg, nodeArgs);
+          } catch(e) {
+            reject(e);
+          }
+        });
+
+        return promise;
+      };
+    }
+
+
+    __exports__.denodeify = denodeify;
+  });
+define("rsvp/promise",
+  ["rsvp/config","rsvp/events","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    var config = __dependency1__.config;
+    var EventTarget = __dependency2__.EventTarget;
+
+    function objectOrFunction(x) {
+      return isFunction(x) || (typeof x === "object" && x !== null);
+    }
+
+    function isFunction(x){
+      return typeof x === "function";
+    }
+
+    var Promise = function(resolver) {
+      var promise = this,
+      resolved = false;
+
+      if (typeof resolver !== 'function') {
+        throw new TypeError('You must pass a resolver function as the sole argument to the promise constructor');
+      }
+
+      if (!(promise instanceof Promise)) {
+        return new Promise(resolver);
+      }
+
+      var resolvePromise = function(value) {
+        if (resolved) { return; }
+        resolved = true;
+        resolve(promise, value);
+      };
+
+      var rejectPromise = function(value) {
+        if (resolved) { return; }
+        resolved = true;
+        reject(promise, value);
+      };
+
+      this.on('promise:failed', function(event) {
+        this.trigger('error', { detail: event.detail });
+      }, this);
+
+      this.on('error', onerror);
+
+      try {
+        resolver(resolvePromise, rejectPromise);
+      } catch(e) {
+        rejectPromise(e);
+      }
+    };
+
+    function onerror(event) {
+      if (config.onerror) {
+        config.onerror(event.detail);
+      }
+    }
+
+    var invokeCallback = function(type, promise, callback, event) {
+      var hasCallback = isFunction(callback),
+          value, error, succeeded, failed;
+
+      if (hasCallback) {
+        try {
+          value = callback(event.detail);
+          succeeded = true;
+        } catch(e) {
+          failed = true;
+          error = e;
+        }
+      } else {
+        value = event.detail;
+        succeeded = true;
+      }
+
+      if (handleThenable(promise, value)) {
+        return;
+      } else if (hasCallback && succeeded) {
+        resolve(promise, value);
+      } else if (failed) {
+        reject(promise, error);
+      } else if (type === 'resolve') {
+        resolve(promise, value);
+      } else if (type === 'reject') {
+        reject(promise, value);
+      }
+    };
+
+    Promise.prototype = {
+      constructor: Promise,
+
+      isRejected: undefined,
+      isFulfilled: undefined,
+      rejectedReason: undefined,
+      fulfillmentValue: undefined,
+
+      then: function(done, fail) {
+        this.off('error', onerror);
+
+        var thenPromise = new this.constructor(function() {});
+
+        if (this.isFulfilled) {
+          config.async(function(promise) {
+            invokeCallback('resolve', thenPromise, done, { detail: promise.fulfillmentValue });
+          }, this);
+        }
+
+        if (this.isRejected) {
+          config.async(function(promise) {
+            invokeCallback('reject', thenPromise, fail, { detail: promise.rejectedReason });
+          }, this);
+        }
+
+        this.on('promise:resolved', function(event) {
+          invokeCallback('resolve', thenPromise, done, event);
+        });
+
+        this.on('promise:failed', function(event) {
+          invokeCallback('reject', thenPromise, fail, event);
+        });
+
+        return thenPromise;
+      },
+
+      fail: function(fail) {
+        return this.then(null, fail);
+      }
+    };
+
+    EventTarget.mixin(Promise.prototype);
+
+    function resolve(promise, value) {
+      if (promise === value) {
+        fulfill(promise, value);
+      } else if (!handleThenable(promise, value)) {
+        fulfill(promise, value);
+      }
+    }
+
+    function handleThenable(promise, value) {
+      var then = null,
+      resolved;
+
+      try {
+        if (promise === value) {
+          throw new TypeError("A promises callback cannot return that same promise.");
+        }
+
+        if (objectOrFunction(value)) {
+          then = value.then;
+
+          if (isFunction(then)) {
+            then.call(value, function(val) {
+              if (resolved) { return true; }
+              resolved = true;
+
+              if (value !== val) {
+                resolve(promise, val);
+              } else {
+                fulfill(promise, val);
+              }
+            }, function(val) {
+              if (resolved) { return true; }
+              resolved = true;
+
+              reject(promise, val);
+            });
+
+            return true;
+          }
+        }
+      } catch (error) {
+        reject(promise, error);
+        return true;
+      }
+
+      return false;
+    }
+
+    function fulfill(promise, value) {
+      config.async(function() {
+        promise.trigger('promise:resolved', { detail: value });
+        promise.isFulfilled = true;
+        promise.fulfillmentValue = value;
+      });
+    }
+
+    function reject(promise, value) {
+      config.async(function() {
+        promise.trigger('promise:failed', { detail: value });
+        promise.isRejected = true;
+        promise.rejectedReason = value;
+      });
+    }
+
+
+    __exports__.Promise = Promise;
+  });
+define("rsvp/reject",
+  ["rsvp/promise","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Promise = __dependency1__.Promise;
+
+    function reject(reason) {
+      return new Promise(function (resolve, reject) {
+        reject(reason);
+      });
+    }
+
+
+    __exports__.reject = reject;
+  });
+define("rsvp/resolve",
+  ["rsvp/promise","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Promise = __dependency1__.Promise;
+
+    function resolve(thenable) {
+      return new Promise(function(resolve, reject) {
+        resolve(thenable);
+      });
+    }
+
+
+    __exports__.resolve = resolve;
+  });
+define("rsvp/rethrow",
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    var local = (typeof global === "undefined") ? this : global;
+
+    function rethrow(reason) {
+      local.setTimeout(function() {
+        throw reason;
+      });
+      throw reason;
+    }
+
+
+    __exports__.rethrow = rethrow;
+  });
+define("rsvp",
+  ["rsvp/events","rsvp/promise","rsvp/node","rsvp/all","rsvp/hash","rsvp/rethrow","rsvp/defer","rsvp/config","rsvp/resolve","rsvp/reject","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __exports__) {
+    "use strict";
+    var EventTarget = __dependency1__.EventTarget;
+    var Promise = __dependency2__.Promise;
+    var denodeify = __dependency3__.denodeify;
+    var all = __dependency4__.all;
+    var hash = __dependency5__.hash;
+    var rethrow = __dependency6__.rethrow;
+    var defer = __dependency7__.defer;
+    var config = __dependency8__.config;
+    var resolve = __dependency9__.resolve;
+    var reject = __dependency10__.reject;
+
+    function configure(name, value) {
+      config[name] = value;
+    }
+
+
+    __exports__.Promise = Promise;
+    __exports__.EventTarget = EventTarget;
+    __exports__.all = all;
+    __exports__.hash = hash;
+    __exports__.rethrow = rethrow;
+    __exports__.defer = defer;
+    __exports__.denodeify = denodeify;
+    __exports__.configure = configure;
+    __exports__.resolve = resolve;
+    __exports__.reject = reject;
+  });
 define("oasis", 
   ["rsvp","oasis/logger","oasis/version","oasis/util","oasis/config","oasis/sandbox","oasis/sandbox_init","oasis/xhr","oasis/events","oasis/service","oasis/connect","oasis/iframe_adapter","oasis/webworker_adapter","oasis/inline_adapter","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __dependency12__, __dependency13__, __dependency14__, __exports__) {
@@ -4885,654 +4101,23 @@ define("oasis/xhr",
 
     __exports__.xhr = xhr;
   });
-define("rsvp/all",
-  ["rsvp/promise","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Promise = __dependency1__.Promise;
-    /* global toString */
-
-
-    function all(promises) {
-      if (Object.prototype.toString.call(promises) !== "[object Array]") {
-        throw new TypeError('You must pass an array to all.');
-      }
-
-      return new Promise(function(resolve, reject) {
-        var results = [], remaining = promises.length,
-        promise;
-
-        if (remaining === 0) {
-          resolve([]);
-        }
-
-        function resolver(index) {
-          return function(value) {
-            resolveAll(index, value);
-          };
-        }
-
-        function resolveAll(index, value) {
-          results[index] = value;
-          if (--remaining === 0) {
-            resolve(results);
-          }
-        }
-
-        for (var i = 0; i < promises.length; i++) {
-          promise = promises[i];
-
-          if (promise && typeof promise.then === 'function') {
-            promise.then(resolver(i), reject);
-          } else {
-            resolveAll(i, promise);
-          }
-        }
-      });
-    }
-
-
-    __exports__.all = all;
-  });
-define("rsvp/async",
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    var browserGlobal = (typeof window !== 'undefined') ? window : {};
-    var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-    var local = (typeof global !== 'undefined') ? global : this;
-
-    // node
-    function useNextTick() {
-      return function() {
-        process.nextTick(flush);
-      };
-    }
-
-    function useMutationObserver() {
-      var observer = new BrowserMutationObserver(flush);
-      var element = document.createElement('div');
-      observer.observe(element, { attributes: true });
-
-      // Chrome Memory Leak: https://bugs.webkit.org/show_bug.cgi?id=93661
-      window.addEventListener('unload', function(){
-        observer.disconnect();
-        observer = null;
-      }, false);
-
-      return function() {
-        element.setAttribute('drainQueue', 'drainQueue');
-      };
-    }
-
-    function useSetTimeout() {
-      return function() {
-        local.setTimeout(flush, 1);
-      };
-    }
-
-    var queue = [];
-    function flush() {
-      for (var i = 0; i < queue.length; i++) {
-        var tuple = queue[i];
-        var callback = tuple[0], arg = tuple[1];
-        callback(arg);
-      }
-      queue = [];
-    }
-
-    var scheduleFlush;
-
-    // Decide what async method to use to triggering processing of queued callbacks:
-    if (typeof process !== 'undefined' && {}.toString.call(process) === '[object process]') {
-      scheduleFlush = useNextTick();
-    } else if (BrowserMutationObserver) {
-      scheduleFlush = useMutationObserver();
-    } else {
-      scheduleFlush = useSetTimeout();
-    }
-
-    function async(callback, arg) {
-      var length = queue.push([callback, arg]);
-      if (length === 1) {
-        // If length is 1, that means that we need to schedule an async flush.
-        // If additional callbacks are queued before the queue is flushed, they
-        // will be processed by this flush that we are scheduling.
-        scheduleFlush();
-      }
-    }
-
-
-    __exports__.async = async;
-  });
-define("rsvp/config",
-  ["rsvp/async","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var async = __dependency1__.async;
-
-    var config = {};
-    config.async = async;
-
-
-    __exports__.config = config;
-  });
-define("rsvp/defer",
-  ["rsvp/promise","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Promise = __dependency1__.Promise;
-
-    function defer() {
-      var deferred = {
-        // pre-allocate shape
-        resolve: undefined,
-        reject:  undefined,
-        promise: undefined
-      };
-
-      deferred.promise = new Promise(function(resolve, reject) {
-        deferred.resolve = resolve;
-        deferred.reject = reject;
-      });
-
-      return deferred;
-    }
-
-
-    __exports__.defer = defer;
-  });
-define("rsvp/events",
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    var Event = function(type, options) {
-      this.type = type;
-
-      for (var option in options) {
-        if (!options.hasOwnProperty(option)) { continue; }
-
-        this[option] = options[option];
-      }
-    };
-
-    var indexOf = function(callbacks, callback) {
-      for (var i=0, l=callbacks.length; i<l; i++) {
-        if (callbacks[i][0] === callback) { return i; }
-      }
-
-      return -1;
-    };
-
-    var callbacksFor = function(object) {
-      var callbacks = object._promiseCallbacks;
-
-      if (!callbacks) {
-        callbacks = object._promiseCallbacks = {};
-      }
-
-      return callbacks;
-    };
-
-    var EventTarget = {
-      mixin: function(object) {
-        object.on = this.on;
-        object.off = this.off;
-        object.trigger = this.trigger;
-        return object;
-      },
-
-      on: function(eventNames, callback, binding) {
-        var allCallbacks = callbacksFor(this), callbacks, eventName;
-        eventNames = eventNames.split(/\s+/);
-        binding = binding || this;
-
-        while (eventName = eventNames.shift()) {
-          callbacks = allCallbacks[eventName];
-
-          if (!callbacks) {
-            callbacks = allCallbacks[eventName] = [];
-          }
-
-          if (indexOf(callbacks, callback) === -1) {
-            callbacks.push([callback, binding]);
-          }
-        }
-      },
-
-      off: function(eventNames, callback) {
-        var allCallbacks = callbacksFor(this), callbacks, eventName, index;
-        eventNames = eventNames.split(/\s+/);
-
-        while (eventName = eventNames.shift()) {
-          if (!callback) {
-            allCallbacks[eventName] = [];
-            continue;
-          }
-
-          callbacks = allCallbacks[eventName];
-
-          index = indexOf(callbacks, callback);
-
-          if (index !== -1) { callbacks.splice(index, 1); }
-        }
-      },
-
-      trigger: function(eventName, options) {
-        var allCallbacks = callbacksFor(this),
-            callbacks, callbackTuple, callback, binding, event;
-
-        if (callbacks = allCallbacks[eventName]) {
-          // Don't cache the callbacks.length since it may grow
-          for (var i=0; i<callbacks.length; i++) {
-            callbackTuple = callbacks[i];
-            callback = callbackTuple[0];
-            binding = callbackTuple[1];
-
-            if (typeof options !== 'object') {
-              options = { detail: options };
-            }
-
-            event = new Event(eventName, options);
-            callback.call(binding, event);
-          }
-        }
-      }
-    };
-
-
-    __exports__.EventTarget = EventTarget;
-  });
-define("rsvp/hash",
-  ["rsvp/defer","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var defer = __dependency1__.defer;
-
-    function size(object) {
-      var s = 0;
-
-      for (var prop in object) {
-        s++;
-      }
-
-      return s;
-    }
-
-    function hash(promises) {
-      var results = {}, deferred = defer(), remaining = size(promises);
-
-      if (remaining === 0) {
-        deferred.resolve({});
-      }
-
-      var resolver = function(prop) {
-        return function(value) {
-          resolveAll(prop, value);
-        };
-      };
-
-      var resolveAll = function(prop, value) {
-        results[prop] = value;
-        if (--remaining === 0) {
-          deferred.resolve(results);
-        }
-      };
-
-      var rejectAll = function(error) {
-        deferred.reject(error);
-      };
-
-      for (var prop in promises) {
-        if (promises[prop] && typeof promises[prop].then === 'function') {
-          promises[prop].then(resolver(prop), rejectAll);
-        } else {
-          resolveAll(prop, promises[prop]);
-        }
-      }
-
-      return deferred.promise;
-    }
-
-
-    __exports__.hash = hash;
-  });
-define("rsvp/node",
-  ["rsvp/promise","rsvp/all","exports"],
-  function(__dependency1__, __dependency2__, __exports__) {
-    "use strict";
-    var Promise = __dependency1__.Promise;
-    var all = __dependency2__.all;
-
-    function makeNodeCallbackFor(resolve, reject) {
-      return function (error, value) {
-        if (error) {
-          reject(error);
-        } else if (arguments.length > 2) {
-          resolve(Array.prototype.slice.call(arguments, 1));
-        } else {
-          resolve(value);
-        }
-      };
-    }
-
-    function denodeify(nodeFunc) {
-      return function()  {
-        var nodeArgs = Array.prototype.slice.call(arguments), resolve, reject;
-        var thisArg = this;
-
-        var promise = new Promise(function(nodeResolve, nodeReject) {
-          resolve = nodeResolve;
-          reject = nodeReject;
-        });
-
-        all(nodeArgs).then(function(nodeArgs) {
-          nodeArgs.push(makeNodeCallbackFor(resolve, reject));
-
-          try {
-            nodeFunc.apply(thisArg, nodeArgs);
-          } catch(e) {
-            reject(e);
-          }
-        });
-
-        return promise;
-      };
-    }
-
-
-    __exports__.denodeify = denodeify;
-  });
-define("rsvp/promise",
-  ["rsvp/config","rsvp/events","exports"],
-  function(__dependency1__, __dependency2__, __exports__) {
-    "use strict";
-    var config = __dependency1__.config;
-    var EventTarget = __dependency2__.EventTarget;
-
-    function objectOrFunction(x) {
-      return isFunction(x) || (typeof x === "object" && x !== null);
-    }
-
-    function isFunction(x){
-      return typeof x === "function";
-    }
-
-    var Promise = function(resolver) {
-      var promise = this,
-      resolved = false;
-
-      if (typeof resolver !== 'function') {
-        throw new TypeError('You must pass a resolver function as the sole argument to the promise constructor');
-      }
-
-      if (!(promise instanceof Promise)) {
-        return new Promise(resolver);
-      }
-
-      var resolvePromise = function(value) {
-        if (resolved) { return; }
-        resolved = true;
-        resolve(promise, value);
-      };
-
-      var rejectPromise = function(value) {
-        if (resolved) { return; }
-        resolved = true;
-        reject(promise, value);
-      };
-
-      this.on('promise:failed', function(event) {
-        this.trigger('error', { detail: event.detail });
-      }, this);
-
-      this.on('error', onerror);
-
-      try {
-        resolver(resolvePromise, rejectPromise);
-      } catch(e) {
-        rejectPromise(e);
-      }
-    };
-
-    function onerror(event) {
-      if (config.onerror) {
-        config.onerror(event.detail);
-      }
-    }
-
-    var invokeCallback = function(type, promise, callback, event) {
-      var hasCallback = isFunction(callback),
-          value, error, succeeded, failed;
-
-      if (hasCallback) {
-        try {
-          value = callback(event.detail);
-          succeeded = true;
-        } catch(e) {
-          failed = true;
-          error = e;
-        }
-      } else {
-        value = event.detail;
-        succeeded = true;
-      }
-
-      if (handleThenable(promise, value)) {
-        return;
-      } else if (hasCallback && succeeded) {
-        resolve(promise, value);
-      } else if (failed) {
-        reject(promise, error);
-      } else if (type === 'resolve') {
-        resolve(promise, value);
-      } else if (type === 'reject') {
-        reject(promise, value);
-      }
-    };
-
-    Promise.prototype = {
-      constructor: Promise,
-
-      isRejected: undefined,
-      isFulfilled: undefined,
-      rejectedReason: undefined,
-      fulfillmentValue: undefined,
-
-      then: function(done, fail) {
-        this.off('error', onerror);
-
-        var thenPromise = new this.constructor(function() {});
-
-        if (this.isFulfilled) {
-          config.async(function(promise) {
-            invokeCallback('resolve', thenPromise, done, { detail: promise.fulfillmentValue });
-          }, this);
-        }
-
-        if (this.isRejected) {
-          config.async(function(promise) {
-            invokeCallback('reject', thenPromise, fail, { detail: promise.rejectedReason });
-          }, this);
-        }
-
-        this.on('promise:resolved', function(event) {
-          invokeCallback('resolve', thenPromise, done, event);
-        });
-
-        this.on('promise:failed', function(event) {
-          invokeCallback('reject', thenPromise, fail, event);
-        });
-
-        return thenPromise;
-      },
-
-      fail: function(fail) {
-        return this.then(null, fail);
-      }
-    };
-
-    EventTarget.mixin(Promise.prototype);
-
-    function resolve(promise, value) {
-      if (promise === value) {
-        fulfill(promise, value);
-      } else if (!handleThenable(promise, value)) {
-        fulfill(promise, value);
-      }
-    }
-
-    function handleThenable(promise, value) {
-      var then = null,
-      resolved;
-
-      try {
-        if (promise === value) {
-          throw new TypeError("A promises callback cannot return that same promise.");
-        }
-
-        if (objectOrFunction(value)) {
-          then = value.then;
-
-          if (isFunction(then)) {
-            then.call(value, function(val) {
-              if (resolved) { return true; }
-              resolved = true;
-
-              if (value !== val) {
-                resolve(promise, val);
-              } else {
-                fulfill(promise, val);
-              }
-            }, function(val) {
-              if (resolved) { return true; }
-              resolved = true;
-
-              reject(promise, val);
-            });
-
-            return true;
-          }
-        }
-      } catch (error) {
-        reject(promise, error);
-        return true;
-      }
-
-      return false;
-    }
-
-    function fulfill(promise, value) {
-      config.async(function() {
-        promise.trigger('promise:resolved', { detail: value });
-        promise.isFulfilled = true;
-        promise.fulfillmentValue = value;
-      });
-    }
-
-    function reject(promise, value) {
-      config.async(function() {
-        promise.trigger('promise:failed', { detail: value });
-        promise.isRejected = true;
-        promise.rejectedReason = value;
-      });
-    }
-
-
-    __exports__.Promise = Promise;
-  });
-define("rsvp/reject",
-  ["rsvp/promise","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Promise = __dependency1__.Promise;
-
-    function reject(reason) {
-      return new Promise(function (resolve, reject) {
-        reject(reason);
-      });
-    }
-
-
-    __exports__.reject = reject;
-  });
-define("rsvp/resolve",
-  ["rsvp/promise","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Promise = __dependency1__.Promise;
-
-    function resolve(thenable) {
-      return new Promise(function(resolve, reject) {
-        resolve(thenable);
-      });
-    }
-
-
-    __exports__.resolve = resolve;
-  });
-define("rsvp/rethrow",
-  ["exports"],
-  function(__exports__) {
-    "use strict";
-    var local = (typeof global === "undefined") ? this : global;
-
-    function rethrow(reason) {
-      local.setTimeout(function() {
-        throw reason;
-      });
-      throw reason;
-    }
-
-
-    __exports__.rethrow = rethrow;
-  });
-define("rsvp",
-  ["rsvp/events","rsvp/promise","rsvp/node","rsvp/all","rsvp/hash","rsvp/rethrow","rsvp/defer","rsvp/config","rsvp/resolve","rsvp/reject","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __exports__) {
-    "use strict";
-    var EventTarget = __dependency1__.EventTarget;
-    var Promise = __dependency2__.Promise;
-    var denodeify = __dependency3__.denodeify;
-    var all = __dependency4__.all;
-    var hash = __dependency5__.hash;
-    var rethrow = __dependency6__.rethrow;
-    var defer = __dependency7__.defer;
-    var config = __dependency8__.config;
-    var resolve = __dependency9__.resolve;
-    var reject = __dependency10__.reject;
-
-    function configure(name, value) {
-      config[name] = value;
-    }
-
-
-    __exports__.Promise = Promise;
-    __exports__.EventTarget = EventTarget;
-    __exports__.all = all;
-    __exports__.hash = hash;
-    __exports__.rethrow = rethrow;
-    __exports__.defer = defer;
-    __exports__.denodeify = denodeify;
-    __exports__.configure = configure;
-    __exports__.resolve = resolve;
-    __exports__.reject = reject;
-  });
-function UUID(){}UUID.generate=function(){var a=UUID._gri,b=UUID._ha;return b(a(32),8)+"-"+b(a(16),4)+"-"+b(16384|a(12),4)+"-"+b(32768|a(14),4)+"-"+b(a(48),12)};UUID._gri=function(a){return 0>a?NaN:30>=a?0|Math.random()*(1<<a):53>=a?(0|1073741824*Math.random())+1073741824*(0|Math.random()*(1<<a-30)):NaN};UUID._ha=function(a,b){for(var c=a.toString(16),d=b-c.length,e="0";0<d;d>>>=1,e+=e)d&1&&(c=e+c);return c};
-
 define("consumers/assertion_consumer", 
-  ["conductor","exports"],
+  ["oasis","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
-    var Conductor = __dependency1__["default"];
+    var Oasis = __dependency1__["default"];
 
-    var AssertionConsumer = Conductor.Oasis.Consumer.extend({
+    var AssertionConsumer = Oasis.Consumer.extend({
       initialize: function() {
         var service = this;
 
 
         window.ok = window.ok || function(bool, message) {
           service.send('ok', { bool: bool, message: message });
+        };
+
+        window.notOk = window.notOk || function(bool, message) {
+          service.send('notOk', { bool: bool, message: message });
         };
 
         window.equal = window.equal || function(expected, actual, message) {
@@ -5554,12 +4139,12 @@ define("consumers/assertion_consumer",
     __exports__["default"] = AssertionConsumer;
   });
 define("services/assertion_service", 
-  ["conductor","exports"],
+  ["oasis","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
-    var Conductor = __dependency1__["default"];
+    var Oasis = __dependency1__["default"];
 
-    var AssertionService = Conductor.Oasis.Service.extend({
+    var AssertionService = Oasis.Service.extend({
       initialize: function(port) {
         this.sandbox.assertionPort = port;
       },
@@ -5567,6 +4152,10 @@ define("services/assertion_service",
       events: {
         ok: function(data) {
           assert.ok(data.bool, data.message);
+        },
+
+        notOk: function(data){
+          assert.notOk(data.bool, data.message);
         },
 
         equal: function (data) {
@@ -5582,45 +4171,139 @@ define("services/assertion_service",
     __exports__["default"] = AssertionService;
   });
 define("spiceworks-sdk", 
-  ["conductor","spiceworks-sdk/card","exports"],
+  ["oasis","spiceworks-sdk/card","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
-    var Conductor = __dependency1__["default"];
-    var card = __dependency2__.card;
+    var Oasis = __dependency1__["default"];
+    var Card = __dependency2__["default"];
 
-    self.Conductor = Conductor;
-    self.Oasis = Conductor.Oasis;
-    self.oasis = new self.Oasis();
-    self.oasis.autoInitializeSandbox();
+    self.Oasis = Oasis;
+    var oasis = new self.Oasis();
+    oasis.autoInitializeSandbox();
 
     __exports__.oasis = oasis;
-    __exports__.card = card;
+    __exports__.Card = Card;
+  });
+define("spiceworks-sdk/card-service", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+
+    function CardService(card, capability){
+      this.promise = card.oasis.connect(capability);
+    }
+
+    CardService.prototype = {
+      send: function (event, data) {
+        this.promise.then(function (port) {
+          port.send(event, data);
+        });
+
+        return this;
+      },
+
+      on: function (event, callback) {
+        this.promise.then(function (port) {
+          port.on(event, callback);
+        });
+
+        return this;
+      }
+    };
+
+    __exports__["default"] = CardService;
   });
 define("spiceworks-sdk/card", 
-  ["conductor","conductor/card","consumers/assertion_consumer","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
+  ["oasis","./card-service","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
-    var Conductor = __dependency1__["default"];
-    var AssertionConsumer = __dependency3__["default"];
+    var Oasis = __dependency1__["default"];
+    var CardService = __dependency2__["default"];
 
-    function extend(a, b) {
-      for (var key in b) {
-        if (b.hasOwnProperty(key)) {
-          a[key] = b[key];
+    function Card(options) {
+      this.options = options = options || {};
+      this.oasis = SW.oasis || new Oasis();
+      this.cardServices = {};
+    }
+
+    Card.prototype = {
+      services: function (capability) {
+        if(!this.cardServices[capability]){
+          this.cardServices[capability] = new CardService(this, capability);
         }
+
+        return this.cardServices[capability];
       }
-      return a;
+    };
+
+    __exports__["default"] = Card;
+  });
+define("spiceworks-sdk/consumers", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+
+    /**
+      Default Oasis consumers provided to every conductor instance.
+    */
+    var consumers = { };
+
+    function defaultConsumers() {
+      return this.consumers;
     }
 
-    function card(options) {
-      options.consumers = extend({
-        assertion: AssertionConsumer
-      }, options.consumers);
-
-      return Conductor.card.call(this, options, this.oasis);
+    function addDefaultConsumer(capability, consumer) {
+      if (!consumer) { consumer = Oasis.Consumer; }
+      this.consumers[capability] = consumer;
     }
 
-    __exports__.card = card;
+    function removeDefaultConsumer(capability) {
+      var index = a_indexOf.call(this.capabilities, capability);
+      if (index !== -1) {
+        return this.capabilities.splice(index, 1);
+      }
+    }
+
+    __exports__.defaultConsumers = defaultConsumers;
+    __exports__.addDefaultConsumer = addDefaultConsumer;
+    __exports__.removeDefaultConsumer = removeDefaultConsumer;
+  });
+define("spiceworks-sdk/services", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+
+    /**
+      Default Oasis services provided to every conductor instance.
+    */
+    var services = { };
+    var capabilities = [ ];
+
+    function defaultCapabilities() {
+      return this.capabilities;
+    }
+
+    function defaultServices() {
+      return this.services;
+    }
+
+    function addDefaultCapability(capability, service) {
+      if (!service) { service = Oasis.Service; }
+      this.capabilities.push(capability);
+      this.services[capability] = service;
+    }
+
+    function removeDefaultCapability(capability) {
+      var index = a_indexOf.call(this.capabilities, capability);
+      if (index !== -1) {
+        return this.capabilities.splice(index, 1);
+      }
+    }
+
+    __exports__.defaultCapabilities = defaultCapabilities;
+    __exports__.defaultServices = defaultServices;
+    __exports__.addDefaultCapability = addDefaultCapability;
+    __exports__.removeDefaultCapability = removeDefaultCapability;
   });
 global.SW = require('spiceworks-sdk');
 }(self));
