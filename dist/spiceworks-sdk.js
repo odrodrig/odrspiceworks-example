@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.1 - 2014-07-23
+/*! spiceworks-sdk - v0.0.1 - 2014-07-24
 * http://developers.spiceworks.com
 * Copyright (c) 2014 ; Licensed  */
 var define, require;
@@ -4137,7 +4137,6 @@ define("spiceworks-sdk/card-service",
 
       on: function (event, callback) {
         var binding = this;
-
         this.promise.then(function (port) {
           port.on(event, callback, binding);
         });
@@ -4164,16 +4163,27 @@ define("spiceworks-sdk/card-service",
     __exports__["default"] = CardService;
   });
 define("spiceworks-sdk/card", 
-  ["oasis","./card-service","exports"],
-  function(__dependency1__, __dependency2__, __exports__) {
+  ["oasis","./card-service","rsvp","./environment-consumer","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
     "use strict";
     var Oasis = __dependency1__["default"];
     var CardService = __dependency2__["default"];
+    var RSVP = __dependency3__;
+    var EnvironmentConsumer = __dependency4__["default"];
 
     function Card(options) {
       this.options = options = options || {};
       this.oasis = SW.oasis || new Oasis();
       this.cardServices = {};
+
+      this.activationDeferred = RSVP.defer();
+      this.activationDeferred.promise.fail( RSVP.rethrow );
+
+      this.oasis.connect({
+        consumers: {
+          environment: EnvironmentConsumer.extend({card: this})
+        }
+      });
     }
 
     Card.prototype = {
@@ -4183,10 +4193,33 @@ define("spiceworks-sdk/card",
         }
 
         return this.cardServices[capability];
+      },
+
+      onActivate: function (callback) {
+        var card = this;
+        card.activationDeferred.promise.then(function (data) {
+          return callback.call(card, data);
+        });
       }
     };
 
     __exports__["default"] = Card;
   });
-global.SW = require('spiceworks-sdk');
+define("spiceworks-sdk/environment-consumer", 
+  ["oasis","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Oasis = __dependency1__["default"];
+
+    var EnvironmentConsumer = Oasis.Consumer.extend({
+      events: {
+        activate: function (data) {
+          this.card.activationDeferred.resolve(data);
+        }
+      }
+    });
+
+    __exports__["default"] = EnvironmentConsumer;
+  });
+window.SW = require("spiceworks-sdk");
 }(self));

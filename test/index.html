@@ -33,25 +33,15 @@
         var assert = chai.assert;
     </script>
 
-    <!-- Include Oasis in the environment for connecting cards -->
-    <script src="vendor/oasis.js" type="text/javascript" charset="utf-8"></script>
-
-    <!-- Spec files -->
-    <script src="sw_js_sdk_tests.js" type="text/javascript" charset="utf-8"></script>
+    <!-- Include host version of sdk (Oasis with custom services) in the
+    environment as well as all test files -->
+    <script src="sw-sdk-tests.js" type="text/javascript" charset="utf-8"></script>
 
     <!-- run mocha -->
     <script type="text/javascript" charset="utf-8">
         // If tests run in a real browser
         // Can alternatively do a check on window.PHANTOMJS
         if (navigator.userAgent.indexOf('PhantomJS') < 0) {
-          // load all tests
-          for (var moduleName in define.registry) {
-            if (!define.registry.hasOwnProperty(moduleName)) { continue; }
-
-            if (/_tests$/.test(moduleName)) {
-              requireModule(moduleName);
-            }
-          }
           mocha.run();
         }
     </script>

@@ -1,3 +1,4 @@
+import Oasis from "oasis";
 import { a_forEach } from "oasis/shims";
 
 var sandboxes = [],
@@ -44,6 +45,7 @@ export function iframeOasis() {
 export function setup() {
   window.oasis = new Oasis();
   window.oasis.logger.enable();
+  window.oasis.log('Test started');
 }
 
 export function teardown() {
@@ -53,4 +55,5 @@ export function teardown() {
   sandboxes = [];
 
   Oasis.reset();
+  window.oasis.log('Test finished');
 }

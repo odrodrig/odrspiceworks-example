@@ -25,31 +25,21 @@ module.exports = function(grunt) {
     clean: ["tmp", "dist/*"],
     copy: {
       tests: {
-        files: [{
-          src: ['<%= browser.distNoVersion.dest %>'],
-          dest: 'tmp/public/',
-          expand: true,
-          flatten: true
-        }, {
-          cwd: 'test/',
-          src: ['index.html', 'fixtures/**'],
-          dest: 'tmp/public/',
-          expand: true
-        }]
+        cwd: 'test/',
+        src: ['index.html', 'fixtures/**'],
+        dest: 'tmp/public/',
+        expand: true
       },
-
       testsVendor: {
         expand: true,
         cwd: 'bower_components',
         src: [
           'mocha/mocha.{js,css}',
-          'chai/chai.js',
-          'oasis.js/dist/oasis.js'
+          'chai/chai.js'
         ],
         flatten: true,
         dest: 'tmp/public/vendor/'
       },
-
       testSDK: {
         expand: true,
         cwd: 'dist',
@@ -62,35 +52,60 @@ module.exports = function(grunt) {
         banner: '<%= banner %>',
         stripBanners: true
       },
-      amd: {
-        src: ['tmp/amd/**/*.amd.js'],
+      libAmd: {
+        src: ['tmp/lib/**/*.amd.js'],
         dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.amd.js'
       },
-      amdNoVersion: {
-        src: ['tmp/amd/**/*.amd.js'],
+      libAmdNoVersion: {
+        src: ['tmp/lib/**/*.amd.js'],
         dest: 'dist/<%= pkg.name %>.amd.js'
       },
-      browser: {
-        src: vendorSources.concat(['tmp/amd/**/*.amd.js']),
+      libBrowser: {
+        src: vendorSources.concat(['tmp/lib/**/*.amd.js']),
         dest: 'tmp/<%= pkg.name %>.browser.js'
       },
+      hostBrowser: {
+        src: vendorSources.concat(['tmp/host/**/*.amd.js']),
+        dest: 'tmp/<%= pkg.name %>-host.browser.js'
+      },
       tests: {
-        src: ['tmp/test/**/*.js'],
-        dest: 'tmp/public/sw_js_sdk_tests.js'
+        src: vendorSources.concat(['tmp/host/**/*.amd.js','tmp/test/**/*.js']),
+        dest: 'tmp/sw-sdk-tests.browser.js'
       }
     },
     browser: {
-      dist: {
-        src: 'tmp/<%= pkg.name %>.browser.js',
-        dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js'
+      libDist: {
+        options: {
+          namespace: '<%= pkg.namespace %>',
+          moduleName: '<%= pkg.name %>'
+        },
+        files: [{
+          src: 'tmp/<%= pkg.name %>.browser.js',
+          dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js'
+        },{
+          src: 'tmp/<%= pkg.name %>.browser.js',
+          dest: 'dist/<%= pkg.name %>.js'
+        }]
       },
-      distNoVersion: {
-        src: 'tmp/<%= pkg.name %>.browser.js',
-        dest: 'dist/<%= pkg.name %>.js'
+      hostDist: {
+        options: {
+          namespace: '<%= pkg.namespace %>',
+          moduleName: 'spiceworks-sdk-host'
+        },
+        src: 'tmp/<%= pkg.name %>-host.browser.js',
+        dest: 'dist/<%= pkg.name %>-host.js'
+      },
+      tests: {
+        options: {
+          namespace: 'TESTS',
+          moduleName: 'test/main'
+        },
+        src: 'tmp/sw-sdk-tests.browser.js',
+        dest: 'tmp/public/sw-sdk-tests.js'
       }
     },
     uglify: {
-      browser: {
+      lib: {
         options: {
           mangle: true
         },
@@ -98,12 +113,20 @@ module.exports = function(grunt) {
           'dist/<%= pkg.name %>-<%= pkg.version %>.min.js': ['dist/<%= pkg.name %>-<%= pkg.version %>.js'],
         }
       },
-      browserNoVersion: {
+      libNoVersion: {
         options: {
           mangle: true
         },
         files: {
           'dist/<%= pkg.name %>.min.js': ['dist/<%= pkg.name %>.js'],
+        }
+      },
+      host: {
+        options: {
+          mangle: true
+        },
+        files: {
+          'dist/<%= pkg.name %>-host.min.js': ['dist/<%= pkg.name %>-host.js'],
         }
       }
     },
@@ -114,8 +137,11 @@ module.exports = function(grunt) {
       grunt: {
         src: 'Gruntfile.js'
       },
-      src: {
+      lib: {
         src: 'lib/**/*.js'
+      },
+      host: {
+        src: 'host/**/*.js'
       },
       test: {
         options: {
@@ -135,13 +161,23 @@ module.exports = function(grunt) {
       }
     },
     transpile: {
-      amd: {
+      lib: {
         type: "amd",
         files: [{
           expand: true,
           cwd: 'lib/',
           src: ['**/*.js'],
-          dest: 'tmp/amd/',
+          dest: 'tmp/lib/',
+          ext: '.amd.js'
+        }]
+      },
+      host: {
+        type: "amd",
+        files: [{
+          expand: true,
+          cwd: 'host/',
+          src: ['**/*.js'],
+          dest: 'tmp/host/',
           ext: '.amd.js'
         }]
       },
@@ -149,7 +185,7 @@ module.exports = function(grunt) {
         type: "amd",
         files: [{
           expand: true,
-          src: ['test/*.js', 'test/helpers/**/*.js'],
+          src: ['test/main.js', 'test/tests/*.js', 'test/helpers/**/*.js'],
           dest: 'tmp',
           ext: '.amd.js'
         }]
@@ -157,7 +193,8 @@ module.exports = function(grunt) {
     },
     watch: {
       files: [
-       'lib/**',
+        'lib/**',
+        'host/**',
         'test/**',
         'bower_components/**/*.js',
         'vendor/**'
@@ -183,13 +220,20 @@ module.exports = function(grunt) {
   });
 
   // For creating globals out of transpiled AMD modules
-  grunt.registerMultiTask('browser', 'Export the object in <%= pkg.name %> to the window', function() {
+  grunt.registerMultiTask('browser', 'Export the object in <%= moduleName %> to the window', function() {
+    var opts = this.options();
     this.files.forEach(function(f) {
       var output = ['(function(global) {'];
 
       output.push.apply(output, f.src.map(grunt.file.read));
 
-      output.push("global.<%= pkg.namespace %> = require('<%= pkg.name %>');");
+      output.push(grunt.template.process(
+      'window.<%= namespace %> = require("<%= moduleName %>");', {
+        data: {
+          namespace: opts.namespace,
+          moduleName: opts.moduleName
+        }
+      }));
       output.push('}(self));');
 
       grunt.file.write(f.dest, grunt.template.process(output.join('\n')));
