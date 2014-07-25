@@ -1,6 +1,7 @@
 import Oasis from "oasis";
 import { iframeOasis, setup, teardown } from "test/helpers/suite";
 import { EnvironmentService } from "spiceworks-sdk-host";
+module RSVP from "rsvp";
 
 describe('SW SDK frame', function () {
   var mochaFixture, oasis;
@@ -92,6 +93,59 @@ describe('SW SDK frame', function () {
     // assertions in activated_card.js
   });
 
+  it("gives cards access to service requests via `request` with args", function(done) {
+    var AssertionsService = Oasis.Service.extend({
+      initialize: function(){
+        this.doneCount = RSVP.defer();
+        this.doneJoin = RSVP.defer();
+        this.doneAdd = RSVP.defer();
+        RSVP.all([
+          this.doneCount.promise,
+          this.doneJoin.promise,
+          this.doneAdd.promise,
+        ]).then(function(){
+          done();
+        });
+      },
+      events: {
+        okCount: function(data) {
+          assert.ok(data.bool, data.message);
+          this.doneCount.resolve();
+        },
+        okJoin: function(data) {
+          assert.ok(data.bool, data.message);
+          this.doneJoin.resolve();
+        },
+        okAdd: function(data) {
+          assert.ok(data.bool, data.message);
+          this.doneAdd.resolve();
+        }
+      },
+      requests: {
+        count: function(){
+          return arguments.length;
+        },
+        join: function(){
+          var args = Array.prototype.slice.call(arguments, 0);
+          return args.join(' and ');
+        },
+        add: function(a, b){
+          return a + b;
+        }
+      }
+    });
+
+    var sandbox = oasis.createSandbox({
+      url: "fixtures/requests_args_card.html",
+      capabilities: ['assertions'],
+      services: {
+        assertions: AssertionsService
+      }
+    });
+
+    mochaFixture.appendChild(sandbox.el);
+  });
+
   it.skip('limits a cards capabilities', function(done) {
     var sandbox = oasis.createSandbox({
       url: "fixtures/limited_card.html",
@@ -165,20 +219,21 @@ describe('SW SDK frame', function () {
     var AssertionsService = Oasis.Service.extend({
       events: {
         one: function(data) {
-          this.oneFired = true;
           assert.deepEqual(data.received, activationData, data.message);
-          this.finish();
+          this.oneDone.resolve();
         },
         two: function(data) {
-          this.twoFired = true;
           assert.deepEqual(data.received, activationData, data.message);
-          this.finish();
+          this.twoDone.resolve();
         }
       },
-      oneFired: false,
-      twoFired: false,
-      finish: function () {
-        if(this.oneFired && this.twoFired) { done(); }
+
+      initialize: function(){
+        this.oneDone = new RSVP.defer();
+        this.twoDone = new RSVP.defer();
+        RSVP.all([this.oneDone.promise, this.twoDone.promise]).then(function(){
+          done();
+        })
       }
     });
 
