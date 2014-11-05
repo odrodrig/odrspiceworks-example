@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2014-08-25
+/*! spiceworks-sdk - v0.0.2 - 2014-11-05
 * http://developers.spiceworks.com
 * Copyright (c) 2014 ; Licensed  */
 var define, require;
@@ -4151,16 +4151,20 @@ define("spiceworks-sdk/card-service",
       },
 
       request: function () {
-        var promise = this.promise;
+        var service = this;
         var requestArgs = arguments;
 
         return RSVP.Promise(function (resolve, reject) {
-          promise.then(function (port) {
+          service.promise.then(function (port) {
             return port.request.apply(port, requestArgs);
+          }, function (error) {
+            console.error('Connection error! Could not connect to service %s', service.name);
+            reject(error);
           })
           .then(function (response) {
             resolve(response);
           }, function (error) {
+            console.error('Request error!');
             reject(error);
           });
         });
