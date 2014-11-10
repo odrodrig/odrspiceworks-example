@@ -1,4 +1,4 @@
-/*! spiceworks-sdk - v0.0.2 - 2014-11-05
+/*! spiceworks-sdk - v0.0.2 - 2014-11-10
 * http://developers.spiceworks.com
 * Copyright (c) 2014 ; Licensed  */
 define("spiceworks-sdk", 
@@ -52,13 +52,16 @@ define("spiceworks-sdk/card-service",
           service.promise.then(function (port) {
             return port.request.apply(port, requestArgs);
           }, function (error) {
-            console.error('Connection error! Could not connect to service %s', service.name);
-            reject(error);
+            reject({
+              errors: [{
+                title: 'Connection Error',
+                details: 'Could not connect to service ' + service.name + '. Make sure the service name is correct and that your App has access to this service.'
+              }]
+            });
           })
           .then(function (response) {
             resolve(response);
           }, function (error) {
-            console.error('Request error!');
             reject(error);
           });
         });
