@@ -1,4 +1,4 @@
-/*! spiceworks-sdk - v0.0.2 - 2014-08-25
+/*! spiceworks-sdk - v0.0.2 - 2014-11-10
 * http://developers.spiceworks.com
 * Copyright (c) 2014 ; Licensed  */
 define("spiceworks-sdk", 
@@ -45,12 +45,19 @@ define("spiceworks-sdk/card-service",
       },
 
       request: function () {
-        var promise = this.promise;
+        var service = this;
         var requestArgs = arguments;
 
         return RSVP.Promise(function (resolve, reject) {
-          promise.then(function (port) {
+          service.promise.then(function (port) {
             return port.request.apply(port, requestArgs);
+          }, function (error) {
+            reject({
+              errors: [{
+                title: 'Connection Error',
+                details: 'Could not connect to service ' + service.name + '. Make sure the service name is correct and that your App has access to this service.'
+              }]
+            });
           })
           .then(function (response) {
             resolve(response);
