@@ -1,0 +1,11 @@
+{
+  "name": "hello-world",
+  "version": "1.0.0",
+  "description": "This is basic 'Hello, World!' example for creating a Spiceworks App",
+  "main": "app.js",
+  "author": "Michael Gerbush",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "express": "^4.10.2"
+  }
+}
