@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.1 - 2014-07-24
+/*! spiceworks-sdk - v0.0.2 - 2014-08-25
 * http://developers.spiceworks.com
 * Copyright (c) 2014 ; Licensed  */
 var define, require;
@@ -2574,8 +2574,14 @@ define("oasis/iframe_adapter",
         if( sandbox.oasis.configuration.allowSameOrigin ) {
           sandboxAttributes.push('allow-same-origin');
         }
-        if( options && options.sandbox && options.sandbox.popups ) {
-          sandboxAttributes.push('allow-popups');
+
+        if( options && options.sandbox ) {
+          if( options.sandbox.forms ) {
+            sandboxAttributes.push('allow-forms');
+          }
+          if( options.sandbox.popups ) {
+            sandboxAttributes.push('allow-popups');
+          }
         }
 
         iframe.name = sandbox.options.url + '?uuid=' + UUID.generate();
@@ -4144,12 +4150,13 @@ define("spiceworks-sdk/card-service",
         return this;
       },
 
-      request: function (requested) {
+      request: function () {
         var promise = this.promise;
+        var requestArgs = arguments;
 
         return RSVP.Promise(function (resolve, reject) {
           promise.then(function (port) {
-            return port.request(requested);
+            return port.request.apply(port, requestArgs);
           })
           .then(function (response) {
             resolve(response);
