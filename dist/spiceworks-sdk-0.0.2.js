@@ -1,7 +1,7 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2014-11-10
+/*! spiceworks-sdk - v0.0.2 - 2015-01-29
 * http://developers.spiceworks.com
-* Copyright (c) 2014 ; Licensed  */
+* Copyright (c) 2015 ; Licensed  */
 var define, require;
 
 (function() {
@@ -4157,11 +4157,12 @@ define("spiceworks-sdk/card-service",
         return RSVP.Promise(function (resolve, reject) {
           service.promise.then(function (port) {
             return port.request.apply(port, requestArgs);
-          }, function (error) {
+          }, function (errorObj) {
             reject({
               errors: [{
                 title: 'Connection Error',
-                details: 'Could not connect to service ' + service.name + '. Make sure the service name is correct and that your App has access to this service.'
+                details: 'Could not connect to service ' + service.name + '. Make sure the service name is correct and that your App has access to this service.',
+                data: errorObj
               }]
             });
           })

@@ -1,7 +1,7 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2014-11-10
+/*! spiceworks-sdk - v0.0.2 - 2015-01-29
 * http://developers.spiceworks.com
-* Copyright (c) 2014 ; Licensed  */
+* Copyright (c) 2015 ; Licensed  */
 var define, require;
 
 (function() {
@@ -4151,13 +4151,31 @@ define("helpdesk-service",
 
     __exports__["default"] = HelpdeskService;
   });
+define("inventory-service", 
+  ["oasis","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Oasis = __dependency1__["default"];
+
+    var InventoryService = Oasis.Service.extend({
+      initialize: function(port){
+        this.sandbox.inventoryProxyPort = port;
+      },
+      requests: {
+        devices: null
+      }
+    });
+
+    __exports__["default"] = InventoryService;
+  });
 define("spiceworks-sdk-host", 
-  ["oasis","environment-service","helpdesk-service","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
+  ["oasis","environment-service","helpdesk-service","inventory-service","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
     "use strict";
     var Oasis = __dependency1__["default"];
     var EnvironmentService = __dependency2__["default"];
     var HelpdeskService = __dependency3__["default"];
+    var InventoryService = __dependency4__["default"];
 
     self.Oasis = Oasis;
     var oasis = new self.Oasis();
@@ -4166,6 +4184,7 @@ define("spiceworks-sdk-host",
     __exports__.oasis = oasis;
     __exports__.EnvironmentService = EnvironmentService;
     __exports__.HelpdeskService = HelpdeskService;
+    __exports__.InventoryService = InventoryService;
   });
 window.SW = require("spiceworks-sdk-host");
 }(self));
