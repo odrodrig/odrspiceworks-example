@@ -1,6 +1,6 @@
 # What is a Cloud App?
 
-Cloud Apps allow you to get your application in front of IT pros right from within Spiceworks.  Building a Cloud App lets your content appear inside of Spiceworks applications and it gives you the ability to integrate your app with the core Spiceworks experience through the [Cloud App APIs][Cloud APIs Link].  
+Cloud Apps allow you to get your application in front of IT pros right from within Spiceworks.  Building a Cloud App lets your content appear inside of Spiceworks applications and it gives you the ability to integrate your app with the core Spiceworks experience through the [Cloud App APIs](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CanvasAppApis.md).  
 
 Cloud Apps are built on top of web technologies, so it's easy to get started or to integrate your existing web application.
 
@@ -14,7 +14,7 @@ Some example card locations throughout the Spiceworks Desktop:
 
 
 
-You populate a card by providing a URL that contains HTML, JavaScript and CSS.  When your card is loaded inside of Spiceworks, we load the URL within an `iframe` on that page.  All cards have access to the [Cloud App APIs][Cloud APIs Link], which provide a secure way for your web app to communicate with Spiceworks from inside of the `iframe`.
+You populate a card by providing a URL that contains HTML, JavaScript and CSS.  When your card is loaded inside of Spiceworks, we load the URL within an `iframe` on that page.  All cards have access to the [Cloud App APIs](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CanvasAppApis.md), which provide a secure way for your web app to communicate with Spiceworks from inside of the `iframe`.
 
 [CARD ARCHITECTURE]
 
@@ -30,13 +30,12 @@ Here's an example of what a Full Page Card looks like inside of the Spiceworks D
 
 By default, the Full Page Card frame is full-width (ranging from 710-935px) and the full browser height.
 
-**Note:** Currently, the Spiceworks Desktop only supports Full Page Cards.  Over time we will be expanding the locations of Cloud App cards throughout Spiceworks.
 
 # Next Steps
 
-* Visit the [Getting Started][Getting Started Link] page for a step-by-step guide to building a Spiceworks Cloud App.
-* Dive into the [Cloud App API][Cloud APIs Link] basics
-* Learn more about listing your app on the [Spiceworks App Center][Spiceworks App Center Overview].
+* Visit the [Getting Started](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/GettingStarted.md) page for a step-by-step guide to building a Spiceworks Cloud App.
+* Dive into the [Cloud App API](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CanvasAppApis.md) basics
+
 
 [Cloud APIs Link]: /documentation/cloud-apps/api-overview "Cloud App APIs Overview"
 [Getting Started Link]: /documentation/cloud-apps/getting-started "Getting Started with Spiceworks Cloud Apps"
