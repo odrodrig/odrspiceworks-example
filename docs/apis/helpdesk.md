@@ -6,9 +6,9 @@
 
 List all tickets visible by the current authenticated user:
 
-~~~js
+```js
 card.services('helpdesk').request('tickets'[, options])
-~~~
+```
 
 #### Options
 
@@ -36,7 +36,7 @@ Name | Type | Description
 `before` (optional)|`string`| Match all objects whose datetime field is `<=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 
 #### Response
-~~~js
+```js
 {
   "meta": {
     "total_entries": 9,
@@ -46,14 +46,14 @@ Name | Type | Description
   },
   "tickets": [...] // see below for ticket json example
 }
-~~~
+```
 
 
 ### Get a single ticket
 
-~~~js
+```js
 card.services('helpdesk').request('tickets', id)
-~~~
+```
 
 #### Parameters
 
@@ -63,7 +63,7 @@ Name | Type | Description
 
 #### Response
 
-~~~js
+```js
 {
   "id": 6,
   "summary": "My email is not working.",
@@ -223,4 +223,4 @@ Name | Type | Description
     }
   ]
 }
-~~~
+```
