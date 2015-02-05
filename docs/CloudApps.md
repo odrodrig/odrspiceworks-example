@@ -6,7 +6,7 @@ Cloud Apps are built on top of web technologies, so it's easy to get started or 
 
 # App Cards
 
-Apps are made up of a collection of web pages that we refer to as **Cards**.  A card is a blank canvas that appears in a specific location inside of Spiceworks where your app can display content.  Cards will always have their own full page, but you can also have them displayed within the help desk or device views.
+Apps are made up of a collection of web pages that we refer to as **Cards**.  A card is a blank canvas that appears in a specific location inside of Spiceworks where your app can display content.  Cards will always have their own full page linked to in the primary navigation, but you can also have them displayed within each ticket or device view.
 
 
 
