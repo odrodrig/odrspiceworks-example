@@ -34,7 +34,7 @@ var card = new SW.Card();
 card.services('helpdesk');
 ```
 
-The `services` method will then return a `CardService` object that responds to requests.  For a full list of the available services see [Canvas App Services](link to somewhere).
+The `services` method will then return a `CardService` object that responds to requests.  For a full list of the available services see [Canvas App Services](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md).
 
 ## Requests
 
@@ -79,7 +79,7 @@ card.services('helpdesk').request('tickets', { status: 'open' })
   });
 ```
 
-For a full list of the supported requests for a service visit the [service documentation page](link to list of services).
+For a full list of the supported requests for a service visit the [service documentation page](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md).
 
 ### Paging
 
