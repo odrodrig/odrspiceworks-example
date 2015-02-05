@@ -4,11 +4,11 @@ This doc will cover the steps you need to take to create a cloud app and make it
 
 ### Installing Spiceworks
 
-Before starting to build your cloud app, you first need to install the [Spiceworks Desktop: Developer Edition][Desktop Dev Download].  The Spiceworks Desktop is where users will ultimately be installing and loading your cloud app.  The developer edition of the Spiceworks Desktop has some small admin features that make it easier to build and test your cloud app during development, before it's been published to the Spiceworks App Center.
+Before starting to build your cloud app, you first need to install the [Spiceworks Desktop: Developer Edition](http://community.spiceworks.com/private/app-center-dev-tools-beta/download).  The Spiceworks Desktop is where users will ultimately be installing and loading your cloud app.  The developer edition of the Spiceworks Desktop has some small admin features that make it easier to build and test your cloud app during development, before it's been published to the Spiceworks App Center.
 
 Like the IT-pro version of the Spiceworks Desktop, the developer edition will need to be installed in a Windows environment (Note: We are currently working on development tools that avoid this requirement).
 
-Install the [Spiceworks Desktop: Developer Edition][Desktop Dev Download].
+Install the [Spiceworks Desktop: Developer Edition](http://community.spiceworks.com/private/app-center-dev-tools-beta/download).
 
 ### Create a place for your app to live
 
@@ -116,7 +116,7 @@ At this point, our example app looks like this:
 
 Now that you've gone over how to create an application for Spiceworks, you're ready to be released to the wild. Here are some resources that should help you along the way (or, "it's dangerous to go alone..." joke):
 
-* [Download the Spiceworks Desktop: Developer Edition][Desktop Dev Download]
+* [Download the Spiceworks Desktop: Developer Edition](http://community.spiceworks.com/private/app-center-dev-tools-beta/download)
 * [Spiceworks Cloud App Examples][Card Examples]
 * [Cloud App Overview](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CloudApps.md)
 * [Spiceworks App API Basics](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CanvasAppApis.md)
