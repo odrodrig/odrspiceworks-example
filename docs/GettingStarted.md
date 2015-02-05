@@ -15,9 +15,8 @@ Install the [Spiceworks Desktop: Developer Edition][Desktop Dev Download].
 Once you've installed Spiceworks, we'll need to find a home for your app. A Spiceworks app is just a website, so make sure that your web app is being served somewhere so that it can be accessed by Spiceworks.  This means that you must have a local or a remote web server serving your web application so that it can be loaded within Spiceworks. At this point, you can just create a framework for the app. You'll just need a host URL to get the app creation process started within Spiceworks.
 
 #### Example
-In this example, we create a single-page application in a Github Gist. If you're not familiar with Github, it basically just gives you a place to store code. You can then use sites like http://bl.ocks.org to then render that code in a usable format for Spiceworks.
-
-   1. Go to <https://gist.github.com> to create a Gist. It will ask you if you want to save the Gist as "secret" or "public". Either one works just fine. We can create the framework for the ubiquitous "Hello world!" application like so:
+In this example, we create a single-page application in a Github Gist. If you're not familiar with Github, it basically just gives you a place to store code. You can then use sites like http://bl.ocks.org to then render that code in a usable format for Spiceworks. <br />
+1. Go to <https://gist.github.com> to create a Gist. It will ask you if you want to save the Gist as "secret" or "public". Either one works just fine. We can create the framework for the ubiquitous "Hello world!" application like so:
 
 ``` html
    <!DOCTYPE html>
@@ -27,10 +26,8 @@ In this example, we create a single-page application in a Github Gist. If you're
     </body>
    </html>
 ```
-
-  2. Save the Gist file as **index.html**.
-
-  3. Make sure that your Gist is working properly by testing it in a browser using <http://bl.ocks.org>. So the Gist I created on Github (at <https://gist.github.com/babbtx/dab075639fef532d612a>) can be tested by viewing it at <http://bl.ocks.org/babbtx/raw/dab075639fef532d612a/>.
+2. Save the Gist file as **index.html**.
+3. Make sure that your Gist is working properly by testing it in a browser using <http://bl.ocks.org>. So the Gist I created on Github (at <https://gist.github.com/babbtx/dab075639fef532d612a>) can be tested by viewing it at <http://bl.ocks.org/babbtx/raw/dab075639fef532d612a/>.
    (**Note:** the http://bl.ocks.org site caches the page for several minutes, so changes you make to the source may not be immediately reflected in the application.
 
 Go [here][Card Examples] for some simple examples of Spiceworks apps.
