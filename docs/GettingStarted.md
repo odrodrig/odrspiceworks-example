@@ -15,8 +15,9 @@ Install the [Spiceworks Desktop: Developer Edition][Desktop Dev Download].
 Once you've installed Spiceworks, we'll need to find a home for your app. A Spiceworks app is just a website, so make sure that your web app is being served somewhere so that it can be accessed by Spiceworks.  This means that you must have a local or a remote web server serving your web application so that it can be loaded within Spiceworks. At this point, you can just create a framework for the app. You'll just need a host URL to get the app creation process started within Spiceworks.
 
 #### Example
-In this example, we create a single-page application in a Github Gist. If you're not familiar with Github, it basically just gives you a place to store code. You can then use sites like http://bl.ocks.org to then render that code in a usable format for Spiceworks. <br />
-1. Go to <https://gist.github.com> to create a Gist. It will ask you if you want to save the Gist as "secret" or "public". Either one works just fine. We can create the framework for the ubiquitous "Hello world!" application like so:
+In this example, we create a single-page application in a Github Gist. If you're not familiar with Github, it basically just gives you a place to store code. You can then use sites like http://bl.ocks.org to then render that code in a usable format for Spiceworks.
+
+1) Go to <https://gist.github.com> to create a Gist. It will ask you if you want to save the Gist as "secret" or "public". Either one works just fine. We can create the framework for the ubiquitous "Hello world!" application like so:
 
 ``` html
    <!DOCTYPE html>
@@ -26,8 +27,8 @@ In this example, we create a single-page application in a Github Gist. If you're
     </body>
    </html>
 ```
-2. Save the Gist file as **index.html**.
-3. Make sure that your Gist is working properly by testing it in a browser using <http://bl.ocks.org>. So the Gist I created on Github (at <https://gist.github.com/babbtx/dab075639fef532d612a>) can be tested by viewing it at <http://bl.ocks.org/babbtx/raw/dab075639fef532d612a/>.
+2) Save the Gist file as **index.html**.
+3) Make sure that your Gist is working properly by testing it in a browser using <http://bl.ocks.org>. So the Gist I created on Github (at <https://gist.github.com/babbtx/dab075639fef532d612a>) can be tested by viewing it at <http://bl.ocks.org/babbtx/raw/dab075639fef532d612a/>.
    (**Note:** the http://bl.ocks.org site caches the page for several minutes, so changes you make to the source may not be immediately reflected in the application.
 
 Go [here][Card Examples] for some simple examples of Spiceworks apps.
@@ -36,16 +37,16 @@ Go [here][Card Examples] for some simple examples of Spiceworks apps.
 
 After you have the Spiceworks Desktop installed and your web app running, you need to create and register your cloud app inside of the Spiceworks Desktop. You can do this by following these steps:
 
-1. Go to **Settings &rarr; Additional Settings &rarr; Manage Apps** and select **New App &rarr; New Platform App**
-2. Fill in your apps' basic info. The App Name field will be what is displayed in the app center, and the Namespace is what will be listed in the url for your app in the Spiceworks App Center. So in our example, the App Name would be Hello World! and the Namespace could be hello-world.
-3. Now you'll need to let Spiceworks know where to pull the app from and display it. You'll want to enter your App Host URL, which is the location of your web app's landing page. In our example, this would be http://bl.ocks.org/babbtx/raw/dab075639fef532d612a/. If your app is also going to appear in tickets or device views within Spiceworks, you can turn on those options here and add the host URL for those as well.
-4. Set any permissions your app will require. If you're planning on pulling any info from the IT pros' Spiceworks installations to display in your app or to dictate what is displayed, you'll need to indicate that here.
-5. Click **Save** to publish the app to the App Center.
+1) Go to **Settings &rarr; Additional Settings &rarr; Manage Apps** and select **New App &rarr; New Platform App**
+2) Fill in your apps' basic info. The App Name field will be what is displayed in the app center, and the Namespace is what will be listed in the url for your app in the Spiceworks App Center. So in our example, the App Name would be Hello World! and the Namespace could be hello-world.
+3) Now you'll need to let Spiceworks know where to pull the app from and display it. You'll want to enter your App Host URL, which is the location of your web app's landing page. In our example, this would be http://bl.ocks.org/babbtx/raw/dab075639fef532d612a/. If your app is also going to appear in tickets or device views within Spiceworks, you can turn on those options here and add the host URL for those as well.
+4) Set any permissions your app will require. If you're planning on pulling any info from the IT pros' Spiceworks installations to display in your app or to dictate what is displayed, you'll need to indicate that here.
+5) Click **Save** to publish the app to the App Center.
 
 ### Add javascript to your application to get data from Spiceworks
 Now that you have registered your application, you can add some Javascript to display help desk and/or inventory data retrieved from Spiceworks.
 
-1. **Include Spiceworks SDK:** Minimally, you'll want to include the Spiceworks SDK javascript. For our "Hello world!" example, we're including jQuery as well.
+1) **Include Spiceworks SDK:** Minimally, you'll want to include the Spiceworks SDK javascript. For our "Hello world!" example, we're including jQuery as well.
 
 ``` javascript
    <head>
@@ -54,7 +55,7 @@ Now that you have registered your application, you can add some Javascript to di
    </head>
 ```
 
-2. **Request service:** Services give you access to the data inside Spiceworks. You can find details of the services available here: [Help Desk][Help Desk Services List] and [Inventory][Inventory Services List]. Here's what we're using in our example:
+2) **Request service:** Services give you access to the data inside Spiceworks. You can find details of the services available here: [Help Desk](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md) and Inventory (Coming Soon). Here's what we're using in our example:
 
 ``` javascript
    <script type="text/javascript">
@@ -65,14 +66,14 @@ Now that you have registered your application, you can add some Javascript to di
    </script>
 ```
 
-3. **Request data:** A data request returns a Javascript Promise, which, when resolved, provides you with the data you requested.
+3) **Request data:** A data request returns a Javascript Promise, which, when resolved, provides you with the data you requested.
 
 ``` javascript
    inventory.request('devices').then(function(data){
     /* do something */ });
 ```
 
-4. **Format the data accordingly:** Now you'll need to make the data presentable (yes, there are much better ways to format the data into HTML DOM, but bear with me for the purposes of this example).
+4) **Format the data accordingly:** Now you'll need to make the data presentable (yes, there are much better ways to format the data into HTML DOM, but bear with me for the purposes of this example).
 
 ``` javascript
    inventory.request('devices').then(function(data){
@@ -109,7 +110,7 @@ At this point, our example app looks like this:
 </html>
 ```
 
-5. **Reload your application and check the results!** Now if you reload your application at /apps/myapp in your Spiceworks Developer Edition server, you should see information populated in your app.
+5) **Reload your application and check the results!** Now if you reload your application at /apps/myapp in your Spiceworks Developer Edition server, you should see information populated in your app.
 
 ## Resources
 
@@ -117,11 +118,11 @@ Now that you've gone over how to create an application for Spiceworks, you're re
 
 * [Download the Spiceworks Desktop: Developer Edition][Desktop Dev Download]
 * [Spiceworks Cloud App Examples][Card Examples]
-* [Spiceworks App API Basics][Cloud App API Basics]
-* [Spiceworks Help Desk API Services][Help Desk Services List]
-* [Spiceworks Inventory API Services][Inventory Services List]
+* [Cloud App Overview](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CloudApps.md)
+* [Spiceworks App API Basics](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CanvasAppApis.md)
+* [Spiceworks Help Desk API Services](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md)
 
-[Cloud App API Basics]: /documentation/cloud-apps/api-overview "Spiceworks App API Basics"
+[Cloud App API Basics]: https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CanvasAppApis.md "Spiceworks App API Basics"
 [Desktop Dev Download]: http://www.spiceworks.com/ "Download the Spiceworks Desktop: Development Version"
 [Card Examples]: http://github.com/spiceworks/ "Spiceworks Cloud App Card Examples"
 [Card Examples Readme]: http://github.com/spiceworks/ "Spiceworks Cloud App Card Examples: README"
