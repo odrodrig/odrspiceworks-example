@@ -29,8 +29,8 @@ In this example, we create a single-page application in a Github Gist. If you're
 ```
 2) Save the Gist file as **index.html**.
 
-3) Make sure that your Gist is working properly by testing it in a browser using <http://bl.ocks.org>. So the Gist I created on Github (at <https://gist.github.com/babbtx/dab075639fef532d612a>) can be tested by viewing it at <http://bl.ocks.org/babbtx/raw/dab075639fef532d612a/>.
-   (**Note:** the http://bl.ocks.org site caches the page for several minutes, so changes you make to the source may not be immediately reflected in the application.
+3) Make sure that your Gist is working properly by testing it in a browser using <http://bl.ocks.org>. So the Gist I created on Github (at <https://gist.github.com/babbtx/dab075639fef532d612a>) can be tested by viewing it at <http://bl.ocks.org/babbtx/raw/dab075639fef532d612a/>. The bl.ocks.org URL is built using your Github username, the keyword "raw", and the Gist SHA.
+   (**Note:** The http://bl.ocks.org site caches the page for several minutes, so changes you make to the source may not be immediately reflected in the application.
 
 Go [here][Card Examples] for some simple examples of Spiceworks apps.
 
