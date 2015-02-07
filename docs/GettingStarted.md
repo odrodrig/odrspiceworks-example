@@ -115,7 +115,7 @@ At this point, our example app looks like this:
 </html>
 ```
 
-5) **Reload your application and check the results!** Now if you reload your application at /apps/myapp in your Spiceworks Developer Edition server, you should see information populated in your app.
+5) **Reload your application and check the results!** Now if you reload your application at /apps/hello-world in your Spiceworks Developer Edition server, you will see Hello World! and a list of device names.
 
 ## Resources
 
