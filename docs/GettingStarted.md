@@ -28,6 +28,7 @@ In this example, we create a single-page application in a Github Gist. If you're
    </html>
 ```
 2) Save the Gist file as **index.html**.
+
 3) Make sure that your Gist is working properly by testing it in a browser using <http://bl.ocks.org>. So the Gist I created on Github (at <https://gist.github.com/babbtx/dab075639fef532d612a>) can be tested by viewing it at <http://bl.ocks.org/babbtx/raw/dab075639fef532d612a/>.
    (**Note:** the http://bl.ocks.org site caches the page for several minutes, so changes you make to the source may not be immediately reflected in the application.
 
@@ -38,9 +39,13 @@ Go [here][Card Examples] for some simple examples of Spiceworks apps.
 After you have the Spiceworks Desktop installed and your web app running, you need to create and register your cloud app inside of the Spiceworks Desktop. You can do this by following these steps:
 
 1) Go to **Settings &rarr; Additional Settings &rarr; Manage Apps** and select **New App &rarr; New Platform App**
+
 2) Fill in your apps' basic info. The App Name field will be what is displayed in the app center, and the Namespace is what will be listed in the url for your app in the Spiceworks App Center. So in our example, the App Name would be Hello World! and the Namespace could be hello-world.
-3) Now you'll need to let Spiceworks know where to pull the app from and display it. You'll want to enter your App Host URL, which is the location of your web app's landing page. In our example, this would be http://bl.ocks.org/babbtx/raw/dab075639fef532d612a/. If your app is also going to appear in tickets or device views within Spiceworks, you can turn on those options here and add the host URL for those as well.
-4) Set any permissions your app will require. If you're planning on pulling any info from the IT pros' Spiceworks installations to display in your app or to dictate what is displayed, you'll need to indicate that here.
+
+3) Now you'll need to let Spiceworks know where to pull the app from and display it. You'll want to enter your App Host URL, which is the location of your web app's landing page, as a Full Page App Placement. In our example, this would be http://bl.ocks.org/babbtx/raw/dab075639fef532d612a/. Our example application does not have any pages to be placed specifically upon tickets or devices, therefore we will leave those options disabled.
+
+4) Set any permissions your app will require. If you're planning on pulling any info from the IT pros' Spiceworks installations to display in your app or to dictate what is displayed, you'll need to indicate that here. Our example application is going to use the Inventory service. Click the toggle to choose this permission.
+
 5) Click **Save** to publish the app to the App Center.
 
 ### Add javascript to your application to get data from Spiceworks
