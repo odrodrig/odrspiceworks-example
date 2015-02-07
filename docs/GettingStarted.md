@@ -36,11 +36,11 @@ Go [here][Card Examples] for some simple examples of Spiceworks apps.
 
 ### Create & register your web app with Spiceworks
 
-After you have the Spiceworks Desktop installed and your web app running, you need to create and register your cloud app inside of the Spiceworks Desktop. You can do this by following these steps:
+After you have Spiceworks Developer Edition installed and your web app running, you need to create and register your web app inside of Spiceworks. You can do this by following these steps:
 
-1) Go to **Settings &rarr; Additional Settings &rarr; Manage Apps** and select **New App &rarr; New Platform App**
+1) Click the Spiceworks logo at the top. This takes you to the management screen for installed apps. Create a new app by clicking **New App &rarr; New Platform App**.
 
-2) Fill in your apps' basic info. The App Name field will be what is displayed in the app center, and the Namespace is what will be listed in the url for your app in the Spiceworks App Center. So in our example, the App Name would be Hello World! and the Namespace could be hello-world.
+2) Fill in your app's basic info. The App Name field will be what is displayed in the app center, and the Namespace is what will be listed in the url for your app in the Spiceworks App Center. So in our example, the App Name would be Hello World! and the Namespace could be hello-world.
 
 3) Now you'll need to let Spiceworks know where to pull the app from and display it. You'll want to enter your App Host URL, which is the location of your web app's landing page, as a Full Page App Placement. In our example, this would be http://bl.ocks.org/babbtx/raw/dab075639fef532d612a/. Our example application does not have any pages to be placed specifically upon tickets or devices, therefore we will leave those options disabled.
 
