@@ -125,10 +125,9 @@ Now that you've gone over how to create an application for Spiceworks, you're re
 * [Spiceworks Cloud App Examples][Card Examples]
 * [Spiceworks App API Basics](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CanvasAppApis.md)
 * [Spiceworks Help Desk API Services](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md)
+* [Spiceworks Inventory API Services](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/inventory.md)
 
 [Cloud App API Basics]: https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CanvasAppApis.md "Spiceworks App API Basics"
 [Desktop Dev Download]: http://www.spiceworks.com/ "Download the Spiceworks Desktop: Development Version"
 [Card Examples]: http://github.com/spiceworks/spiceworks-js-sdk/tree/master/docs/examples "Spiceworks Cloud App Card Examples"
 [Card Examples Readme]: http://github.com/spiceworks/ "Spiceworks Cloud App Card Examples: README"
-[Help Desk Services List]: /documentation/cloud-apps/helpdesk-service-reference "Spiceworks Help Desk API Services"
-[Inventory Services List]: /documentation/cloud-apps/inventory-service-reference "Spiceworks Inventory API Services"
