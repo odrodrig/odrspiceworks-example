@@ -60,7 +60,7 @@ Now that you have registered your application, you can add some Javascript to di
    </head>
 ```
 
-2) **Request service:** Services give you access to the data inside Spiceworks. You can find details of the services available here: [Help Desk](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md) and Inventory (Coming Soon). Here's what we're using in our example:
+2) **Request service:** Services give you access to the data inside Spiceworks. You can find details of the services available here: [Help Desk](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md) and [Inventory](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/inventory.md). Here's what we're using in our example:
 
 ``` javascript
    <script type="text/javascript">
