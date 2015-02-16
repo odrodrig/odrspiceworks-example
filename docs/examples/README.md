@@ -1,9 +1,5 @@
-﻿EXAMPLE APPLICATIONS GUIDE
-
-How to run example applications
+Running example apps
 -------------------------------
-
-Steps:
 
 1. Clone this repo `https://github.com/spiceworks/spiceworks-js-sdk.git`
 2. Install node JS: `http://nodejs.org/download/`
@@ -13,10 +9,8 @@ Steps:
 6. Navigate to the hostname and port the app is running on (`http://localhost:3000/` by default)
 
 
-How to run example applications within Spiceworks
+Adding example apps to Spiceworks
 --------------------------------------------------
-
-Steps:
 
 1. Navigate to Settings (top right of page, gray gear icon)
 2. Under Additional Settings, select Manage Apps
