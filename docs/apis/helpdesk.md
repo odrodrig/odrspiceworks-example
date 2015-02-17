@@ -2,7 +2,9 @@
 
 ## Tickets
 
-### List tickets
+### Requests
+
+#### List tickets
 
 List all tickets visible by the current authenticated user:
 
@@ -10,7 +12,7 @@ List all tickets visible by the current authenticated user:
 card.services('helpdesk').request('tickets'[, options])
 ```
 
-#### Options
+##### Options
 
 Name | Type | Description
 -----|------|--------------
@@ -35,7 +37,7 @@ Name | Type | Description
 `after` (optional)|`string`| Match all objects whose datetime field is `>=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 `before` (optional)|`string`| Match all objects whose datetime field is `<=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 
-#### Response
+##### Response
 ```js
 {
   "meta": {
@@ -49,19 +51,19 @@ Name | Type | Description
 ```
 
 
-### Get a single ticket
+#### Get a single ticket
 
 ```js
 card.services('helpdesk').request('tickets', id)
 ```
 
-#### Parameters
+##### Parameters
 
 Name | Type | Description
 -----|------|--------------
 `id`|`integer`| The `id` of the ticket
 
-#### Response
+##### Response
 
 ```js
 {
@@ -224,3 +226,19 @@ Name | Type | Description
   ]
 }
 ```
+
+### Events
+
+#### Show ticket
+
+Fired after a new ticket is rendered inside the Spiceworks Help Desk.
+
+```js
+card.services('helpdesk').on('showTicket', handler)
+```
+
+##### Hanlder arguments
+
+Name | Type | Description
+-----|------|--------------
+`id`|`integer`| The id of the ticket that was rendered.
