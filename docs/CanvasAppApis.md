@@ -145,7 +145,7 @@ attribute containing pagination information.  For example:
 
 ## Events
 
-In addition to requests, every API service will keep your App up to date on
+In addition to responding to requests, every API service will keep your App up to date on
 changes inside of Spiceworks.  When a change occurs relating to a service, it
 will send your App an `event`.  Your App can listen for these events and
 register event handlers to respond to the changes using the `CardService#on`
