@@ -227,6 +227,29 @@ Name | Type | Description
 }
 ```
 
+#### Create a ticket
+
+Create a ticket with the given parameters
+
+```js
+card.services('helpdesk').request('ticket:create', attributes)
+```
+
+##### Attributes
+
+Name | Type | Description
+-----|------|--------------
+`summary`|`string`| **Required**.  A short description of the request.
+`description`|`string`| Full description of the request.
+`assignee`|`integer`| The IT Pro the ticket is assigned to.  Must be an IT Pro `id`.
+`priority`|`string`| The priority of the request. Must be `low`, `medium`, or `high`.
+`due_at`|`string`| Due date of the request.  Must be a timestamp in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+`status`|`string`| The current status of the request. Must be `open` or `closed`.
+
+##### Response
+
+This request will return the created ticket JSON, see the [single ticket response](#response-1).
+
 ### Events
 
 #### Show ticket
