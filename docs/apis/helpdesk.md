@@ -54,7 +54,7 @@ Name | Type | Description
 #### Get a single ticket
 
 ```js
-card.services('helpdesk').request('tickets', id)
+card.services('helpdesk').request('ticket', id)
 ```
 
 ##### Parameters
