@@ -244,7 +244,7 @@ Name | Type | Description
 `assignee`|`integer`| The IT Pro the ticket is assigned to.  Must be an IT Pro `id`.
 `priority`|`string`| The priority of the request. Must be `low`, `medium`, or `high`.
 `due_at`|`string`| Due date of the request.  Must be a timestamp in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
-`status`|`string`| The current status of the request. Must be `open` or `closed`.
+`status`|`string`| The current status of the request. Must be `open` or `closed`.  Default: `open`.
 
 ##### Response
 
