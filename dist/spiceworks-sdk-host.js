@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2015-01-29
+/*! spiceworks-sdk - v0.0.2 - 2015-02-19
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 var define, require;
@@ -4117,6 +4117,9 @@ define("environment-service",
       initialize: function () {
         this.send('activate', this.data);
       },
+      requests: {
+        environment: null
+      },
       data: null //extend this property to send in data on activation
     });
 
@@ -4133,19 +4136,9 @@ define("helpdesk-service",
         this.sandbox.helpdeskProxyPort = port;
       },
       requests: {
-        tickets: null,
-        unassigned: null,
-        open: null,
-        pastDue: null,
-        recent: null,
-        recentOpen: null,
-        closed: null,
-        assigned: null,
-        requiringPurchase: null,
-        email: null,
-        openAndAssignedTo: null,
-        openAndAssignedToCurrentUser: null,
-        assignedToUserAndHasNotBeenViewed: null
+        'tickets': null,
+        'ticket': null,
+        'ticket:create': null
       }
     });
 
