@@ -23,7 +23,7 @@ Name | Type | Description
 `due_at`|`object`(datetime range)| Return tickets whose due date is within the given range.
 `page`|`integer`| The page offset.  Must be between `1` and `page_count`.  Default: `1`
 `per_page`|`integer`| Number of entries per page. Must be between `1` and `100`.  Default: `30`
-`priority`|`string`| Return tickets with this priority. Can be either `low`, `medium`, or `high`.
+`priority`|`string`| Return tickets with this priority. Can be either `low`, `med`, or `high`.
 `site`|`integer`| Return tickets from this site.  Must be the site `id`.
 `sort`|`string`| How to sort the results.  Can be either `updated`, when the ticket was last updated, or `created`, when the ticket was created.  Default: `created`
 `status`|`string`| Return tickets with this status. Can be either `open` or `closed`.
@@ -226,6 +226,29 @@ Name | Type | Description
   ]
 }
 ```
+
+#### Create a ticket
+
+Create a ticket with the given parameters
+
+```js
+card.services('helpdesk').request('ticket:create', attributes)
+```
+
+##### Attributes
+
+Name | Type | Description
+-----|------|--------------
+`summary`|`string`| **Required**.  A short description of the request.
+`description`|`string`| Full description of the request.
+`assignee`|`integer`| The IT Pro the ticket is assigned to.  Must be an IT Pro `id`.
+`priority`|`string`| The priority of the request. Must be `low`, `med`, or `high`.  Default: `med`.
+`due_at`|`string`| Due date of the request.  Must be a timestamp in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+`status`|`string`| The current status of the request. Must be `open` or `closed`.  Default: `open`.
+
+##### Response
+
+This request will return the created ticket JSON, see the [single ticket response](#response-1).
 
 ### Events
 
