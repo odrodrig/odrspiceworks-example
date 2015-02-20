@@ -2,7 +2,9 @@
 
 ## Environment
 
-### Get the environment
+### Requests
+
+#### Get the environment
 
 Get environment information from the Spiceworks application in which your
 cloud app is installed:
@@ -20,7 +22,7 @@ card.onActivate(function(environment){
 });
 ```
 
-#### Response
+##### Response
 ```js
 {
   "app_host":
