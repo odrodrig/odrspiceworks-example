@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2015-02-19
+/*! spiceworks-sdk - v0.0.2 - 2015-02-20
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 var define, require;

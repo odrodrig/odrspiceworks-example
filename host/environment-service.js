@@ -5,7 +5,9 @@ var EnvironmentService = Oasis.Service.extend({
     this.send('activate', this.data);
   },
   requests: {
-    environment: null
+    environment: null,
+    users: null,
+    user: null,
   },
   data: null //extend this property to send in data on activation
 });
