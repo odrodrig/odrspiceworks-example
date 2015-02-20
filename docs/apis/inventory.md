@@ -17,7 +17,7 @@ card.services('inventory').request('devices'[, options])
 
 Name | Type | Description
 -----|------|--------------
-`scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'offline'`, or `'unknown'`. 
+`scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'offline'`, or `'unknown'`.
 
 
 #### Response
@@ -37,7 +37,7 @@ Name | Type | Description
 ### Get a single device
 
 ```js
-card.services('inventory').request('devices', id)
+card.services('inventory').request('device', id)
 ```
 
 #### Parameters
@@ -48,7 +48,7 @@ Name | Type | Description
 
 #### Response
 
-Example computer (note all arrays have been reduced to a single example 
+Example computer (note all arrays have been reduced to a single example
 item):
 
 ```js
@@ -242,7 +242,7 @@ item):
 }
 ```
 
-Example switch (note all arrays have been reduced to a single example 
+Example switch (note all arrays have been reduced to a single example
 item):
 
 ```js
