@@ -1,5 +1,8 @@
 # Inventory Service
 
+The inventory service gives you access to the network device and asset inventory
+managed within Spiceworks. Inventory includes [Devices](#devices) and [Software](#software).
+
 ## Devices
 
 ### List devices
@@ -320,6 +323,90 @@ item):
       "ip_address": null,
       "net_mask": null,
       "mac_address": "D4:A4:38:0C:1D:A0"
+    }
+  ]
+}
+```
+
+## Software
+
+### List software applications
+
+List all software applications visible by the current authenticated user:
+
+```js
+card.services('inventory').request('software'[, options])
+```
+
+#### Options
+
+Name | Type | Description
+-----|------|--------------
+`name`|`string`| Return software matching a specific name.
+
+
+#### Response
+```js
+{
+  "meta": {
+    "total_entries": 3096,
+    "page_count": 104,
+    "per_page": 30,
+    "current_page": 1
+  },
+  "software": [...] // see below for a single software application JSON example
+}
+```
+
+
+### Get a single software application
+
+```js
+card.services('inventory').request('software', id)
+```
+
+#### Parameters
+
+Name | Type | Description
+-----|------|--------------
+`id`|`integer`| The `id` of the software application.
+
+#### Response
+
+Example software application (note all arrays have been reduced to a single example
+item):
+
+```js
+{
+  "id": 8,
+  "show_url": "/inventory/software/applications/8",
+  "name": "7-Zip",
+  "display_name": "7-Zip 9.20 (x64 edition)",
+  "vendor": "Igor Pavlov",
+  "summary": null,
+  "url_about_info": "http://www.7-zip.org/",
+  "url_update_info": "http://www.7-zip.org/download.html",
+  "computers": [
+    {
+      "id": 317,
+      "show_url": "/inventory/groups/devices/317",
+      "name": "adorable-dugong",
+      "type": "Device",
+      "product_info": {
+        "description": null,
+        "image_url": null,
+        "model_name": "EliteBook 2560p",
+        "vendor_name": "Hewlett-Packard",
+        "avg_rating": null,
+        "rating_count": null,
+        "category": null
+      },
+      "version": "9.20.00.0",
+      "install_date": "2011-09-15",
+      "install_location": null,
+      "uninstall_string": "MsiExec.exe /I{23170F69-40C1-2702-0920-000001000000}",
+      "identity": "{23170F69-40C1-2702-0920-000001000000}",
+      "product_key": null
     }
   ]
 }
