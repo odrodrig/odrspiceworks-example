@@ -5,7 +5,9 @@ managed within Spiceworks. Inventory includes [Devices](#devices) and [Software]
 
 ## Devices
 
-### List devices
+### Requests
+
+#### List devices
 
 List all devices visible by the current authenticated user:
 
@@ -13,14 +15,14 @@ List all devices visible by the current authenticated user:
 card.services('inventory').request('devices'[, options])
 ```
 
-#### Options
+##### Options
 
 Name | Type | Description
 -----|------|--------------
 `scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'offline'`, or `'unknown'`.
 
 
-#### Response
+##### Response
 ```js
 {
   "meta": {
@@ -33,20 +35,19 @@ Name | Type | Description
 }
 ```
 
-
-### Get a single device
+#### Get a single device
 
 ```js
 card.services('inventory').request('device', id)
 ```
 
-#### Parameters
+##### Parameters
 
 Name | Type | Description
 -----|------|--------------
 `id`|`integer`| The `id` of the device
 
-#### Response
+##### Response
 
 Example computer (note all arrays have been reduced to a single example
 item):
@@ -349,7 +350,9 @@ item):
 
 ## Software
 
-### List software applications
+### Requests
+
+#### List software applications
 
 List all software applications visible by the current authenticated user:
 
@@ -357,14 +360,14 @@ List all software applications visible by the current authenticated user:
 card.services('inventory').request('software'[, options])
 ```
 
-#### Options
+##### Options
 
 Name | Type | Description
 -----|------|--------------
 `name`|`string`| Return software matching a specific name.
 
 
-#### Response
+##### Response
 ```js
 {
   "meta": {
@@ -378,19 +381,19 @@ Name | Type | Description
 ```
 
 
-### Get a single software application
+#### Get a single software application
 
 ```js
 card.services('inventory').request('software', id)
 ```
 
-#### Parameters
+##### Parameters
 
 Name | Type | Description
 -----|------|--------------
 `id`|`integer`| The `id` of the software application.
 
-#### Response
+##### Response
 
 Example software application (note all arrays have been reduced to a single example
 item):
