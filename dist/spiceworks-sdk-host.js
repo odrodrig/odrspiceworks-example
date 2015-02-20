@@ -4155,7 +4155,9 @@ define("inventory-service",
         this.sandbox.inventoryProxyPort = port;
       },
       requests: {
-        devices: null
+        devices: null,
+        device: null,
+        software: null
       }
     });
 

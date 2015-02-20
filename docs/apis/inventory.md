@@ -1,8 +1,13 @@
 # Inventory Service
 
+The inventory service gives you access to the network device and asset inventory
+managed within Spiceworks. Inventory includes [Devices](#devices) and [Software](#software).
+
 ## Devices
 
-### List devices
+### Requests
+
+#### List devices
 
 List all devices visible by the current authenticated user:
 
@@ -10,14 +15,14 @@ List all devices visible by the current authenticated user:
 card.services('inventory').request('devices'[, options])
 ```
 
-#### Options
+##### Options
 
 Name | Type | Description
 -----|------|--------------
-`scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'offline'`, or `'unknown'`. 
+`scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'offline'`, or `'unknown'`.
 
 
-#### Response
+##### Response
 ```js
 {
   "meta": {
@@ -30,35 +35,44 @@ Name | Type | Description
 }
 ```
 
-
-### Get a single device
+#### Get a single device
 
 ```js
-card.services('inventory').request('devices', id)
+card.services('inventory').request('device', id)
 ```
 
-#### Parameters
+##### Parameters
 
 Name | Type | Description
 -----|------|--------------
 `id`|`integer`| The `id` of the device
 
-#### Response
+##### Response
 
-Example computer (note all arrays have been reduced to a single example 
+Example computer (note all arrays have been reduced to a single example
 item):
 
 ```js
 {
   "id": 2,
+  "show_url": "/inventory/groups/devices/2",
   "type": "Computer",
-  "server_name": "unsightly-sloth.workgroup",
-  "name": "unsightly-sloth",
-  "domain": "workgroup",
+  "server_name": "jolly-capybara.example.com",
+  "name": "jolly-capybara",
+  "domain": "example.com",
   "manually_added": false,
   "device_type": "Laptop",
   "description": "AT/AT COMPATIBLE",
   "location": null,
+  "product_info": {
+    "description": null,
+    "image_url": "//h10003.www1.hp.com/digmedialib/prodimg/lowres/c03889640.jpg",
+    "model_name": "ProBook 650 G1",
+    "vendor_name": "Hewlett-Packard",
+    "avg_rating": null,
+    "rating_count": null,
+    "category": null
+  },
   "manufacturer": "Hewlett-Packard",
   "model": "ProBook 650 G1",
   "memory": 17088729088,
@@ -74,28 +88,28 @@ item):
   "windows_product_id": "00371-868-0000007-85065",
   "management_oid": null,
   "number_of_licensed_users": 0,
-  "bios_date": "2013-12-05T00:00:00-06:00",
+  "bios_date": "2013-12-05T00:00:00-08:00",
   "bios_version": "L77 Ver. 01.02",
   "page_count": null,
-  "mac_address": "DC:AD:D8:47:31:17",
-  "ip_address": "169.108.36.132",
-  "ip_comparable": 2842436740,
-  "os_serial_number": "63034-882-6985763-83972",
-  "asset_tag": "8175730DBE",
-  "serial_number": "8175730DBE",
-  "uuid": "39622E44-ABEB-C8D8-755E-44463108B330",
+  "mac_address": "E1:19:B5:F9:9C:A2",
+  "ip_address": "3.247.227.245",
+  "ip_comparable": 66577397,
+  "os_serial_number": "81386-805-2882254-33720",
+  "asset_tag": "3B71E7EF7A",
+  "serial_number": "3B71E7EF7A",
+  "uuid": "332A52FA-6EAF-86A6-3FE1-A340835369B1",
   "reported_by_id": null,
   "site_id": 1,
-  "created_at": "2015-02-04T12:56:38-06:00",
-  "updated_at": "2015-02-05T14:53:15-06:00",
+  "created_at": "2015-02-04T12:56:38-08:00",
+  "updated_at": "2015-02-19T02:26:01-08:00",
   "scan_state": "inventoried",
-  "install_date": "2014-05-30T20:40:42-05:00",
+  "install_date": "2014-05-30T20:40:42-07:00",
   "last_backup_time": null,
-  "last_boot_up_time": "2015-02-04T10:57:36-06:00",
+  "last_boot_up_time": "2015-02-04T10:57:36-08:00",
   "last_qrcode_time": null,
-  "last_scan_time": "2015-02-04T13:50:48-06:00",
+  "last_scan_time": "2015-02-04T13:50:48-08:00",
   "offline_at": null,
-  "online_at": "2015-02-04T13:50:48-06:00",
+  "online_at": "2015-02-04T13:50:48-08:00",
   "up_time": null,
   "owner": null,
   "network_adapters": [
@@ -103,15 +117,15 @@ item):
       "name": "NETwNs64",
       "net_connection_id": "Wireless Network Connection",
       "description": "Intel(R) Centrino(R) Advanced-N 6235",
-      "ip_address": "155.204.103.38",
-      "ip_comparable": 2613864230,
-      "gateway": "116.252.52.186",
+      "ip_address": "242.2.223.202",
+      "ip_comparable": 4060274634,
+      "gateway": "34.240.52.162",
       "net_mask": "255.255.252.0",
-      "mac_address": "9B:1D:03:22:A3:BC",
+      "mac_address": "4A:4D:11:16:65:97",
       "dns_domain": "example.com",
-      "dns_servers": "196.249.135.102 173.17.111.2 40.144.154.113",
+      "dns_servers": "8.48.12.14 153.95.118.87 183.25.121.27",
       "dhcp_enabled": "true",
-      "dhcp_server": "191.138.14.168",
+      "dhcp_server": "179.207.148.94",
       "ip_addresses": [
         "10.10.48.35",
         "fe80::9c43:4df5:dc5b:1252"
@@ -131,7 +145,7 @@ item):
         "igd10iumd32"
       ],
       "driver_version": "9.18.10.3324",
-      "driver_date": "2013-10-07T00:00:00-05:00",
+      "driver_date": "2013-10-07T00:00:00-07:00",
       "video_processor": "Intel(R) HD Graphics Family"
     }
   ],
@@ -144,7 +158,7 @@ item):
       "screen_width": 1920,
       "monitor_type": "Generic PnP Monitor",
       "manufacturer_date": "2014-04-28",
-      "serial_number": "2D8B19A1"
+      "serial_number": "14959821"
     }
   ],
   "printers": [
@@ -159,14 +173,14 @@ item):
   ],
   "peripherals": [
     {
-      "name": "HP HD Webcam",
-      "manufacturer": "Lite-On Technology Corp.",
-      "product_identifier": "7025",
-      "vendor_identifier": "04CA",
-      "service": "USBVIDEO",
+      "name": "Generic Bluetooth Adapter",
+      "manufacturer": "Intel Corp.",
+      "product_identifier": "07DA",
+      "vendor_identifier": "8087",
+      "service": "BTHUSB",
       "source": "USB",
       "status": "OK",
-      "windows_device_id": "USB\\VID_04CA&PID_7025"
+      "windows_device_id": "USB\\VID_8087&PID_07DA"
     }
   ],
   "memory_slots": [
@@ -201,45 +215,54 @@ item):
     {
       "name": "0",
       "manufacturer": null,
-      "model": "WD My Passport 0830 USB Device",
-      "size": 1000169372160,
+      "model": "HGST HTS725050A7E630 ATA Device",
+      "size": 500105249280,
       "status": "OK",
-      "interface": "USB",
-      "firmware": "1056",
-      "failure_prediction": "unsupported",
+      "interface": "IDE",
+      "firmware": "GH2OA910",
+      "failure_prediction": "enabled",
       "is_solid_state": true,
       "partitions": [
         {
-          "name": "Disk #1, Partition #0",
+          "name": "Disk #0, Partition #0",
           "partition_type": null,
-          "size": 1000169537536,
+          "size": 104857600,
           "starting_offset": 1048576,
-          "free_space": 560203796480
+          "free_space": 0
+        },
+        {
+          "name": "Disk #0, Partition #1",
+          "partition_type": null,
+          "size": 255953207296,
+          "starting_offset": 105906176,
+          "free_space": 31873052672
         }
       ],
-      "serial_number": "194D1970"
+      "serial_number": "02394654"
     }
   ],
   "software": [
     {
-      "name": "Google Chrome",
-      "display_name": "Google Chrome",
-      "version": "40.0.2214.94",
-      "vendor": "Google",
+      "id": 8,
+      "show_url": "/inventory/software/applications/8",
+      "name": "7-Zip",
+      "display_name": "7-Zip 9.20 (x64 edition)",
+      "version": "9.20.00.0",
+      "vendor": "Igor Pavlov",
       "summary": null,
-      "url_about_info": "",
-      "url_update_info": "",
-      "install_date": "2014-06-02",
+      "url_about_info": "http://www.7-zip.org/",
+      "url_update_info": "http://www.7-zip.org/download.html",
+      "install_date": "2014-05-14",
       "install_location": null,
-      "uninstall_string": "\"C:\\Program Files (x86)\\Google\\Chrome\\Application\\40.0.2214.94\\Installer\\setup.exe\" --uninstall --multi-install --chrome --system-level",
-      "identity": "Google Chrome",
+      "uninstall_string": "MsiExec.exe /I{23170F69-40C1-2702-0920-000001000000}",
+      "identity": "{23170F69-40C1-2702-0920-000001000000}",
       "product_key": null
     }
   ]
 }
 ```
 
-Example switch (note all arrays have been reduced to a single example 
+Example switch (note all arrays have been reduced to a single example
 item):
 
 ```js
@@ -320,6 +343,92 @@ item):
       "ip_address": null,
       "net_mask": null,
       "mac_address": "D4:A4:38:0C:1D:A0"
+    }
+  ]
+}
+```
+
+## Software
+
+### Requests
+
+#### List software applications
+
+List all software applications visible by the current authenticated user:
+
+```js
+card.services('inventory').request('software'[, options])
+```
+
+##### Options
+
+Name | Type | Description
+-----|------|--------------
+`name`|`string`| Return software matching a specific name.
+
+
+##### Response
+```js
+{
+  "meta": {
+    "total_entries": 3096,
+    "page_count": 104,
+    "per_page": 30,
+    "current_page": 1
+  },
+  "software": [...] // see below for a single software application JSON example
+}
+```
+
+
+#### Get a single software application
+
+```js
+card.services('inventory').request('software', id)
+```
+
+##### Parameters
+
+Name | Type | Description
+-----|------|--------------
+`id`|`integer`| The `id` of the software application.
+
+##### Response
+
+Example software application (note all arrays have been reduced to a single example
+item):
+
+```js
+{
+  "id": 8,
+  "show_url": "/inventory/software/applications/8",
+  "name": "7-Zip",
+  "display_name": "7-Zip 9.20 (x64 edition)",
+  "vendor": "Igor Pavlov",
+  "summary": null,
+  "url_about_info": "http://www.7-zip.org/",
+  "url_update_info": "http://www.7-zip.org/download.html",
+  "computers": [
+    {
+      "id": 317,
+      "show_url": "/inventory/groups/devices/317",
+      "name": "adorable-dugong",
+      "type": "Device",
+      "product_info": {
+        "description": null,
+        "image_url": null,
+        "model_name": "EliteBook 2560p",
+        "vendor_name": "Hewlett-Packard",
+        "avg_rating": null,
+        "rating_count": null,
+        "category": null
+      },
+      "version": "9.20.00.0",
+      "install_date": "2011-09-15",
+      "install_location": null,
+      "uninstall_string": "MsiExec.exe /I{23170F69-40C1-2702-0920-000001000000}",
+      "identity": "{23170F69-40C1-2702-0920-000001000000}",
+      "product_key": null
     }
   ]
 }
