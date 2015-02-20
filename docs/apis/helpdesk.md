@@ -120,7 +120,6 @@ Example ticket (note all arrays have been reduced to a single example item)
   "comments": [
     {
       "attachment_content_type": null,
-      "attachment_location": "/Users/davidb/src/spiceworks/data/uploads/Ticket/53/70-",
       "attachment_name": null,
       "comment_type": "response",
       "created_at": "2015-02-18T22:48:46-08:00",
