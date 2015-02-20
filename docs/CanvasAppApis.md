@@ -28,6 +28,9 @@ card.onActivate(function(envData){
 
 Your callback function will receive a single argument that is an object
 containing data about the environment in which your Card was loaded.
+See [Environment
+Service](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/environment.md)
+for more detail.
 
 ## Card Services
 
@@ -111,7 +114,7 @@ page](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/help
 
 Requests that return multiple items will be paginated.  The pagination will keep
 from returning too many items at once, which can slow down your app or the
-Spiceworks server.  
+Spiceworks server.
 
 For paginated requests, you can request a specific page of results.  For some
 paginated requests, you can also specify the number of results per page.  To set

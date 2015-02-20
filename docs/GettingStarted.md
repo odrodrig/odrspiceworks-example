@@ -182,8 +182,9 @@ along the way (or, "it's dangerous to go alone..." joke):
 * [Download the Spiceworks Desktop: Developer Edition](http://community.spiceworks.com/private/app-center-dev-tools-beta/download)
 * [Spiceworks Cloud App Examples][Card Examples]
 * [Spiceworks App API Basics](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CanvasAppApis.md)
-* [Spiceworks Help Desk API Services](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md)
-* [Spiceworks Inventory API Services](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/inventory.md)
+* [Spiceworks Environment API Reference](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/environment.md)
+* [Spiceworks Help Desk API Reference](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md)
+* [Spiceworks Inventory API Reference](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/inventory.md)
 
 [Cloud App API Basics]: https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CanvasAppApis.md "Spiceworks App API Basics"
 [Desktop Dev Download]: http://www.spiceworks.com/ "Download the Spiceworks Desktop: Development Version"
