@@ -1,5 +1,7 @@
 (function(){
 
+  var index = 0;
+
   $( "#run" ).click(function() {
     processCommand();
   });
@@ -8,38 +10,43 @@
     clear();
   });
 
-  index = 0;
-  var e = new Evaluator();
+  function evaluate(str) {
 
-  function Evaluator() {
-    this.env = {};
+    try {
+      return eval(str);
+    }
+    catch(err) {
+      return log(err.message);
+    }
+
   }
 
-  Evaluator.prototype.evaluate = function (str) {
-    try {
-      var __environment__ = this.env;
-      with (__environment__) {
-        return eval(str);
-      }
-    } catch (e) {
-      return log(e.toString());
-    }
-  };
-
   function processCommand() {
-    e.evaluate($('#in').val());
+    evaluate($('#in').val());
   }
 
   function clear() {
-    // Delete div and that will delete all entries
-    $("#out").remove();
-
-    // Make sure to recreate it so next commands can get logged
-    $("<div></div>").attr('id', "out").appendTo('body');
+    $( "#out" ).empty();
   }
 
   function log(text) {
-    $("#out").append("<p>=> " + text + "</p>");
+
+    if(isJSON(text)) {
+      outputJSON(text);
+    }
+    else {
+      $("#out").append("<p>=> " + text + "</p>");
+    }
+
+  }
+
+  function isJSON(text) {
+    try {
+      JSON.parse(text);
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
 
   function outputJSON(json) {
