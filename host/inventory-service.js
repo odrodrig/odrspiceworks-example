@@ -5,7 +5,9 @@ var InventoryService = Oasis.Service.extend({
     this.sandbox.inventoryProxyPort = port;
   },
   requests: {
-    devices: null
+    devices: null,
+    device: null,
+    software: null
   }
 });
 

@@ -66,82 +66,84 @@ Name | Type | Description
 
 ##### Response
 
+Example ticket (note all arrays have been reduced to a single example item)
+
 ```js
 {
-  "id": 6,
-  "summary": "My email is not working.",
-  "status": "open",
-  "priority": 3,
-  "description": "I can't login to my email account.",
-  "due_at": "2014-11-07T17:00:00-06:00",
-  "created_at": "2012-02-16T16:22:13-06:00",
-  "updated_at": "2014-11-11T15:08:18-06:00",
-  "closed_at": null,
-  "viewed_at": "2014-11-11T15:08:14-06:00",
-  "reopened": null,
+  "id": 53,
+  "show_url": "/tickets/list/single_ticket/53",
+  "summary": "Keyboard issue",
+  "status": "closed",
+  "priority": 1,
+  "description": "My keyboard is growing mold on it, ned new one.",
+  "due_at": null,
+  "created_at": "2015-02-08T22:48:46-08:00",
+  "updated_at": "2015-02-18T22:48:46-08:00",
+  "closed_at": "2015-02-17T22:48:46-08:00",
+  "viewed_at": null,
+  "reopened": false,
   "muted": null,
   "category": "",
-  "site_id": 1,
+  "site_id": null,
   "master_ticket_id": null,
   "reported_by_id": null,
-  "time_spent_duration": "1h",
-  "shared": true,
+  "time_spent_duration": "0m",
+  "shared": false,
   "creator": {
-    "id": 159,
-    "first_name": "Michael",
-    "last_name": "Gerbush",
-    "role": "admin",
-    "department": "DEV",
+    "id": 11,
+    "first_name": "Chris",
+    "last_name": "Habanero",
+    "role": "end_user",
+    "department": null,
     "avatar_path": null,
-    "url": "http://localhost:9675/people/159"
+    "show_url": "/people/11"
   },
   "assignee": {
-    "id": 159,
-    "first_name": "Michael",
-    "last_name": "Gerbush",
+    "id": 2,
+    "first_name": "Mark",
+    "last_name": "Jalapeno",
     "role": "admin",
-    "department": "DEV",
+    "department": "IT",
     "avatar_path": null,
-    "url": "http://localhost:9675/people/159"
+    "show_url": "/people/2"
   },
   "users": [
     {
-      "id": 159,
-      "first_name": "Michael",
-      "last_name": "Gerbush",
+      "id": 2,
+      "first_name": "Mark",
+      "last_name": "Jalapeno",
       "role": "admin",
-      "department": "DEV",
+      "department": "IT",
       "avatar_path": null,
-      "url": "http://localhost:9675/people/159"
+      "show_url": "/people/2"
     }
   ],
   "comments": [
     {
       "attachment_content_type": null,
-      "attachment_location": "/Users/michaelg/src/desktop/data/uploads/Ticket/6/1-",
       "attachment_name": null,
       "comment_type": "response",
-      "created_at": "2014-11-07T17:17:44-06:00",
-      "updated_at": "2014-11-07T17:17:44-06:00",
-      "id": 1,
+      "created_at": "2015-02-18T22:48:46-08:00",
+      "updated_at": "2015-02-18T22:48:46-08:00",
+      "id": 70,
       "is_inventory": false,
       "is_labor": null,
       "is_public": true,
       "is_purchase": false,
       "remote_id": null,
-      "ticket_id": 6,
+      "ticket_id": 53,
       "creator": {
-        "id": 1,
-        "first_name": "Tim",
-        "last_name": "Gittos",
+        "id": 2,
+        "first_name": "Mark",
+        "last_name": "Jalapeno",
         "role": "admin",
-        "department": "DEV",
+        "department": "IT",
         "avatar_path": null,
-        "url": "http://localhost:9675/people/1"
+        "show_url": "/people/2"
       },
       "collaborator": null,
-      "body": "Working on resetting your password."
-    } // ...
+      "body": "Ticket closed."
+    }
   ],
   "c_alert_level": "orange",
   "custom_attrs": [
@@ -160,25 +162,22 @@ Name | Type | Description
   ],
   "inventory_items": [
     {
-      "id": 128,
-      "name": "michaelg-mbp",
+      "id": 642,
+      "show_url": "/inventory/groups/devices/642",
+      "name": "embarrassed-dugong",
       "type": "Device",
       "product_info": {
-        "avg_rating": null,
-        "category": null,
-        "collected_at": "2013-06-22T16:57:13-05:00",
-        "community_product_id": 37338,
         "description": null,
-        "id": 8,
-        "image_url": "//static.spiceworks.com/images/products/0007/5850/macbook_pro_profile.jpg",
-        "model_name": "MacBook Pro",
+        "image_url": "//h10003.www1.hp.com/digmedialib/prodimg/lowres/c03889640.jpg",
+        "model_name": "ProBook 650 G1",
+        "vendor_name": "Hewlett-Packard",
+        "avg_rating": null,
         "rating_count": null,
-        "vendor_name": "Apple"
+        "category": null
       },
-      "show_url": "/inventory/groups/devices/128",
       "can_troubleshoot": true,
-      "recent_tickets": 0,
-      "tickets_this_year": 0
+      "recent_tickets": 1,
+      "tickets_this_year": 1
     }
   ],
   "purchases": [

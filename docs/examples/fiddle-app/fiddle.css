@@ -1,0 +1,27 @@
+#left { position: absolute;
+        left: 0;
+        top: 0;
+        width: 50%;
+        height: 50%;
+        font-family: "Inconsolata"; }
+
+#out { position: absolute;
+       right: 0;
+       top: 0;
+       width: 50%;
+       overflow-y: auto;
+       height: 55%;
+       color: #F6A605 }
+
+#in { display: block;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #D8D8D8;
+      color: #19425F;
+      vertical-align: top;
+      padding: 0; }
+
+#run { width: 100%; }
+
+#clear { width: 100%; }
