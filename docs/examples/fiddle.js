@@ -1,7 +1,5 @@
 (function(){
 
-  var index = 0;
-
   $( "#run" ).click(function() {
     processCommand();
   });
@@ -51,15 +49,7 @@
 
   function outputJSON(json) {
 
-    var divID = 'jsonView_';
-    divID = divID.concat(index);
-
-    $("<div></div>").attr('id', divID).appendTo('#out');
-    var divIDHash = '#';
-    divIDHash = divIDHash.concat(divID);
-    $(divIDHash).JSONView(json);
-
-    index++;
+    $('<div class="json-view"></div>').JSONView(json).appendTo("#out")
 
   }
 
