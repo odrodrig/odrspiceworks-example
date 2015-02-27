@@ -29,6 +29,7 @@ Name | Type | Description
 `status`|`string`| Return tickets with this status. Can be either `open` or `closed`.
 `status_updated_at`|`object`(datetime range)| Return tickets whose status was last changed within the given range.
 `viewed_at`|`object`(datetime range)| Return tickets that were last viewed within the given range.
+`search`|`object`| Search fields: `summary`, `description`.  See [Searching](/docs/CanvasAppApis.md#searching) documentation for more information.
 
 Note: All filters that accept a datetime range take a JSON object with at least one of the following keys:
 
