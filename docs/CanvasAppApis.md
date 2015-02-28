@@ -110,6 +110,109 @@ For a full list of the supported requests for a service visit the [service
 documentation
 page](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md).
 
+### Searching
+
+Like in the open tickets example above, requests that return a collection of
+resources support filtering the collection by the exact values of the model
+attributes.  Some requests also support a special, additional `search` filter
+for filtering by the values of the model attributes with inexact matching.
+
+The `search` filter allows you to specify a set of substrings to search for
+across a set of model fields.  For example, if you want to find all open tickets
+that contain the word 'keyboard' in either their `summary` or `description`
+fields, you would write:
+
+```js
+var card = new SW.Card();
+card.services('helpdesk').request('tickets', {
+  status: 'open',
+  search: {
+    query: {
+      terms: ['keyboard']
+    },
+    fields: {
+      names: ['summary', 'description']
+      operator: 'or'
+    }
+  }}).then(function(data){
+    // do something with tickets...
+  });
+```
+
+The `search` filter requires an object with two properties, `query` and
+`fields`.  Both the `query` and `fields` properties are also objects.
+
+The `query` object contains two properties:
+
+Name | Type | Description
+-----|------|--------------
+`terms`|`array`| **Required**. The list of substrings that you want to find in model attributes.
+`operator`|`string`| The boolean operator that you want to use when searching for the set of `terms`. Can be `and` or `or`.  Default: `or`.
+
+If you use the `or` operator in the `query` object, the search will return
+models whose fields match at least **ONE** of the `terms` in your search.  If
+you use the `and` operator it will only return results with fields that contain
+**ALL** the terms in your search.
+
+The `fields` object also contains two properties:
+
+Name | Type | Description
+-----|------|--------------
+`names`|`array`| **Required**. The list of model field names that you want to search across.
+`operator`|`string`| The boolean operator that you want to use when searching across fields. Can be `and` or `or`.  Default: `or`.
+
+If you use the `or` operator the search will return objects that match your
+query in at least **ONE** of the `fields` in your search.  If you use the `and`
+operator, it will only return results that have your query in **ALL** fields.
+
+Some examples:
+
+All tickets with the words 'Microsoft' and 'keyboard' in their `summary` field:
+
+```js
+card.services('helpdesk').request('tickets', {
+  search: {
+    query: {
+      terms: ['Microsoft', 'keyboard'],
+      operator: 'and'
+    },
+    fields: {
+      names: ['summary']
+    }
+  }})
+```
+
+All tickets with either the word 'mouse' or 'keyboard' in their `summary`:
+
+```js
+card.services('helpdesk').request('tickets', {
+  search: {
+    query: {
+      terms: ['mouse', 'keyboard'],
+      operator: 'or'
+    },
+    fields: {
+      names: ['summary']
+    }
+  }})
+```
+
+All tickets with the word 'mouse' in both their `summary` and their
+`description`:
+
+```js
+card.services('helpdesk').request('tickets', {
+  search: {
+    query: {
+      terms: ['mouse']
+    },
+    fields: {
+      names: ['summary', 'description'],
+      operator: 'and'
+    }
+  }})
+```
+
 ### Paging
 
 Requests that return multiple items will be paginated.  The pagination will keep
