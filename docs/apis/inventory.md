@@ -20,6 +20,10 @@ card.services('inventory').request('devices'[, options])
 Name | Type | Description
 -----|------|--------------
 `scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'offline'`, or `'unknown'`.
+`owner.id`| 'integer' | Return devices owned by the user with id `owner.id`.
+`operating_system`|`string`| Return devices running the operating system `operating_system`.
+`model`|`string`| Return devices with model name `model`.
+`manufacturer`|`string`| Return devices manufactured by `manufacturer`.
 `search`|`object`| Search fields: `manufacturer`, `model`, `operating_system`, `software.name`, `software.display_name`, `software.vendor`.  See [Searching](/docs/CanvasAppApis.md#searching) documentation for more information.
 
 ##### Response
