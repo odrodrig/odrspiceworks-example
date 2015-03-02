@@ -20,7 +20,7 @@ be fired.  Your App can respond to the `activate` event by passing a callback to
 the `onActivate` method:
 
 ```js
-var card = new SW.card();
+var card = new SW.Card();
 card.onActivate(function(envData){
   // do any app setup or configuration
 });
