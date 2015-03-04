@@ -246,6 +246,10 @@ Name | Type | Description
 `due_at`|`string`| Due date of the request.  Must be a timestamp in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 `status`|`string`| The current status of the request. Must be `open` or `closed`.  Default: `open`.
 
+##### Response
+
+This request will return the created ticket JSON, see the [single ticket response](#response-1).
+
 #### Update a ticket
 
 Update a ticket with the given parameters
