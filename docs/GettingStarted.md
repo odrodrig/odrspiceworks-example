@@ -185,6 +185,7 @@ along the way (or, "it's dangerous to go alone..." joke):
 * [Spiceworks Environment API Reference](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/environment.md)
 * [Spiceworks Help Desk API Reference](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md)
 * [Spiceworks Inventory API Reference](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/inventory.md)
+* [Spiceworks People API Reference](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/people.md)
 
 [Cloud App API Basics]: https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/CanvasAppApis.md "Spiceworks App API Basics"
 [Desktop Dev Download]: http://www.spiceworks.com/ "Download the Spiceworks Desktop: Development Version"
