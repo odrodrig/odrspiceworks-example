@@ -58,9 +58,10 @@ into which your cloud app is integrated. This identifier is unique to your cloud
 of Spiceworks using your app. This identifier is unique to your cloud app, and will be
 consistent for the Spiceworks user across multiple and/or different Spiceworks applications.
 
-(3) The `placement` is the location within the host application where your app is being activated.
-The `name` of the placement will always be provided, and other information relevant to the location
-will be provided in the `placement` object.
+(3) The `placement` is the location within the Spiceworks application where your
+app is being activated. The `name` of the placement will always be provided, and
+other information relevant to the location will be provided in the `placement`
+object.
 
 #### List users
 
