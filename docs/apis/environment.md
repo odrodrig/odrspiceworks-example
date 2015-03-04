@@ -82,6 +82,13 @@ card.services('environment').request('users')
 card.services('environment').request('user', id)
 ```
 
+##### Parameters
+
+Name | Type | Description
+-----|------|--------------
+`id`|`integer`| The `id` of the user
+
+
 ##### Response
 
 Example user (note all arrays have been reduced to a single example item)
@@ -99,8 +106,6 @@ Example user (note all arrays have been reduced to a single example item)
   "community_unread_message_count": null,
   "community_activity_count": null,
   "community_activity_seen_at": null,
-  "office_phone": "5125551212",
-  "cell_phone": "5125551212",
   "title": "Chief IT Person",
   "location": "Main Office",
   "start_date": null,
