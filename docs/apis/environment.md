@@ -29,7 +29,11 @@ card.onActivate(function(environment){
     {
       "app_name": "desktop",
       "auid": "92a450d9a3e596d7bef9ed9853b6a454", // see (1) below
-      "version": "7.4.00000"
+      "version": "7.4.00000",
+      "placement": {  // see (3)
+        "name": "device",
+        "current_device_id": 123
+      }
     }
   "user":
     {
@@ -53,6 +57,8 @@ into which your cloud app is integrated. This identifier is unique to your cloud
 (2) The app-unique identifier `user.user_auid` uniquely identifies the current user
 of Spiceworks using your app. This identifier is unique to your cloud app, and will be
 consistent for the Spiceworks user across multiple and/or different Spiceworks applications.
+
+(3) The placement is the location within the host application where your app is being activated.
 
 #### List users
 
