@@ -16,7 +16,7 @@ card.services('environment').request('environment')
 Alternatively, this environment information is available on App Card activation:
 
 ```js
-var card = new SW.card();
+var card = new SW.Card();
 card.onActivate(function(environment){
   // see response below
 });
