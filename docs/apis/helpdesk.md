@@ -263,7 +263,7 @@ card.services('helpdesk').request('ticket:update', id, attributes)
 Name | Type | Description
 -----|------|--------------
 `id`|`integer`| The `id` of the ticket
-`attributes`|`hash`| See below for detailed requirements
+`attributes`|`object`| See below for detailed requirements
 
 ##### Attributes
 
