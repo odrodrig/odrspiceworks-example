@@ -24,7 +24,7 @@ Name | Type | Description
 `page`|`integer`| The page offset.  Must be between `1` and `page_count`.  Default: `1`
 `per_page`|`integer`| Number of entries per page. Must be between `1` and `100`.  Default: `30`
 `priority`|`string`| Return tickets with this priority. Can be either `low`, `med`, or `high`.
-`site`|`integer`| Return tickets from this site.  Must be the site `id`.
+`site`|`string`| Return tickets from this remote site.
 `sort`|`string`| How to sort the results.  Can be either `updated`, when the ticket was last updated, or `created`, when the ticket was created.  Default: `created`
 `status`|`string`| Return tickets with this status. Can be either `open` or `closed`.
 `status_updated_at`|`object`(datetime range)| Return tickets whose status was last changed within the given range.
@@ -84,9 +84,7 @@ Example ticket (note all arrays have been reduced to a single example item)
   "reopened": false,
   "muted": null,
   "category": "",
-  "site_id": null,
   "master_ticket_id": null,
-  "reported_by_id": null,
   "time_spent_duration": "0m",
   "shared": false,
   "creator": {
@@ -106,6 +104,10 @@ Example ticket (note all arrays have been reduced to a single example item)
     "department": "IT",
     "avatar_path": null,
     "show_url": "/people/2"
+  },
+  "remote_src": {
+    "site": null,
+    "collector": null
   },
   "users": [
     {
