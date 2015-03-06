@@ -21,6 +21,8 @@ Name | Type | Description
 -----|------|--------------
 `scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'offline'`, or `'unknown'`.
 `owner.id`| 'integer' | Return devices owned by the user with id `owner.id`.
+`offline_at`|`object`(datetime range)| Return devices that were offline within the given range.
+`online_at`|`object`(datetime range)| Return devices that were online within the given range.
 `operating_system`|`string`| Return devices running the operating system `operating_system`.
 `model`|`string`| Return devices with model name `model`.
 `manufacturer`|`string`| Return devices manufactured by `manufacturer`.
