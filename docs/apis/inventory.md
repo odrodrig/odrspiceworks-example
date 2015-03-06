@@ -23,6 +23,7 @@ Name | Type | Description
 `owner.id`| 'integer' | Return devices owned by the user with id `owner.id`.
 `offline_at`|`object`(datetime range)| Return devices that were offline within the given range.
 `online_at`|`object`(datetime range)| Return devices that were online within the given range.
+`last_scanned_at`|`object`(datetime range)| Return devices that were last scanned within the given range.
 `operating_system`|`string`| Return devices running the operating system `operating_system`.
 `model`|`string`| Return devices with model name `model`.
 `manufacturer`|`string`| Return devices manufactured by `manufacturer`.
