@@ -4,8 +4,7 @@ import HelpdeskService from "helpdesk-service";
 import InventoryService from "inventory-service";
 import PeopleService from "people-service";
 
-self.Oasis = Oasis;
-var oasis = new self.Oasis();
+var oasis = new Oasis();
 oasis.autoInitializeSandbox();
 
 export {
