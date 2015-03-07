@@ -22,7 +22,7 @@
     "mocha": "~1.20.1"
   },
   "dependencies": {
-    "oasis.js": "https://github.com/spiceworks/oasis.js.git#dbeeb3a482175228228a41739b5732e0f29ef12e",
+    "oasis.js": "https://github.com/spiceworks/oasis.js.git#0d9e2c0417965ede31aaab8dea496245a298a6e4",
     "rsvp": "~2.0.3"
   },
   "private": true,
