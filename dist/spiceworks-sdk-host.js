@@ -2489,21 +2489,22 @@ define("oasis/events",
     __exports__["default"] = Events;
   });
 define("oasis/iframe_adapter", 
-  ["rsvp","oasis/logger","oasis/util","oasis/shims","oasis/base_adapter","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
+  ["UUID","rsvp","oasis/logger","oasis/util","oasis/shims","oasis/base_adapter","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __exports__) {
     "use strict";
-    /*global Window, UUID */
+    /*global Window*/
 
-    var RSVP = __dependency1__;
-    var Logger = __dependency2__["default"];
-    var assert = __dependency3__.assert;
-    var extend = __dependency3__.extend;
-    var a_forEach = __dependency4__.a_forEach;
-    var addEventListener = __dependency4__.addEventListener;
-    var removeEventListener = __dependency4__.removeEventListener;
-    var a_map = __dependency4__.a_map;
+    var UUID = __dependency1__["default"];
+    var RSVP = __dependency2__;
+    var Logger = __dependency3__["default"];
+    var assert = __dependency4__.assert;
+    var extend = __dependency4__.extend;
+    var a_forEach = __dependency5__.a_forEach;
+    var addEventListener = __dependency5__.addEventListener;
+    var removeEventListener = __dependency5__.removeEventListener;
+    var a_map = __dependency5__.a_map;
 
-    var BaseAdapter = __dependency5__["default"];
+    var BaseAdapter = __dependency6__["default"];
 
     function verifySandbox(oasis, sandboxUrl) {
       var iframe = document.createElement('iframe'),
@@ -3163,19 +3164,20 @@ define("oasis/message_channel",
     __exports__.PostMessagePort = PostMessagePort;
   });
 define("oasis/sandbox", 
-  ["rsvp","oasis/logger","oasis/util","oasis/shims","oasis/message_channel","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
+  ["rsvp","oasis/logger","oasis/iframe_adapter","oasis/util","oasis/shims","oasis/message_channel","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __exports__) {
     "use strict";
     var RSVP = __dependency1__;
     var Logger = __dependency2__["default"];
-    var assert = __dependency3__.assert;
-    var uniq = __dependency3__.uniq;
-    var reverseMerge = __dependency3__.reverseMerge;
-    var a_forEach = __dependency4__.a_forEach;
-    var a_reduce = __dependency4__.a_reduce;
-    var a_filter = __dependency4__.a_filter;
+    var IframeAdapter = __dependency3__["default"];
+    var assert = __dependency4__.assert;
+    var uniq = __dependency4__.uniq;
+    var reverseMerge = __dependency4__.reverseMerge;
+    var a_forEach = __dependency5__.a_forEach;
+    var a_reduce = __dependency5__.a_reduce;
+    var a_filter = __dependency5__.a_filter;
 
-    var OasisPort = __dependency5__.OasisPort;
+    var OasisPort = __dependency6__.OasisPort;
 
     var OasisSandbox = function(oasis, options) {
       options = reverseMerge(options || {}, {
@@ -3202,7 +3204,7 @@ define("oasis/sandbox",
 
       pkg = pkg || {};
 
-      this.adapter = options.adapter || Oasis.adapters.iframe;
+      this.adapter = options.adapter || new IframeAdapter();
 
       this._capabilitiesToConnect = this._filterCapabilities(capabilities);
       this.envPortDefereds = {};
@@ -3893,20 +3895,21 @@ define("oasis/version",
     __exports__["default"] = '0.4.0';
   });
 define("oasis/webworker_adapter", 
-  ["rsvp","oasis/logger","oasis/util","oasis/shims","oasis/base_adapter","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
+  ["UUID","rsvp","oasis/logger","oasis/util","oasis/shims","oasis/base_adapter","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __exports__) {
     "use strict";
-    /*global self, postMessage, importScripts, UUID */
+    /*global self, postMessage, importScripts */
 
-    var RSVP = __dependency1__;
-    var Logger = __dependency2__["default"];
-    var assert = __dependency3__.assert;
-    var extend = __dependency3__.extend;
-    var a_forEach = __dependency4__.a_forEach;
-    var addEventListener = __dependency4__.addEventListener;
-    var removeEventListener = __dependency4__.removeEventListener;
+    var UUID = __dependency1__["default"];
+    var RSVP = __dependency2__;
+    var Logger = __dependency3__["default"];
+    var assert = __dependency4__.assert;
+    var extend = __dependency4__.extend;
+    var a_forEach = __dependency5__.a_forEach;
+    var addEventListener = __dependency5__.addEventListener;
+    var removeEventListener = __dependency5__.removeEventListener;
 
-    var BaseAdapter = __dependency5__["default"];
+    var BaseAdapter = __dependency6__["default"];
 
     var WebworkerAdapter = extend(BaseAdapter, {
       type: 'js',
