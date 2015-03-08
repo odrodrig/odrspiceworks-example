@@ -114,8 +114,8 @@ item):
   "online_at": "2015-02-04T13:50:48-08:00",
   "up_time": null,
   "owner": null,
-  "remote_src": {
-    "site": null,
+  "site": {
+    "name": "Central Server",
     "collector": null
   },
   "network_adapters": [
@@ -319,8 +319,8 @@ item):
   "online_at": "2015-02-04T17:18:18-06:00",
   "up_time": null,
   "owner": null,
-  "remote_src": {
-    "site": null,
+  "site": {
+    "name": "Central Server",
     "collector": null
   },
   "vlans": [
