@@ -5,8 +5,9 @@ var ReportingService = Oasis.Service.extend({
     this.sandbox.reportingProxyPort = port;
   },
   requests: {
-    reports: null,
-    report: null
+    'reports': null,
+    'report': null,
+    'report:run': null
   }
 });
 

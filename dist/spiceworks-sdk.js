@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2015-03-04
+/*! spiceworks-sdk - v0.0.2 - 2015-03-08
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 var define, require;
@@ -2013,8 +2013,8 @@ define("rsvp",
     __exports__.reject = reject;
   });
 define("oasis", 
-  ["rsvp","oasis/logger","oasis/version","oasis/util","oasis/config","oasis/sandbox","oasis/sandbox_init","oasis/xhr","oasis/events","oasis/service","oasis/connect","oasis/iframe_adapter","oasis/webworker_adapter","oasis/inline_adapter","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __dependency12__, __dependency13__, __dependency14__, __exports__) {
+  ["rsvp","oasis/logger","oasis/version","oasis/util","oasis/config","oasis/sandbox","oasis/xhr","oasis/events","oasis/service","oasis/connect","oasis/iframe_adapter","oasis/webworker_adapter","oasis/inline_adapter","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __dependency12__, __dependency13__, __exports__) {
     "use strict";
     var RSVP = __dependency1__;
     var logger = __dependency2__["default"];
@@ -2023,18 +2023,17 @@ define("oasis",
     var delegate = __dependency4__.delegate;
     var OasisConfiguration = __dependency5__["default"];
     var Sandbox = __dependency6__["default"];
-    var autoInitializeSandbox = __dependency7__["default"];
-    var xhr = __dependency8__.xhr;
-    var Events = __dependency9__["default"];
+    var xhr = __dependency7__.xhr;
+    var Events = __dependency8__["default"];
 
-    var Service = __dependency10__["default"];
-    var connect = __dependency11__.connect;
-    var connectCapabilities = __dependency11__.connectCapabilities;
-    var portFor = __dependency11__.portFor;
+    var Service = __dependency9__["default"];
+    var connect = __dependency10__.connect;
+    var connectCapabilities = __dependency10__.connectCapabilities;
+    var portFor = __dependency10__.portFor;
 
-    var IframeAdapter = __dependency12__["default"];
-    var WebworkerAdapter = __dependency13__["default"];
-    var InlineAdapter = __dependency14__["default"];
+    var IframeAdapter = __dependency11__["default"];
+    var WebworkerAdapter = __dependency12__["default"];
+    var InlineAdapter = __dependency13__["default"];
 
     function Oasis() {
       // Data structures used by Oasis when creating sandboxes
@@ -2122,7 +2121,28 @@ define("oasis",
       },
 
       configure: function(name, value) { this.configuration[name] = value; },
-      autoInitializeSandbox: autoInitializeSandbox,
+      autoInitializeSandbox: function() {
+        if (typeof window !== 'undefined') {
+          if (/PhantomJS/.test(navigator.userAgent)) {
+            // We don't support phantomjs for several reasons, including
+            //  - window.constructor vs Window
+            //  - postMessage must not have ports (but recall in IE postMessage must
+            //    have ports)
+            //  - because of the above we need to polyfill, but we fail to do so
+            //    because we see MessageChannel in global object
+            //  - we erroneously try to decode the oasis load message; alternatively
+            //    we should just encode the init message
+            //  - all the things we haven't noticed yet
+            return;
+          }
+
+          if (window.parent && window.parent !== window) {
+            Oasis.adapters.iframe.connectSandbox(this);
+          }
+        } else {
+          Oasis.adapters.webworker.connectSandbox(this);
+        }
+      },
 
       connect: connect,
       connectCapabilities: connectCapabilities,
@@ -3411,10 +3431,10 @@ define("oasis/sandbox_init",
         }
 
         if (window.parent && window.parent !== window) {
-          Oasis.adapters.iframe.connectSandbox(this);
-        } 
+          this.adapters.iframe.connectSandbox(this);
+        }
       } else {
-        Oasis.adapters.webworker.connectSandbox(this);
+        this.adapters.webworker.connectSandbox(this);
       }
     }
 
