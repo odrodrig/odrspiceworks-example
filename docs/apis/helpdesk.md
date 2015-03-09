@@ -316,7 +316,7 @@ Name | Type | Description
 Name | Type | Description
 -----|------|--------------
 `body`|`string`| **Required**. The content of the comment.
-`created_at: datetime`|`string`| Created at date of the request.  Must be a timestamp in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+`created_at: datetime`|`string`| Created at date of the comment.  Must be a timestamp in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 
 ##### Response
 
