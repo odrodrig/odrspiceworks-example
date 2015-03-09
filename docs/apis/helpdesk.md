@@ -295,3 +295,29 @@ card.services('helpdesk').on('showTicket', handler)
 Name | Type | Description
 -----|------|--------------
 `id`|`integer`| The id of the ticket that was rendered.
+
+#### Create a comment
+
+Create a comment with the given parameters
+
+```js
+card.services('helpdesk').request('comment:create', ticket_id, attributes)
+```
+
+##### Parameters
+
+Name | Type | Description
+-----|------|--------------
+`ticket_id`|`integer`| The `id` of the ticket this comment will be appended to
+`attributes`|`object`| See below for detailed requirements
+
+##### Attributes
+
+Name | Type | Description
+-----|------|--------------
+`body`|`string`| **Required**. The content of the comment.
+`created_at: datetime`|`string`| Created at date of the request.  Must be a timestamp in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+
+##### Response
+
+This request will return the ticket JSON that the comment was appended to, see the [single ticket response](#response-1).
