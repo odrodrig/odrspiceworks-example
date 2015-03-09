@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2015-03-08
+/*! spiceworks-sdk - v0.0.2 - 2015-03-09
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 var define, require;
@@ -4128,17 +4128,11 @@ define("oasis/xhr",
     __exports__.xhr = xhr;
   });
 define("spiceworks-sdk", 
-  ["oasis","spiceworks-sdk/card","exports"],
-  function(__dependency1__, __dependency2__, __exports__) {
+  ["spiceworks-sdk/card","exports"],
+  function(__dependency1__, __exports__) {
     "use strict";
-    var Oasis = __dependency1__["default"];
-    var Card = __dependency2__["default"];
+    var Card = __dependency1__["default"];
 
-    self.Oasis = Oasis;
-    var oasis = new self.Oasis();
-    oasis.autoInitializeSandbox();
-
-    __exports__.oasis = oasis;
     __exports__.Card = Card;
   });
 define("spiceworks-sdk/card-service", 
@@ -4206,9 +4200,12 @@ define("spiceworks-sdk/card",
     var RSVP = __dependency3__;
     var EnvironmentConsumer = __dependency4__["default"];
 
+    var oasis = new Oasis();
+    oasis.autoInitializeSandbox();
+
     function Card(options) {
       this.options = options = options || {};
-      this.oasis = SW.oasis || new Oasis();
+      this.oasis = oasis;
       this.cardServices = {};
 
       this.activationDeferred = RSVP.defer();

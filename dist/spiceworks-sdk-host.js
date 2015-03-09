@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2015-03-08
+/*! spiceworks-sdk - v0.0.2 - 2015-03-09
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 var define, require;
@@ -4233,8 +4233,7 @@ define("spiceworks-sdk-host",
     var PeopleService = __dependency5__["default"];
     var ReportingService = __dependency6__["default"];
 
-    self.Oasis = Oasis;
-    var oasis = new self.Oasis();
+    var oasis = new Oasis();
     oasis.autoInitializeSandbox();
 
     __exports__.oasis = oasis;
