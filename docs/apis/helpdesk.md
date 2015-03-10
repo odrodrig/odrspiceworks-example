@@ -66,7 +66,7 @@ Name | Type | Description
 
 ##### Response
 
-Example ticket (note all arrays have been reduced to a single example item)
+Example ticket (note all arrays have been reduced to a single example item):
 
 ```js
 {
@@ -131,7 +131,6 @@ Example ticket (note all arrays have been reduced to a single example item)
       "is_public": true,
       "is_purchase": false,
       "remote_id": null,
-      "ticket_id": 53,
       "creator": {
         "id": 2,
         "first_name": "Mark",
@@ -280,6 +279,60 @@ Name | Type | Description
 
 This request will return the updated ticket JSON, see the [single ticket response](#response-1).
 
+#### Create a comment
+
+Create a comment with the given parameters
+
+```js
+card.services('helpdesk').request('comment:create', ticket_id, attributes)
+```
+
+##### Parameters
+
+Name | Type | Description
+-----|------|--------------
+`ticket_id`|`integer`| The `id` of the ticket where this comment will be appended.
+`attributes`|`object`| See below for detailed requirements
+
+##### Attributes
+
+Name | Type | Description
+-----|------|--------------
+`body`|`string`| **Required**. The content of the comment.
+`public`|`boolean`|Whether the ticket will be a public comment or an internal note.  Default: `true`.
+
+##### Response
+
+This request will return the same comment JSON as the `comments` array in the
+[ticket response](#response-1).  Example comment JSON:
+
+```js
+{
+  "attachment_content_type": null,
+  "attachment_name": null,
+  "comment_type": "response",
+  "created_at": "2015-02-18T22:48:46-08:00",
+  "updated_at": "2015-02-18T22:48:46-08:00",
+  "id": 70,
+  "is_inventory": false,
+  "is_labor": null,
+  "is_public": true,
+  "is_purchase": false,
+  "remote_id": null,
+  "creator": {
+    "id": 2,
+    "first_name": "Mark",
+    "last_name": "Jalapeno",
+    "role": "admin",
+    "department": "IT",
+    "avatar_path": null,
+    "show_url": "/people/2"
+  },
+  "collaborator": null,
+  "body": "What a great ticket!"
+}
+```
+
 ### Events
 
 #### Show ticket
@@ -295,28 +348,3 @@ card.services('helpdesk').on('showTicket', handler)
 Name | Type | Description
 -----|------|--------------
 `id`|`integer`| The id of the ticket that was rendered.
-
-#### Create a comment
-
-Create a comment with the given parameters
-
-```js
-card.services('helpdesk').request('comment:create', ticket_id, attributes)
-```
-
-##### Parameters
-
-Name | Type | Description
------|------|--------------
-`ticket_id`|`integer`| The `id` of the ticket this comment will be appended to
-`attributes`|`object`| See below for detailed requirements
-
-##### Attributes
-
-Name | Type | Description
------|------|--------------
-`body`|`string`| **Required**. The content of the comment.
-
-##### Response
-
-This request will return the ticket JSON that the comment was appended to, see the [single ticket response](#response-1).
