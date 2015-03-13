@@ -343,7 +343,7 @@ Fired after a new ticket is rendered inside the Spiceworks Help Desk.
 card.services('helpdesk').on('showTicket', handler)
 ```
 
-##### Hanlder arguments
+##### Handler arguments
 
 Name | Type | Description
 -----|------|--------------
