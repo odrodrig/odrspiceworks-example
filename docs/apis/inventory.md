@@ -106,8 +106,6 @@ item):
   "asset_tag": "3B71E7EF7A",
   "serial_number": "3B71E7EF7A",
   "uuid": "332A52FA-6EAF-86A6-3FE1-A340835369B1",
-  "reported_by_id": null,
-  "site_id": 1,
   "created_at": "2015-02-04T12:56:38-08:00",
   "updated_at": "2015-02-19T02:26:01-08:00",
   "scan_state": "inventoried",
@@ -120,6 +118,10 @@ item):
   "online_at": "2015-02-04T13:50:48-08:00",
   "up_time": null,
   "owner": null,
+  "site": {
+    "name": "Central Server",
+    "collector": null
+  },
   "network_adapters": [
     {
       "name": "NETwNs64",
@@ -311,8 +313,6 @@ item):
   "asset_tag": null,
   "serial_number": "48.188.254.146",
   "uuid": null,
-  "reported_by_id": null,
-  "site_id": 1,
   "created_at": "2015-02-04T16:25:35-06:00",
   "updated_at": "2015-02-05T14:52:38-06:00",
   "scan_state": "inventoried",
@@ -325,6 +325,10 @@ item):
   "online_at": "2015-02-04T17:18:18-06:00",
   "up_time": null,
   "owner": null,
+  "site": {
+    "name": "Central Server",
+    "collector": null
+  },
   "vlans": [
     {
       "vlan": "Wireless VLAN",
@@ -408,8 +412,6 @@ Example response for a user-defined asset or an unknown device on the network:
   "asset_tag": null,
   "serial_number": "948384-83347',
   "uuid": null,
-  "reported_by_id": null,
-  "site_id": 1,
   "created_at": "2015-02-04T12:56:38-08:00",
   "updated_at": "2015-02-19T02:26:01-08:00",
   "scan_state": "offline",
@@ -421,7 +423,11 @@ Example response for a user-defined asset or an unknown device on the network:
   "offline_at": null,
   "online_at": null,
   "up_time": null,
-  "owner": null
+  "owner": null,
+  "site": {
+    "name": "Central Server",
+    "collector": null
+  }
 }
 ```
 
