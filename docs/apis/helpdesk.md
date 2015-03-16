@@ -270,7 +270,7 @@ Name | Type | Description
 
 Name | Type | Description
 -----|------|--------------
-`summary`|`string`| **Required**.  A short description of the request.
+`summary`|`string`| A short description of the request.
 `description`|`string`| Full description of the request.
 `assignee`|`integer`| The IT Pro the ticket is assigned to.  Must be an IT Pro `id`.
 `priority`|`string`| The priority of the request. Must be `low`, `med`, or `high`.  Default: `med`.
