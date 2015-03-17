@@ -21,7 +21,7 @@ Name | Type | Description
 -----|------|--------------
 `scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'offline'`, or `'unknown'`.
 `owner.id`| 'integer' | Return devices owned by the user with id `owner.id`.
-`date time filter`|`object`| Fields: `offline_at`, `online_at`, `last_scanned_at`, See [Date Time](/docs/CanvasAppApis.md#datetimefiltering) documentation for more information.
+`date time filter`|`object`| Fields: `offline_at`, `online_at`, `last_scanned_at`, See [Date Time Filtering](/docs/CanvasAppApis.md#Date Time Filtering) documentation for more information.
 `operating_system`|`string`| Return devices running the operating system `operating_system`.
 `model`|`string`| Return devices with model name `model`.
 `manufacturer`|`string`| Return devices manufactured by `manufacturer`.
