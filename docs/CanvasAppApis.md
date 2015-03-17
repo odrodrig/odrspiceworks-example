@@ -72,18 +72,18 @@ Name | Type | Description
 
 Some more examples:
 
-All devices that were 'last_scanned' after January 5th, 2015:
+All devices that were `last_scanned` after January 5th, 2015:
 
 ```js
 var card = new SW.Card();
 card.services('inventory').request('devices', {last_scanned_at: {after: '01/05/2015'}})
 ```
 
-All reports that were 'created_at' between January 5th, 2015 and March 5th, 2015:
+All reports that were `created_at` between January 5th, 2015 and March 5th, 2015:
 
 ```js
 var card = new SW.Card();
-card.services('reporting').request('reports', {last_scanned_at: {after: '01/05/2015', before: '3/05/2015'}})
+card.services('reporting').request('reports', {created_at: {after: '01/05/2015', before: '3/05/2015'}})
 ```
 
 ## Requests
