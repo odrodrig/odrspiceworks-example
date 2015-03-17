@@ -18,8 +18,7 @@ Name | Type | Description
 -----|------|--------------
 `assignee`|`integer` or `string`| Return tickets that are assigned to this user.  Can be either a user `id` or the string `none` for unassigned tickets.
 `author`|`integer`| Return tickets authored by this user. Must be the user `id`.
-`date time filter`|`object`| Fields: `closed_at`, `created_at`, `due_at`, `status_updated_at`, `viewed_at`
- See [Date Time](/docs/CanvasAppApis.md#datetimefiltering) documentation for more information.
+`date time filter`|`object`| Fields: `closed_at`, `created_at`, `due_at`, `status_updated_at`, `viewed_at`, See [Date Time](/docs/CanvasAppApis.md#datetimefiltering) documentation for more information.
 `page`|`integer`| The page offset.  Must be between `1` and `page_count`.  Default: `1`
 `per_page`|`integer`| Number of entries per page. Must be between `1` and `100`.  Default: `30`
 `priority`|`string`| Return tickets with this priority. Can be either `low`, `med`, or `high`.
