@@ -24,7 +24,7 @@ Name | Type | Description
 `page`|`integer`| The page offset.  Must be between `1` and `page_count`.  Default: `1`
 `per_page`|`integer`| Number of entries per page. Must be between `1` and `100`.  Default: `30`
 `priority`|`string`| Return tickets with this priority. Can be either `low`, `med`, or `high`.
-`site`|`integer`| Return tickets from this site.  Must be the site `id`.
+`site`|`string`| Return tickets by `site.name`.
 `sort`|`string`| How to sort the results.  Can be either `updated`, when the ticket was last updated, or `created`, when the ticket was created.  Default: `created`
 `status`|`string`| Return tickets with this status. Can be either `open` or `closed`.
 `status_updated_at`|`object`(datetime range)| Return tickets whose status was last changed within the given range.
@@ -66,7 +66,7 @@ Name | Type | Description
 
 ##### Response
 
-Example ticket (note all arrays have been reduced to a single example item)
+Example ticket (note all arrays have been reduced to a single example item):
 
 ```js
 {
@@ -84,9 +84,7 @@ Example ticket (note all arrays have been reduced to a single example item)
   "reopened": false,
   "muted": null,
   "category": "",
-  "site_id": null,
   "master_ticket_id": null,
-  "reported_by_id": null,
   "time_spent_duration": "0m",
   "shared": false,
   "creator": {
@@ -106,6 +104,10 @@ Example ticket (note all arrays have been reduced to a single example item)
     "department": "IT",
     "avatar_path": null,
     "show_url": "/people/2"
+  },
+  "site": {
+    "name": "Central Server",
+    "collector": null
   },
   "users": [
     {
@@ -131,7 +133,6 @@ Example ticket (note all arrays have been reduced to a single example item)
       "is_public": true,
       "is_purchase": false,
       "remote_id": null,
-      "ticket_id": 53,
       "creator": {
         "id": 2,
         "first_name": "Mark",
@@ -269,7 +270,7 @@ Name | Type | Description
 
 Name | Type | Description
 -----|------|--------------
-`summary`|`string`| **Required**.  A short description of the request.
+`summary`|`string`| A short description of the request.
 `description`|`string`| Full description of the request.
 `assignee`|`integer`| The IT Pro the ticket is assigned to.  Must be an IT Pro `id`.
 `priority`|`string`| The priority of the request. Must be `low`, `med`, or `high`.  Default: `med`.
@@ -279,6 +280,60 @@ Name | Type | Description
 ##### Response
 
 This request will return the updated ticket JSON, see the [single ticket response](#response-1).
+
+#### Create a comment
+
+Create a comment with the given parameters
+
+```js
+card.services('helpdesk').request('comment:create', ticket_id, attributes)
+```
+
+##### Parameters
+
+Name | Type | Description
+-----|------|--------------
+`ticket_id`|`integer`| The `id` of the ticket where this comment will be appended.
+`attributes`|`object`| See below for detailed requirements
+
+##### Attributes
+
+Name | Type | Description
+-----|------|--------------
+`body`|`string`| **Required**. The content of the comment.
+`public`|`boolean`|Whether the ticket will be a public comment or an internal note.  Default: `true`.
+
+##### Response
+
+This request will return the same comment JSON as the `comments` array in the
+[ticket response](#response-1).  Example comment JSON:
+
+```js
+{
+  "attachment_content_type": null,
+  "attachment_name": null,
+  "comment_type": "response",
+  "created_at": "2015-02-18T22:48:46-08:00",
+  "updated_at": "2015-02-18T22:48:46-08:00",
+  "id": 70,
+  "is_inventory": false,
+  "is_labor": null,
+  "is_public": true,
+  "is_purchase": false,
+  "remote_id": null,
+  "creator": {
+    "id": 2,
+    "first_name": "Mark",
+    "last_name": "Jalapeno",
+    "role": "admin",
+    "department": "IT",
+    "avatar_path": null,
+    "show_url": "/people/2"
+  },
+  "collaborator": null,
+  "body": "What a great ticket!"
+}
+```
 
 ### Events
 
@@ -290,7 +345,7 @@ Fired after a new ticket is rendered inside the Spiceworks Help Desk.
 card.services('helpdesk').on('showTicket', handler)
 ```
 
-##### Hanlder arguments
+##### Handler arguments
 
 Name | Type | Description
 -----|------|--------------

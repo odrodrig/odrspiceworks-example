@@ -27,6 +27,7 @@ Name | Type | Description
 `operating_system`|`string`| Return devices running the operating system `operating_system`.
 `model`|`string`| Return devices with model name `model`.
 `manufacturer`|`string`| Return devices manufactured by `manufacturer`.
+`device_type`|`string`| Return only devices that match this `device_type`. Users can add custom types, but the default device types are: `Desktop`, `Laptop`, `Server`, `Fax`, `Firewall`, `Copier`, `Router`, `NetworkPrinter`, `Unknown`, `Switch`, `Hub`, `HttpDevice`, `VoipDevice`, `Wireless`, `SnmpDevice`, `NAS`, `Ilo`, `IloOA`, `Tablet`, and `Smartphone`.
 `search`|`object`| Search fields: `manufacturer`, `model`, `operating_system`, `software.name`, `software.display_name`, `software.vendor`.  See [Searching](/docs/CanvasAppApis.md#searching) documentation for more information.
 
 ##### Response
@@ -105,8 +106,6 @@ item):
   "asset_tag": "3B71E7EF7A",
   "serial_number": "3B71E7EF7A",
   "uuid": "332A52FA-6EAF-86A6-3FE1-A340835369B1",
-  "reported_by_id": null,
-  "site_id": 1,
   "created_at": "2015-02-04T12:56:38-08:00",
   "updated_at": "2015-02-19T02:26:01-08:00",
   "scan_state": "inventoried",
@@ -119,6 +118,10 @@ item):
   "online_at": "2015-02-04T13:50:48-08:00",
   "up_time": null,
   "owner": null,
+  "site": {
+    "name": "Central Server",
+    "collector": null
+  },
   "network_adapters": [
     {
       "name": "NETwNs64",
@@ -269,6 +272,8 @@ item):
 }
 ```
 
+##### Switch Response
+
 Example switch (note all arrays have been reduced to a single example
 item):
 
@@ -308,8 +313,6 @@ item):
   "asset_tag": null,
   "serial_number": "48.188.254.146",
   "uuid": null,
-  "reported_by_id": null,
-  "site_id": 1,
   "created_at": "2015-02-04T16:25:35-06:00",
   "updated_at": "2015-02-05T14:52:38-06:00",
   "scan_state": "inventoried",
@@ -322,6 +325,10 @@ item):
   "online_at": "2015-02-04T17:18:18-06:00",
   "up_time": null,
   "owner": null,
+  "site": {
+    "name": "Central Server",
+    "collector": null
+  },
   "vlans": [
     {
       "vlan": "Wireless VLAN",
@@ -354,6 +361,106 @@ item):
   ]
 }
 ```
+
+##### Asset or Unknown Device Response
+
+Example response for a user-defined asset or an unknown device on the network:
+
+```js
+{
+  "id": 665,
+  "show_url": "/inventory/groups/devices/665",
+  "type": "Unknown",
+  "server_name": null,
+  "name": "Chris's Printer",
+  "domain": null,
+  "manually_added": true,
+  "device_type": "Printer",
+  "description": null,
+  "location": null,
+  "product_info": {
+    "description": null,
+    "image_url": null,
+    "model_name": "Officejet 6310",
+    "vendor_name": "Hewlett-Packard",
+    "avg_rating": null,
+    "rating_count": null,
+    "category": null
+  },
+  "manufacturer": "Hewlett-Packard",
+  "model": "Officejet 6310",
+  "memory": 0,
+  "os_architecture": null,
+  "number_of_processors": null,
+  "processor_architecture": null,
+  "processor_type": null,
+  "kernel": null,
+  "operating_system": null,
+  "version": null,
+  "service_pack_major_version": null,
+  "service_pack_minor_version": null,
+  "windows_product_id": null,
+  "management_oid": null,
+  "number_of_licensed_users": null,
+  "bios_date": null,
+  "bios_version": null,
+  "page_count": null,
+  "mac_address": null,
+  "ip_address": null,
+  "ip_comparable": 0,
+  "os_serial_number": null,
+  "asset_tag": null,
+  "serial_number": "948384-83347',
+  "uuid": null,
+  "created_at": "2015-02-04T12:56:38-08:00",
+  "updated_at": "2015-02-19T02:26:01-08:00",
+  "scan_state": "offline",
+  "install_date": null,
+  "last_backup_time": null,
+  "last_boot_up_time": null,
+  "last_qrcode_time": null,
+  "last_scan_time": null,
+  "offline_at": null,
+  "online_at": null,
+  "up_time": null,
+  "owner": null,
+  "site": {
+    "name": "Central Server",
+    "collector": null
+  }
+}
+```
+
+#### Create an asset or device
+
+Create an asset or device with the given attributes. A device created via API
+must be manually maintained by the IT Pro in the Inventory application.
+I.e. it is not scanned from the network.
+All attributes are optional unless indicated otherwise.
+
+```js
+card.services('inventory').request('device:create', attributes)
+```
+
+##### Attributes
+
+Name | Type | Description
+-----|------|--------------
+`name`|`string`| **Required**.  The name of the device or asset
+`mac_address`|`string`|A hardware network address to identify the device.
+`ip_address`|`string`|A network IP address to identify the device.
+`serial_number`|`string`|A unique serial number to identify the device. One will be generated if not specified.
+`asset_tag`|`string`|A tracking tag of some kind.
+`description`|`string`|Any kind of description of the device or asset.
+`location`|`string`|A description of the physical location of the device or asset.
+`device_type`|`string`|The user-defined kind of device, like `Copier`, `Fax`, etc.
+`site`|`string`|The location of the device or asset in a multi-site Spiceworks installation. Must be a valid `site.name`.
+`manufacturer`|`string`|Manufacturer information.
+`model`|`string`|Model information.
+
+##### Response
+
+This request will return the single device JSON, see the [asset response](#asset-or-unknown-device-response).
 
 ## Software
 
