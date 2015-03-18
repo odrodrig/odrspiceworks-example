@@ -1,4 +1,4 @@
-/*! spiceworks-sdk - v0.0.2 - 2015-03-06
+/*! spiceworks-sdk - v0.1.0 - 2015-03-18
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 define("spiceworks-sdk", 
@@ -21,7 +21,7 @@ define("spiceworks-sdk/card-service",
     }
 
     CardService.prototype = {
-      send: function (event, data) {
+      trigger: function (event, data) {
         this.promise.then(function (port) {
           port.send(event, data);
         });

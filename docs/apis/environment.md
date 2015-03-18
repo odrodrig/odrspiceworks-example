@@ -258,3 +258,20 @@ Example user (note all arrays have been reduced to a single example item)
   ]
 }
 ```
+
+### Events
+
+#### Navigate the host environment
+
+Trigger a navigation event to direct the host application window to a new
+relative url.
+
+```js
+card.services('environment').trigger('navigate', path)
+```
+
+##### Parameters
+
+Name | Type | Description
+-----|------|--------------
+`path`|`string`| The relative path for the host application to visit

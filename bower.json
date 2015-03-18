@@ -1,6 +1,6 @@
 {
   "name": "spiceworks-sdk",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "homepage": "http://developers.spiceworks.com",
   "authors": [
     "Michael Gerbush <michaelg@spiceworks.com>",
