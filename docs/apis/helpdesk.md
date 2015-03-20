@@ -16,7 +16,7 @@ card.services('helpdesk').request('tickets'[, options])
 
 Name | Type | Description
 -----|------|--------------
-`id` | `array` | Returns tickets whose id is contained within the requested array of ids
+`id` | `array` | Returns tickets whose id is contained within the array of ids.
 `assignee`|`integer` or `string`| Return tickets that are assigned to this user.  Can be either a user `id` or the string `none` for unassigned tickets.
 `author`|`integer`| Return tickets authored by this user. Must be the user `id`.
 `closed_at`|`object`(datetime range)| Return tickets closed within the given range.
