@@ -122,7 +122,7 @@ Name | Type | Description
 `before` (optional)|`string`| Match all objects whose datetime field is `<=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
   
 For example, if you want to find all tickets
-that were created before March 1st at noon, you would write:
+that were created before March 1st, 2015 at 12:00pm, you would write:
 
 ```js
 var card = new SW.Card();
