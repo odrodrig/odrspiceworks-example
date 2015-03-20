@@ -126,7 +126,7 @@ that were created before March 1st, 2015 at 12:00pm, you would write:
 
 ```js
 var card = new SW.Card();
-card.services('helpdesk').request('tickets', {created_at: {before: 2015-03-01T12:00:00}})
+card.services('helpdesk').request('tickets', {created_at: {before: '2015-03-01T12:00:00Z'}})
 ```
 
 Some more examples:
