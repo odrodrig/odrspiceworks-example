@@ -52,40 +52,6 @@ The `services` method will then return a `CardService` object that responds to
 requests.  For a full list of the available services see [Canvas App
 Services](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md).
 
-### Date Time Filtering
-
-The date time filter allows you to specify a range of dates and times to search for
-across a set of model fields.  For example, if you want to find all tickets
-that were created before March, you would write:
-
-```js
-var card = new SW.Card();
-card.services('helpdesk').request('tickets', {created_at: {before: '03/01/2015'}})
-```
-
-Note: All filters that accept a datetime range take a JSON object with at least one of the following keys:
-
-Name | Type | Description
------|------|--------------
-`after` (optional)|`string`| Match all objects whose datetime field is `>=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
-`before` (optional)|`string`| Match all objects whose datetime field is `<=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
-
-Some more examples:
-
-All devices that were `last_scanned` after January 5th, 2015:
-
-```js
-var card = new SW.Card();
-card.services('inventory').request('devices', {last_scanned_at: {after: '01/05/2015'}})
-```
-
-All reports that were `created_at` between January 5th, 2015 and March 5th, 2015:
-
-```js
-var card = new SW.Card();
-card.services('reporting').request('reports', {created_at: {after: '01/05/2015', before: '3/05/2015'}})
-```
-
 ## Requests
 
 Each service will respond to a specific set of API requests.  To make a request
@@ -143,6 +109,41 @@ card.services('helpdesk').request('tickets', { status: 'open' })
 For a full list of the supported requests for a service visit the [service
 documentation
 page](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md).
+
+### Date Time Filtering
+
+The date time filter allows you to filter the objects returned based on the value of their timestamp in a single field.
+
+All filters that accept a datetime range take a JSON object with at least one of the following keys:
+
+Name | Type | Description
+-----|------|--------------
+`after` (optional)|`string`| Match all objects whose datetime field is `>=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+`before` (optional)|`string`| Match all objects whose datetime field is `<=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+  
+For example, if you want to find all tickets
+that were created before March 1st at noon, you would write:
+
+```js
+var card = new SW.Card();
+card.services('helpdesk').request('tickets', {created_at: {before: 2015-03-01T12:00:00}})
+```
+
+Some more examples:
+
+All devices that were `last_scanned` after January 5th, 2015:
+
+```js
+var card = new SW.Card();
+card.services('inventory').request('devices', {last_scanned_at: {after: '2015-03-05'}})
+```
+
+All reports that were `created_at` between January 5th, 2015 and March 5th, 2015:
+
+```js
+var card = new SW.Card();
+card.services('reporting').request('reports', {created_at: {after: '2015-01-05', before: '2015-03-01'}})
+```
 
 ### Searching
 
