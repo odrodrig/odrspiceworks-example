@@ -337,16 +337,76 @@ This request will return the same comment JSON as the `comments` array in the
 
 ### Events
 
-#### Show ticket
+#### Ticket show
 
 Fired after a new ticket is rendered inside the Spiceworks Help Desk.
 
 ```js
-card.services('helpdesk').on('showTicket', handler)
+card.services('helpdesk').on('ticket:show', handler)
 ```
 
 ##### Handler arguments
 
 Name | Type | Description
 -----|------|--------------
-`id`|`integer`| The id of the ticket that was rendered.
+`ticket`|`object`| The ticket JSON, see the [single ticket response](#response-1).
+
+#### Ticket change
+
+Fired after any of a ticket's attributes are changed from inside the Spiceworks
+Help Desk.
+
+```js
+card.services('helpdesk').on('ticket:change', handler)
+```
+
+##### Handler arguments
+
+Name | Type | Description
+-----|------|--------------
+`ticket`|`object`| The ticket JSON, see the [single ticket response](#response-1).
+`changedAttributes`|`objects`| An object representing the fields changed on the ticket.
+
+The `changedAttributes` field will be an object with info about the old and new
+values for all the fields changed on the ticket.  For example, if a ticket's
+priority changes from `high` to `low` and the due date is set for March 18 at
+9am, then the object would be:
+
+```js
+{
+  due_at: [null, "2015-03-18T09:00:00-08:00"]
+  priority: ['high', 'low']
+}
+```
+
+Notice the old value always appears first and the new value always appears
+second in the array.
+
+#### Ticket field change
+
+Fired after a specific ticket attribute is changed from inside the Spiceworks
+Help Desk.
+
+```js
+card.services('helpdesk').on('ticket:change:[attribute]', handler)
+```
+
+##### Attribute options
+
+In the event string `[attribute]` can be replaced by any of the following ticket
+attributes:
+
+- `summary`
+- `description`
+- `assignee`
+- `priority`
+- `due_at`
+- `status`
+
+##### Handler arguments
+
+Name | Type | Description
+-----|------|--------------
+`ticket`|`object`| The ticket JSON, see the [single ticket response](#response-1).
+`oldValue`|JSON property| The old value of the attribute changed.
+`newValue`|JSON property| The new value of the attribute changed.
