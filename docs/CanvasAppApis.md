@@ -138,11 +138,11 @@ var card = new SW.Card();
 card.services('inventory').request('devices', {last_scanned_at: {after: '2015-03-05'}})
 ```
 
-All reports that were `created_at` between January 5th, 2015 and March 5th, 2015:
+All reports that were `created_at` starting on January 5th, 2015 and up to March 5th, 2015:
 
 ```js
 var card = new SW.Card();
-card.services('reporting').request('reports', {created_at: {after: '2015-01-05', before: '2015-03-01'}})
+card.services('reporting').request('reports', {created_at: {after: '2015-01-05', before: '2015-03-05'}})
 ```
 
 ### Searching
