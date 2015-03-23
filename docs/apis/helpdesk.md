@@ -18,17 +18,17 @@ Name | Type | Description
 -----|------|--------------
 `assignee`|`integer` or `string`| Return tickets that are assigned to this user.  Can be either a user `id` or the string `none` for unassigned tickets.
 `author`|`integer`| Return tickets authored by this user. Must be the user `id`.
-`closed_at`|`object`[(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering)| Return tickets closed within the given range.
-`created_at`|`object`[(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering)| Return tickets created within the given range.
-`due_at`|`object`[(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering)| Return tickets whose due date is within the given range.
+`closed_at`|`object`([datetime range]) (/docs/CanvasAppApis.md#date-time-filtering)| Return tickets closed within the given range.
+`created_at`|`object`([datetime range]) (/docs/CanvasAppApis.md#date-time-filtering)| Return tickets created within the given range.
+`due_at`|`object`([datetime range]) (/docs/CanvasAppApis.md#date-time-filtering)| Return tickets whose due date is within the given range.
 `page`|`integer`| The page offset.  Must be between `1` and `page_count`.  Default: `1`
 `per_page`|`integer`| Number of entries per page. Must be between `1` and `100`.  Default: `30`
 `priority`|`string`| Return tickets with this priority. Can be either `low`, `med`, or `high`.
 `site`|`string`| Return tickets by `site.name`.
 `sort`|`string`| How to sort the results.  Can be either `updated`, when the ticket was last updated, or `created`, when the ticket was created.  Default: `created`
 `status`|`string`| Return tickets with this status. Can be either `open` or `closed`.
-`status_updated_at`|`object`[(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering)| Return tickets whose status was last changed within the given range.
-`viewed_at`|`object`[(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering)| Return tickets that were last viewed within the given range.
+`status_updated_at`|`object`([datetime range]) (/docs/CanvasAppApis.md#date-time-filtering)| Return tickets whose status was last changed within the given range.
+`viewed_at`|`object`([datetime range]) (/docs/CanvasAppApis.md#date-time-filtering)| Return tickets that were last viewed within the given range.
 `search`|`object`| Search fields: `summary`, `description`.  See [Searching](/docs/CanvasAppApis.md#searching) documentation for more information.
 
 ##### Response
