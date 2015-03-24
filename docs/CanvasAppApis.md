@@ -120,7 +120,7 @@ Name | Type | Description
 -----|------|--------------
 `after` (optional)|`string`| Match all objects whose datetime field is `>=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 `before` (optional)|`string`| Match all objects whose datetime field is `<=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
-  
+
 For example, if you want to find all tickets
 that were created before March 1st, 2015 at 12:00pm, you would write:
 
@@ -131,7 +131,7 @@ card.services('helpdesk').request('tickets', {created_at: {before: '2015-03-01T1
 
 Some more examples:
 
-All devices that were `last_scanned` after January 5th, 2015:
+All devices that were `last_scanned` after March 5th, 2015:
 
 ```js
 var card = new SW.Card();
