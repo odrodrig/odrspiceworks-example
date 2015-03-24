@@ -462,6 +462,35 @@ Name | Type | Description
 
 This request will return the single device JSON, see the [asset response](#asset-or-unknown-device-response).
 
+#### Update a device
+
+Update a device with the given parameters
+
+```js
+card.services('inventory').request('device:update', id, attributes)
+```
+
+##### Parameters
+
+Name | Type | Description
+-----|------|--------------
+`id`|`integer`| The `id` of the device
+`attributes`|`object`| See below for detailed requirements
+
+##### Attributes
+
+All attributes that are available to create an asset or device can be updated. In addition, you can also update the following:
+
+Name | Type | Description
+-----|------|--------------
+`primary_owner_name`|`string`| Primary owner of the device or asset
+`site_id`|`integer`| The site id for the multi-site Spiceworks installation location of the device or asset
+`user_id`|`integer`| The user id of the user that the device or asset is assigned to
+
+##### Response
+
+This request will return the updated device JSON, see the [single device response](#response-1).
+
 ## Software
 
 ### Requests
