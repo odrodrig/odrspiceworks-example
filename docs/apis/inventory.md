@@ -21,9 +21,9 @@ Name | Type | Description
 -----|------|--------------
 `scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'offline'`, or `'unknown'`.
 `owner.id`| 'integer' | Return devices owned by the user with id `owner.id`.
-`offline_at`|`object`(datetime range)| Return devices that were offline within the given range.
-`online_at`|`object`(datetime range)| Return devices that were online within the given range.
-`last_scanned_at`|`object`(datetime range)| Return devices that were last scanned within the given range.
+`offline_at`|`object`| Return devices that were offline within the given range. See [(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering) documentation for more information.
+`online_at`|`object`| Return devices that were online within the given range. See [(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering) documentation for more information.
+`last_scanned_at`|`object`| Return devices that were last scanned within the given range. See [(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering) documentation for more information.
 `operating_system`|`string`| Return devices running the operating system `operating_system`.
 `model`|`string`| Return devices with model name `model`.
 `manufacturer`|`string`| Return devices manufactured by `manufacturer`.
@@ -65,6 +65,7 @@ item):
   "id": 2,
   "show_url": "/inventory/groups/devices/2",
   "type": "Computer",
+  "primary_owner_name": "Harry Houdini",
   "server_name": "jolly-capybara.example.com",
   "name": "jolly-capybara",
   "domain": "example.com",
@@ -281,6 +282,7 @@ item):
 {
   "id": 475,
   "type": "SnmpDevice",
+  "primary_owner_name": "Steve Jobs",
   "server_name": "clean-octopus.example.com",
   "name": "clean-octopus",
   "domain": "example.com",
@@ -371,6 +373,7 @@ Example response for a user-defined asset or an unknown device on the network:
   "id": 665,
   "show_url": "/inventory/groups/devices/665",
   "type": "Unknown",
+  "primary_owner_name": "Scott Abel",
   "server_name": null,
   "name": "Chris's Printer",
   "domain": null,
@@ -461,36 +464,6 @@ Name | Type | Description
 ##### Response
 
 This request will return the single device JSON, see the [asset response](#asset-or-unknown-device-response).
-
-#### Update a device
-
-Update a device with the given parameters
-
-```js
-card.services('inventory').request('device:update', id, attributes)
-```
-
-##### Parameters
-
-Name | Type | Description
------|------|--------------
-`id`|`integer`| The `id` of the device
-`attributes`|`object`| See below for detailed requirements
-
-##### Attributes
-
-**All attributes that are available to create an asset or device can be updated.**
-Furthermore, you can use the update call with these additional fields:
-
-Name | Type | Description
------|------|--------------
-`primary_owner_name`|`string`| Primary owner of the device or asset
-`site_id`|`integer`| The site id for the multi-site Spiceworks installation location of the device or asset
-`user_id`|`integer`| The user id of the user that the device or asset is assigned to
-
-##### Response
-
-This request will return the updated device JSON, see the [single device response](#response-1).
 
 ## Software
 
