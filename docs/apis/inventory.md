@@ -460,6 +460,7 @@ Name | Type | Description
 `site`|`string`|The location of the device or asset in a multi-site Spiceworks installation. Must be a valid `site.name`.
 `manufacturer`|`string`|Manufacturer information.
 `model`|`string`|Model information.
+`primary_owner_name`|`string`| Primary owner of the device or asset
 
 ##### Response
 
@@ -483,13 +484,6 @@ Name | Type | Description
 ##### Attributes
 
 **All attributes that are available to create an asset or device can be updated.**
-Furthermore, you can use the update call with these additional fields:
-
-Name | Type | Description
------|------|--------------
-`primary_owner_name`|`string`| Primary owner of the device or asset
-`site_id`|`integer`| The site id for the multi-site Spiceworks installation location of the device or asset
-`user_id`|`integer`| The user id of the user that the device or asset is assigned to
 
 ##### Response
 
