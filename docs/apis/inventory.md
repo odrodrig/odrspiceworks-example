@@ -65,6 +65,7 @@ item):
   "id": 2,
   "show_url": "/inventory/groups/devices/2",
   "type": "Computer",
+  "primary_owner_name": "Harry Houdini",
   "server_name": "jolly-capybara.example.com",
   "name": "jolly-capybara",
   "domain": "example.com",
@@ -281,6 +282,7 @@ item):
 {
   "id": 475,
   "type": "SnmpDevice",
+  "primary_owner_name": "Steve Jobs",
   "server_name": "clean-octopus.example.com",
   "name": "clean-octopus",
   "domain": "example.com",
@@ -371,6 +373,7 @@ Example response for a user-defined asset or an unknown device on the network:
   "id": 665,
   "show_url": "/inventory/groups/devices/665",
   "type": "Unknown",
+  "primary_owner_name": "Scott Abel",
   "server_name": null,
   "name": "Chris's Printer",
   "domain": null,
