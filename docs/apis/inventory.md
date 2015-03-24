@@ -479,7 +479,8 @@ Name | Type | Description
 
 ##### Attributes
 
-All attributes that are available to create an asset or device can be updated. In addition, you can also update the following:
+**All attributes that are available to create an asset or device can be updated.**
+Furthermore, you can use the update call with these additional fields:
 
 Name | Type | Description
 -----|------|--------------
