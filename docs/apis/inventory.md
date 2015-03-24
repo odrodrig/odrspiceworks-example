@@ -334,15 +334,7 @@ item):
   "offline_at": null,
   "online_at": "2015-02-04T17:18:18-06:00",
   "up_time": null,
-  "owner": {
-    "avatar_path": "/images/icons/medium/person-avatar-admin.png",
-    "department": "IT",
-    "first_name": "Steve",
-    "id": 1,
-    "last_name": "Jobs",
-    "role": "admin",
-    "show_url": "/people/1"
-  },
+  "owner": null,
   "site": {
     "name": "Central Server",
     "collector": null
@@ -485,6 +477,7 @@ Name | Type | Description
 `manufacturer`|`string`|Manufacturer information.
 `model`|`string`|Model information.
 `primary_owner_name`|`string`| Primary owner of the device or asset
+`owner`|`integer`| id corresponding to the owner of the device or asset. See [People](/docs/apis/people.md#people-service) documentation for more information.
 
 ##### Response
 
