@@ -118,7 +118,15 @@ item):
   "offline_at": null,
   "online_at": "2015-02-04T13:50:48-08:00",
   "up_time": null,
-  "owner": null,
+  "owner": {
+    "avatar_path": "/images/icons/medium/person-avatar-admin.png",
+    "department": "IT",
+    "first_name": "Harry",
+    "id": 2,
+    "last_name": "Houdini",
+    "role": "admin",
+    "show_url": "/people/2"
+  },
   "site": {
     "name": "Central Server",
     "collector": null
@@ -326,7 +334,15 @@ item):
   "offline_at": null,
   "online_at": "2015-02-04T17:18:18-06:00",
   "up_time": null,
-  "owner": null,
+  "owner": {
+    "avatar_path": "/images/icons/medium/person-avatar-admin.png",
+    "department": "IT",
+    "first_name": "Steve",
+    "id": 1,
+    "last_name": "Jobs",
+    "role": "admin",
+    "show_url": "/people/1"
+  },
   "site": {
     "name": "Central Server",
     "collector": null
@@ -426,7 +442,15 @@ Example response for a user-defined asset or an unknown device on the network:
   "offline_at": null,
   "online_at": null,
   "up_time": null,
-  "owner": null,
+  "owner": {
+    "avatar_path": "/images/icons/medium/person-avatar-admin.png",
+    "department": "IT",
+    "first_name": "Scott",
+    "id": 5,
+    "last_name": "Abel",
+    "role": "admin",
+    "show_url": "/people/5"
+  },
   "site": {
     "name": "Central Server",
     "collector": null
