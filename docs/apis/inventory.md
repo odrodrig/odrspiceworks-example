@@ -20,7 +20,7 @@ card.services('inventory').request('devices'[, options])
 Name | Type | Description
 -----|------|--------------
 `scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'offline'`, or `'unknown'`.
-`owner.id`| 'integer' | Return devices owned by the user with id `owner.id`.
+`owner`|`integer`| id corresponding to the owner of the device or asset. See [People](/docs/apis/people.md#people-service) documentation for more information.
 `offline_at`|`object`| Return devices that were offline within the given range. See [(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering) documentation for more information.
 `online_at`|`object`| Return devices that were online within the given range. See [(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering) documentation for more information.
 `last_scanned_at`|`object`| Return devices that were last scanned within the given range. See [(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering) documentation for more information.
