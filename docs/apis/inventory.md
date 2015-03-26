@@ -20,7 +20,7 @@ card.services('inventory').request('devices'[, options])
 Name | Type | Description
 -----|------|--------------
 `id` | `array` | Returns devices whose id is contained within the array of ids.
-`scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'offline'`, or `'unknown'`.
+`scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'manual'`, or `'unknown'`.
 `owner.id`| 'integer' | Return devices owned by the user with id `owner.id`.
 `offline_at`|`object`(datetime range)| Return devices that were last noticed offline within the given datetime range.
 `online_at`|`object`(datetime range)| Return devices that were last noticed online within the given datetime range.
