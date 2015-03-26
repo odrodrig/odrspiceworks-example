@@ -101,7 +101,7 @@ SDK javascript. For our "Hello world!" example, we're including jQuery as well.
 
 ``` javascript
    <head>
-    <script src="https://www.dropbox.com/s/l6hgjq7mh52o6od/spiceworks-sdk.js?dl=1&raw=1" type="text/javascript"></script>
+    <script src="https://spiceworks.github.io/spiceworks-js-sdk/dist/spiceworks-sdk.js" type="text/javascript"></script>
     <script src="https://code.jquery.com/jquery-2.1.3.min.js" type="text/javascript"></script>
    </head>
 ```
@@ -149,7 +149,7 @@ At this point, our example app looks like this:
 <!DOCTYPE html>
 <html>
  <head>
-  <script src="https://www.dropbox.com/s/l6hgjq7mh52o6od/spiceworks-sdk.js?dl=1&raw=1" type="text/javascript"></script>
+  <script src="https://spiceworks.github.io/spiceworks-js-sdk/dist/spiceworks-sdk.js" type="text/javascript"></script>
   <script src="https://code.jquery.com/jquery-2.1.3.min.js" type="text/javascript"></script>
   <script type="text/javascript">
    $(document).ready(function(){
