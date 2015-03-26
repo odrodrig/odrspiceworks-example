@@ -247,6 +247,7 @@ Name | Type | Description
 `priority`|`string`| The priority of the request. Must be `low`, `med`, or `high`.  Default: `med`.
 `due_at`|`string`| Due date of the request.  Must be a timestamp in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 `status`|`string`| The current status of the request. Must be `open` or `closed`.  Default: `open`.
+`inventory_items`|`array`| A list of items from inventory related to the ticket.  Must be an array of objects containing an `id` and a `type` property for a valid inventory item.
 
 ##### Response
 
@@ -277,6 +278,8 @@ Name | Type | Description
 `priority`|`string`| The priority of the request. Must be `low`, `med`, or `high`.  Default: `med`.
 `due_at`|`string`| Due date of the request.  Must be a timestamp in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 `status`|`string`| The current status of the request. Must be `open` or `closed`.  Default: `open`.
+`inventory_items`|`array`| A list of items from inventory related to the ticket.  Must be an array of objects containing an `id` and a `type` property for a valid inventory item.
+
 
 ##### Response
 
