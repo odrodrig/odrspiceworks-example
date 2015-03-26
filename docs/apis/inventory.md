@@ -505,7 +505,7 @@ Name | Type | Description
 
 ##### Attributes
 
-**All attributes that are available to create an asset or device can be updated.**
+This request accepts the same [attributes](#attributes) as creating a device, [see the list above](#attributes).
 
 ##### Response
 
