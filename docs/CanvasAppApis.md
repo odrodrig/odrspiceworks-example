@@ -131,7 +131,7 @@ card.services('helpdesk').request('tickets', {created_at: {before: '2015-03-01T1
 
 Some more examples:
 
-All devices that were `last_scanned` after March 5th, 2015:
+All devices that were `last_scanned` starting on March 6th, 2015:
 
 ```js
 var card = new SW.Card();
