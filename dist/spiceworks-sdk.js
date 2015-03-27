@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2015-03-09
+/*! spiceworks-sdk - v0.0.2 - 2015-03-27
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 var define, require;
@@ -3183,8 +3183,8 @@ define("oasis/message_channel",
     __exports__.PostMessagePort = PostMessagePort;
   });
 define("oasis/sandbox", 
-  ["rsvp","oasis/logger","oasis/util","oasis/shims","oasis/message_channel","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
+  ["rsvp","oasis/logger","oasis/util","oasis/shims","oasis/message_channel","oasis/iframe_adapter","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __exports__) {
     "use strict";
     var RSVP = __dependency1__;
     var Logger = __dependency2__["default"];
@@ -3194,8 +3194,8 @@ define("oasis/sandbox",
     var a_forEach = __dependency4__.a_forEach;
     var a_reduce = __dependency4__.a_reduce;
     var a_filter = __dependency4__.a_filter;
-
     var OasisPort = __dependency5__.OasisPort;
+    var iframeAdapter = __dependency6__["default"];
 
     var OasisSandbox = function(oasis, options) {
       options = reverseMerge(options || {}, {
@@ -3222,7 +3222,7 @@ define("oasis/sandbox",
 
       pkg = pkg || {};
 
-      this.adapter = options.adapter || Oasis.adapters.iframe;
+      this.adapter = options.adapter || new iframeAdapter();
 
       this._capabilitiesToConnect = this._filterCapabilities(capabilities);
       this.envPortDefereds = {};
@@ -4155,8 +4155,8 @@ define("spiceworks-sdk/card-service",
         return this;
       },
 
-      on: function (event, callback) {
-        var binding = this;
+      on: function (event, callback, context) {
+        var binding = context || this;
         this.promise.then(function (port) {
           port.on(event, callback, binding);
         });
@@ -4192,13 +4192,12 @@ define("spiceworks-sdk/card-service",
     __exports__["default"] = CardService;
   });
 define("spiceworks-sdk/card", 
-  ["oasis","./card-service","rsvp","./environment-consumer","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
+  ["oasis","./card-service","rsvp","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
     var Oasis = __dependency1__["default"];
     var CardService = __dependency2__["default"];
     var RSVP = __dependency3__;
-    var EnvironmentConsumer = __dependency4__["default"];
 
     var oasis = new Oasis();
     oasis.autoInitializeSandbox();
@@ -4211,11 +4210,9 @@ define("spiceworks-sdk/card",
       this.activationDeferred = RSVP.defer();
       this.activationDeferred.promise.fail( RSVP.rethrow );
 
-      this.oasis.connect({
-        consumers: {
-          environment: EnvironmentConsumer.extend({card: this})
-        }
-      });
+      this.services('environment').on('activate', function (data) {
+        this.activationDeferred.resolve(data);
+      }, this);
     }
 
     Card.prototype = {
@@ -4236,22 +4233,6 @@ define("spiceworks-sdk/card",
     };
 
     __exports__["default"] = Card;
-  });
-define("spiceworks-sdk/environment-consumer", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var EnvironmentConsumer = Oasis.Consumer.extend({
-      events: {
-        activate: function (data) {
-          this.card.activationDeferred.resolve(data);
-        }
-      }
-    });
-
-    __exports__["default"] = EnvironmentConsumer;
   });
 window.SW = require("spiceworks-sdk");
 }(self));

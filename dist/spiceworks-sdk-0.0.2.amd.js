@@ -1,4 +1,4 @@
-/*! spiceworks-sdk - v0.0.2 - 2015-03-09
+/*! spiceworks-sdk - v0.0.2 - 2015-03-27
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 define("spiceworks-sdk", 
@@ -29,8 +29,8 @@ define("spiceworks-sdk/card-service",
         return this;
       },
 
-      on: function (event, callback) {
-        var binding = this;
+      on: function (event, callback, context) {
+        var binding = context || this;
         this.promise.then(function (port) {
           port.on(event, callback, binding);
         });
@@ -66,13 +66,12 @@ define("spiceworks-sdk/card-service",
     __exports__["default"] = CardService;
   });
 define("spiceworks-sdk/card", 
-  ["oasis","./card-service","rsvp","./environment-consumer","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
+  ["oasis","./card-service","rsvp","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
     var Oasis = __dependency1__["default"];
     var CardService = __dependency2__["default"];
     var RSVP = __dependency3__;
-    var EnvironmentConsumer = __dependency4__["default"];
 
     var oasis = new Oasis();
     oasis.autoInitializeSandbox();
@@ -85,11 +84,9 @@ define("spiceworks-sdk/card",
       this.activationDeferred = RSVP.defer();
       this.activationDeferred.promise.fail( RSVP.rethrow );
 
-      this.oasis.connect({
-        consumers: {
-          environment: EnvironmentConsumer.extend({card: this})
-        }
-      });
+      this.services('environment').on('activate', function (data) {
+        this.activationDeferred.resolve(data);
+      }, this);
     }
 
     Card.prototype = {
@@ -110,20 +107,4 @@ define("spiceworks-sdk/card",
     };
 
     __exports__["default"] = Card;
-  });
-define("spiceworks-sdk/environment-consumer", 
-  ["oasis","exports"],
-  function(__dependency1__, __exports__) {
-    "use strict";
-    var Oasis = __dependency1__["default"];
-
-    var EnvironmentConsumer = Oasis.Consumer.extend({
-      events: {
-        activate: function (data) {
-          this.card.activationDeferred.resolve(data);
-        }
-      }
-    });
-
-    __exports__["default"] = EnvironmentConsumer;
   });
