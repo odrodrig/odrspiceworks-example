@@ -110,6 +110,41 @@ For a full list of the supported requests for a service visit the [service
 documentation
 page](https://github.com/spiceworks/spiceworks-js-sdk/blob/master/docs/apis/helpdesk.md).
 
+### Date Time Filtering
+
+The date time filter allows you to filter the objects returned based on the value of their timestamp in a single field.
+
+All filters that accept a datetime range take a JSON object with at least one of the following keys:
+
+Name | Type | Description
+-----|------|--------------
+`after` (optional)|`string`| Match all objects whose datetime field is `>=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+`before` (optional)|`string`| Match all objects whose datetime field is `<=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+
+For example, if you want to find all tickets
+that were created before March 1st, 2015 at 12:00PM UTC, you would write:
+
+```js
+var card = new SW.Card();
+card.services('helpdesk').request('tickets', {created_at: {before: '2015-03-01T12:00:00Z'}})
+```
+
+Some more examples:
+
+All devices that were `last_scanned` starting on March 6th, 2015:
+
+```js
+var card = new SW.Card();
+card.services('inventory').request('devices', {last_scanned_at: {after: '2015-03-06T00:00:00Z'}})
+```
+
+All reports that were `created_at` starting on January 5th at 1:00PM UTC, 2015 and up to March 5th at 7:00AM UTC, 2015:
+
+```js
+var card = new SW.Card();
+card.services('reporting').request('reports', {created_at: {after: '2015-01-05T13:00:00Z', before: '2015-03-05T07:00:00Z'}})
+```
+
 ### Searching
 
 Like in the open tickets example above, requests that return a collection of

@@ -18,7 +18,7 @@ Name | Type | Description
 -----|------|--------------
 `public`|`boolean`| Return reports that are marked as public or not public.
 `return_type`|`string`| Get all reports that return this type of object.  Can be either `Software`, `Device`, `User`, `Purchase`, `Ticket`, `Agreement`, `CloudService`, `MobileSoftware`, `MobileDevice`, `Peripheral`, `PeripheralInstances`, or `SQL` for custom SQL reports.
-`created_at`|`object`(datetime range)| Return reports created within the given range.
+`created_at`|`object`| Return reports created within the given range. See [(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering) documentation for more information.
 `schedule`|`object`| Return reports based on their schedule properties (see below).
 `search`|`object`| Search fields: `summary`, `description`.  See [Searching](/docs/CanvasAppApis.md#searching) documentation for more information.
 
