@@ -16,6 +16,7 @@ card.services('helpdesk').request('tickets'[, options])
 
 Name | Type | Description
 -----|------|--------------
+`id` | `array` | Returns tickets whose id is contained within the array of ids.
 `assignee`|`integer` or `string`| Return tickets that are assigned to this user.  Can be either a user `id` or the string `none` for unassigned tickets.
 `author`|`integer`| Return tickets authored by this user. Must be the user `id`.
 `closed_at`|`object`| Return tickets closed within the given range. See [(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering) documentation for more information.
@@ -239,6 +240,7 @@ Name | Type | Description
 `priority`|`string`| The priority of the request. Must be `low`, `med`, or `high`.  Default: `med`.
 `due_at`|`string`| Due date of the request.  Must be a timestamp in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 `status`|`string`| The current status of the request. Must be `open` or `closed`.  Default: `open`.
+`inventory_items`|`array`| A list of items from inventory related to the ticket.  Must be an array of objects containing an `id` and a `type` property for a valid inventory item.
 
 ##### Response
 
@@ -265,10 +267,12 @@ Name | Type | Description
 -----|------|--------------
 `summary`|`string`| A short description of the request.
 `description`|`string`| Full description of the request.
-`assignee`|`integer`| The IT Pro the ticket is assigned to.  Must be an IT Pro `id`.
+`assignee`|`integer`| The IT Pro the ticket is assigned to.  Must be an IT Pro `id` or `null` to unassign the ticket.
 `priority`|`string`| The priority of the request. Must be `low`, `med`, or `high`.  Default: `med`.
 `due_at`|`string`| Due date of the request.  Must be a timestamp in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 `status`|`string`| The current status of the request. Must be `open` or `closed`.  Default: `open`.
+`inventory_items`|`array`| A list of items from inventory related to the ticket.  Must be an array of objects containing an `id` and a `type` property for a valid inventory item.
+
 
 ##### Response
 

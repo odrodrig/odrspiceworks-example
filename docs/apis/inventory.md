@@ -19,11 +19,13 @@ card.services('inventory').request('devices'[, options])
 
 Name | Type | Description
 -----|------|--------------
-`scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'offline'`, or `'unknown'`.
-`owner.id`| 'integer' | Return devices owned by the user with id `owner.id`.
-`offline_at`|`object`| Return devices that were offline within the given range. See [(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering) documentation for more information.
-`online_at`|`object`| Return devices that were online within the given range. See [(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering) documentation for more information.
-`last_scanned_at`|`object`| Return devices that were last scanned within the given range. See [(datetime range)] (/docs/CanvasAppApis.md#date-time-filtering) documentation for more information.
+`id` | `array` | Returns devices whose id is contained within the array of ids.
+`scan_state`|`string`| Return devices that were in this state during the last scan. Can be either `'inventoried'`,  `'manual'`, or `'unknown'`.
+`owner`|`integer`| id corresponding to the owner of the device or asset. See [People](/docs/apis/people.md#people-service) documentation for more information.
+`offline_at`|`object`([datetime range](/docs/CanvasAppApis.md#date-time-filtering))| Return devices that were last noticed offline within the given [datetime range](/docs/CanvasAppApis.md#date-time-filtering).
+`online_at`|`object`([datetime range](/docs/CanvasAppApis.md#date-time-filtering))| Return devices that were last noticed online within the given [datetime range](/docs/CanvasAppApis.md#date-time-filtering).
+`online`|`boolean`| Return only devices that are online if `true` or offline if `false`.
+`last_scanned_at`|`object`([datetime range](/docs/CanvasAppApis.md#date-time-filtering))| Return devices that were last scanned within the given [datetime range](/docs/CanvasAppApis.md#date-time-filtering).
 `operating_system`|`string`| Return devices running the operating system `operating_system`.
 `model`|`string`| Return devices with model name `model`.
 `manufacturer`|`string`| Return devices manufactured by `manufacturer`.
@@ -65,6 +67,7 @@ item):
   "id": 2,
   "show_url": "/inventory/groups/devices/2",
   "type": "Computer",
+  "primary_owner_name": "Harry Houdini",
   "server_name": "jolly-capybara.example.com",
   "name": "jolly-capybara",
   "domain": "example.com",
@@ -106,7 +109,7 @@ item):
   "asset_tag": "3B71E7EF7A",
   "serial_number": "3B71E7EF7A",
   "uuid": "332A52FA-6EAF-86A6-3FE1-A340835369B1",
-  "created_at": "2015-02-04T12:56:38-08:00",
+  "created_at": "2015-02-01T12:56:38-08:00",
   "updated_at": "2015-02-19T02:26:01-08:00",
   "scan_state": "inventoried",
   "install_date": "2014-05-30T20:40:42-07:00",
@@ -114,10 +117,19 @@ item):
   "last_boot_up_time": "2015-02-04T10:57:36-08:00",
   "last_qrcode_time": null,
   "last_scan_time": "2015-02-04T13:50:48-08:00",
-  "offline_at": null,
+  "offline_at": "2015-02-02T01:21:31-08:00",
   "online_at": "2015-02-04T13:50:48-08:00",
+  "online": true,
   "up_time": null,
-  "owner": null,
+  "owner": {
+    "avatar_path": "/images/icons/medium/person-avatar-admin.png",
+    "department": "IT",
+    "first_name": "Harry",
+    "id": 2,
+    "last_name": "Houdini",
+    "role": "admin",
+    "show_url": "/people/2"
+  },
   "site": {
     "name": "Central Server",
     "collector": null
@@ -281,6 +293,7 @@ item):
 {
   "id": 475,
   "type": "SnmpDevice",
+  "primary_owner_name": "Steve Jobs",
   "server_name": "clean-octopus.example.com",
   "name": "clean-octopus",
   "domain": "example.com",
@@ -323,6 +336,7 @@ item):
   "last_scan_time": "2015-02-04T17:18:18-06:00",
   "offline_at": null,
   "online_at": "2015-02-04T17:18:18-06:00",
+  "online": true,
   "up_time": null,
   "owner": null,
   "site": {
@@ -371,6 +385,7 @@ Example response for a user-defined asset or an unknown device on the network:
   "id": 665,
   "show_url": "/inventory/groups/devices/665",
   "type": "Unknown",
+  "primary_owner_name": "Scott Abel",
   "server_name": null,
   "name": "Chris's Printer",
   "domain": null,
@@ -422,8 +437,17 @@ Example response for a user-defined asset or an unknown device on the network:
   "last_scan_time": null,
   "offline_at": null,
   "online_at": null,
+  "online": true,
   "up_time": null,
-  "owner": null,
+  "owner": {
+    "avatar_path": "/images/icons/medium/person-avatar-admin.png",
+    "department": "IT",
+    "first_name": "Scott",
+    "id": 5,
+    "last_name": "Abel",
+    "role": "admin",
+    "show_url": "/people/5"
+  },
   "site": {
     "name": "Central Server",
     "collector": null
@@ -457,10 +481,35 @@ Name | Type | Description
 `site`|`string`|The location of the device or asset in a multi-site Spiceworks installation. Must be a valid `site.name`.
 `manufacturer`|`string`|Manufacturer information.
 `model`|`string`|Model information.
+`primary_owner_name`|`string`| Primary owner of the device or asset
+`owner`|`integer`| id corresponding to the owner of the device or asset. See [People](/docs/apis/people.md#people-service) documentation for more information.
 
 ##### Response
 
 This request will return the single device JSON, see the [asset response](#asset-or-unknown-device-response).
+
+#### Update a device
+
+Update a device with the given parameters
+
+```js
+card.services('inventory').request('device:update', id, attributes)
+```
+
+##### Parameters
+
+Name | Type | Description
+-----|------|--------------
+`id`|`integer`| The `id` of the device
+`attributes`|`object`| See below for detailed requirements
+
+##### Attributes
+
+This request accepts the same [attributes](#attributes) as creating a device, [see the list above](#attributes).
+
+##### Response
+
+This request will return the updated device JSON, see the [single device response](#response-1).
 
 ## Software
 
