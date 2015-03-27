@@ -122,7 +122,7 @@ Name | Type | Description
 `before` (optional)|`string`| Match all objects whose datetime field is `<=` the timestamp, provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 
 For example, if you want to find all tickets
-that were created before March 1st, 2015 at 12:00pm, you would write:
+that were created before March 1st, 2015 at 12:00PM UTC, you would write:
 
 ```js
 var card = new SW.Card();
@@ -138,7 +138,7 @@ var card = new SW.Card();
 card.services('inventory').request('devices', {last_scanned_at: {after: '2015-03-06T00:00:00Z'}})
 ```
 
-All reports that were `created_at` starting on January 5th at 1:00pm, 2015 and up to March 5th at 7:00am, 2015:
+All reports that were `created_at` starting on January 5th at 1:00PM UTC, 2015 and up to March 5th at 7:00AM UTC, 2015:
 
 ```js
 var card = new SW.Card();
