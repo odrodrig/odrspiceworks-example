@@ -135,14 +135,14 @@ All devices that were `last_scanned` after March 5th, 2015:
 
 ```js
 var card = new SW.Card();
-card.services('inventory').request('devices', {last_scanned_at: {after: '2015-03-05'}})
+card.services('inventory').request('devices', {last_scanned_at: {after: '2015-03-06T00:00:00Z'}})
 ```
 
-All reports that were `created_at` starting on January 5th, 2015 and up to March 5th, 2015:
+All reports that were `created_at` starting on January 5th at 1:00pm, 2015 and up to March 5th at 7:00am, 2015:
 
 ```js
 var card = new SW.Card();
-card.services('reporting').request('reports', {created_at: {after: '2015-01-05', before: '2015-03-05'}})
+card.services('reporting').request('reports', {created_at: {after: '2015-01-05T13:00:00Z', before: '2015-03-05T07:00:00Z'}})
 ```
 
 ### Searching
