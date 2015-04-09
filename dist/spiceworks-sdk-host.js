@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2015-03-27
+/*! spiceworks-sdk - v0.0.2 - 2015-04-09
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 var define, require;
@@ -3183,8 +3183,8 @@ define("oasis/message_channel",
     __exports__.PostMessagePort = PostMessagePort;
   });
 define("oasis/sandbox", 
-  ["rsvp","oasis/logger","oasis/util","oasis/shims","oasis/message_channel","oasis/iframe_adapter","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __exports__) {
+  ["rsvp","oasis/logger","oasis/util","oasis/shims","oasis/message_channel","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
     "use strict";
     var RSVP = __dependency1__;
     var Logger = __dependency2__["default"];
@@ -3194,8 +3194,8 @@ define("oasis/sandbox",
     var a_forEach = __dependency4__.a_forEach;
     var a_reduce = __dependency4__.a_reduce;
     var a_filter = __dependency4__.a_filter;
+
     var OasisPort = __dependency5__.OasisPort;
-    var iframeAdapter = __dependency6__["default"];
 
     var OasisSandbox = function(oasis, options) {
       options = reverseMerge(options || {}, {
@@ -3222,7 +3222,7 @@ define("oasis/sandbox",
 
       pkg = pkg || {};
 
-      this.adapter = options.adapter || new iframeAdapter();
+      this.adapter = options.adapter || Oasis.adapters.iframe;
 
       this._capabilitiesToConnect = this._filterCapabilities(capabilities);
       this.envPortDefereds = {};

@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2015-03-27
+/*! spiceworks-sdk - v0.0.2 - 2015-04-09
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 var define, require;
@@ -3183,8 +3183,8 @@ define("oasis/message_channel",
     __exports__.PostMessagePort = PostMessagePort;
   });
 define("oasis/sandbox", 
-  ["rsvp","oasis/logger","oasis/util","oasis/shims","oasis/message_channel","oasis/iframe_adapter","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __exports__) {
+  ["rsvp","oasis/logger","oasis/util","oasis/shims","oasis/message_channel","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
     "use strict";
     var RSVP = __dependency1__;
     var Logger = __dependency2__["default"];
@@ -3194,8 +3194,8 @@ define("oasis/sandbox",
     var a_forEach = __dependency4__.a_forEach;
     var a_reduce = __dependency4__.a_reduce;
     var a_filter = __dependency4__.a_filter;
+
     var OasisPort = __dependency5__.OasisPort;
-    var iframeAdapter = __dependency6__["default"];
 
     var OasisSandbox = function(oasis, options) {
       options = reverseMerge(options || {}, {
@@ -3222,7 +3222,7 @@ define("oasis/sandbox",
 
       pkg = pkg || {};
 
-      this.adapter = options.adapter || new iframeAdapter();
+      this.adapter = options.adapter || Oasis.adapters.iframe;
 
       this._capabilitiesToConnect = this._filterCapabilities(capabilities);
       this.envPortDefereds = {};
@@ -4128,12 +4128,14 @@ define("oasis/xhr",
     __exports__.xhr = xhr;
   });
 define("spiceworks-sdk", 
-  ["spiceworks-sdk/card","exports"],
-  function(__dependency1__, __exports__) {
+  ["spiceworks-sdk/card","spiceworks-sdk/login","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
     var Card = __dependency1__["default"];
+    var Login = __dependency2__["default"];
 
     __exports__.Card = Card;
+    __exports__.Login = Login;
   });
 define("spiceworks-sdk/card-service", 
   ["rsvp","exports"],
@@ -4233,6 +4235,97 @@ define("spiceworks-sdk/card",
     };
 
     __exports__["default"] = Card;
+  });
+define("spiceworks-sdk/login", 
+  ["rsvp","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var RSVP = __dependency1__;
+
+    var accessTokens = {};
+    var windowFeatures = "width=460,height=420,menubar=no,toolbar=no,status=no,scrollbars=no";
+    var identityServer = "https://accounts.spiceworks.com";
+    // developer
+    identityServer = "http://localhost:3000";
+
+    function Login(args) {
+      args = args || {};
+      if (typeof args.clientId === 'undefined') {
+        throw new Error("'clientId' must be provided in args");
+      }
+
+      this.clientId = args.clientId;
+      this.targetWindow = null;
+      this.deferred = null;
+
+      window.addEventListener('message', this.messageReceiver.bind(this), false);
+    }
+
+    Login.prototype = {
+
+      saveToken: function(token) {
+        accessTokens[this.clientId] = token;
+      },
+
+      respond: function(args) {
+        if (this.deferred) {
+          this.deferred.resolve(args);
+        }
+      },
+
+      messageReceiver: function() {
+        if (event.source !== this.targetWindow) {
+          return;
+        }
+        if (event.origin !== identityServer) {
+          return;
+        }
+        if (event.data.messageType !== 'access_token') {
+          return;
+        }
+        if (event.data.clientId !== this.clientId) {
+          return;
+        }
+
+        this.targetWindow.close();
+        this.saveToken(event.data.accessToken);
+        this.respond(event.data.accessToken);
+      },
+
+      createIdentityUrl: function(path) {
+        return (identityServer +
+          path +
+          '?response_type=token' +
+          '&client_id=' + this.clientId +
+          '&redirect_uri=' + encodeURIComponent('/oauth/callback?client_id=' + this.clientId));
+      },
+
+      login: function() {
+        this.deferred = RSVP.defer();
+        if (accessTokens[this.clientId]) {
+          this.deferred.resolve(accessTokens[this.clientId]);
+        }
+        else {
+          this.targetWindow = window.open(this.createIdentityUrl('/oauth/sign_in'), null, windowFeatures);
+        }
+        return this.deferred.promise;
+      },
+
+      create: function() {
+        this.deferred = RSVP.defer();
+        this.targetWindow = window.open(this.createIdentityUrl('/oauth/users/new'), null, windowFeatures);
+        return this.deferred.promise;
+      },
+
+      // syntax sugar to match the rest of the library
+      // e.g. request('login').then()
+      request: function(action, options) {
+        var args = [].slice.call(arguments).splice(1);
+        return this[action].apply(this, args);
+      }
+    };
+
+    __exports__["default"] = Login;
   });
 window.SW = require("spiceworks-sdk");
 }(self));
