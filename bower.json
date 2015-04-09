@@ -23,8 +23,7 @@
   },
   "dependencies": {
     "oasis.js": "https://github.com/spiceworks/oasis.js.git#d1e911c8bcc9795657af519e9e6a3800e9305d9e",
-    "rsvp": "~2.0.3",
-    "crypto-js": "~3.1"
+    "rsvp": "~2.0.3"
   },
   "private": true,
   "description": "The Spiceworks JS SDK to be included in platform Apps",

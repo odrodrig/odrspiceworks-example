@@ -9,16 +9,7 @@ module.exports = function(grunt) {
     'bower_components/kamino.js/lib/kamino.js',
     'bower_components/MessageChannel.js/lib/message_channel.js',
     'bower_components/rsvp/rsvp.amd.js',
-    'bower_components/oasis.js/dist/oasis.amd.js',
-    'bower_components/crypto-js/crypto-js.js',
-    'bower_components/crypto-js/core.js',
-    'bower_components/crypto-js/cipher-core.js',
-    'bower_components/crypto-js/enc-base64.js',
-    'bower_components/crypto-js/md5.js',
-    'bower_components/crypto-js/sha1.js',
-    'bower_components/crypto-js/hmac.js',
-    'bower_components/crypto-js/evpkdf.js',
-    'bower_components/crypto-js/aes.js',
+    'bower_components/oasis.js/dist/oasis.amd.js'
   ];
 
   // Project configuration.
