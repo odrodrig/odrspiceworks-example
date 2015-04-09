@@ -4248,6 +4248,38 @@ define("spiceworks-sdk/login",
     // developer
     identityServer = "http://localhost:3000";
 
+    function messageReceiver(event) {
+      if (event.source !== this.targetWindow) {
+        return;
+      }
+      if (event.origin !== identityServer) {
+        return;
+      }
+      if (event.data.messageType !== 'access_token') {
+        return;
+      }
+      if (event.data.clientId !== this.clientId) {
+        return;
+      }
+      var token = event.data.accessToken;
+      this.targetWindow.close();
+
+      // cache
+      accessTokens[this.clientId] = token;
+      // "return"
+      if (this.deferred) {
+        this.deferred.resolve(token);
+      }
+    }
+
+    function createIdentityUrl(clientId, path) {
+      return (identityServer +
+              path +
+              '?response_type=token' +
+              '&client_id=' + clientId +
+              '&redirect_uri=' + encodeURIComponent('/oauth/callback?client_id=' + clientId));
+    }
+
     function Login(args) {
       args = args || {};
       if (typeof args.clientId === 'undefined') {
@@ -4258,47 +4290,10 @@ define("spiceworks-sdk/login",
       this.targetWindow = null;
       this.deferred = null;
 
-      window.addEventListener('message', this.messageReceiver.bind(this), false);
+      window.addEventListener('message', messageReceiver.bind(this), false);
     }
 
     Login.prototype = {
-
-      saveToken: function(token) {
-        accessTokens[this.clientId] = token;
-      },
-
-      respond: function(args) {
-        if (this.deferred) {
-          this.deferred.resolve(args);
-        }
-      },
-
-      messageReceiver: function() {
-        if (event.source !== this.targetWindow) {
-          return;
-        }
-        if (event.origin !== identityServer) {
-          return;
-        }
-        if (event.data.messageType !== 'access_token') {
-          return;
-        }
-        if (event.data.clientId !== this.clientId) {
-          return;
-        }
-
-        this.targetWindow.close();
-        this.saveToken(event.data.accessToken);
-        this.respond(event.data.accessToken);
-      },
-
-      createIdentityUrl: function(path) {
-        return (identityServer +
-          path +
-          '?response_type=token' +
-          '&client_id=' + this.clientId +
-          '&redirect_uri=' + encodeURIComponent('/oauth/callback?client_id=' + this.clientId));
-      },
 
       login: function() {
         this.deferred = RSVP.defer();
@@ -4306,14 +4301,16 @@ define("spiceworks-sdk/login",
           this.deferred.resolve(accessTokens[this.clientId]);
         }
         else {
-          this.targetWindow = window.open(this.createIdentityUrl('/oauth/sign_in'), null, windowFeatures);
+          var url = createIdentityUrl(this.clientId, '/oauth/sign_in');
+          this.targetWindow = window.open(url, null, windowFeatures);
         }
         return this.deferred.promise;
       },
 
       create: function() {
         this.deferred = RSVP.defer();
-        this.targetWindow = window.open(this.createIdentityUrl('/oauth/users/new'), null, windowFeatures);
+        var url = createIdentityUrl(this.clientId, '/oauth/users/new');
+        this.targetWindow = window.open(url, null, windowFeatures);
         return this.deferred.promise;
       },
 
