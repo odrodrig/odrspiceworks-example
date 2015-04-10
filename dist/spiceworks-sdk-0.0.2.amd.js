@@ -151,7 +151,7 @@ define("spiceworks-sdk/login",
               path +
               '?response_type=token' +
               '&client_id=' + clientId +
-              '&redirect_uri=' + encodeURIComponent('/oauth/callback?client_id=' + clientId));
+              '&redirect_uri=' + encodeURIComponent('/oauth/callback'));
     }
 
     function Login(args) {
