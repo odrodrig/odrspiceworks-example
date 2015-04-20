@@ -1,3 +1,3 @@
 # spiceworks-sdk
 
-Checkout our [Getting Started](//developers.spiceworks.com/documentation/cloud-apps/) guide
+Checkout our [Getting Started](http://developers.spiceworks.com/documentation/cloud-apps/) guide
