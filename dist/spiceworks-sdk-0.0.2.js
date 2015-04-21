@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2015-04-09
+/*! spiceworks-sdk - v0.0.2 - 2015-04-20
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 var define, require;
@@ -4245,8 +4245,6 @@ define("spiceworks-sdk/login",
     var accessTokens = {};
     var windowFeatures = "width=460,height=420,menubar=no,toolbar=no,status=no,scrollbars=no";
     var identityServer = "https://accounts.spiceworks.com";
-    // developer
-    identityServer = "http://localhost:3000";
 
     function messageReceiver(event) {
       if (event.source !== this.targetWindow) {
