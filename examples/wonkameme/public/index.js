@@ -41,7 +41,7 @@
     });
   };
 
-  card.services('helpdesk').on('showTicket', function(id){
+  card.services('helpdesk').on('ticket:show', function(id){
     showWonkaMeme(id);
   });
 

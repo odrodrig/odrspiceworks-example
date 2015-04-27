@@ -15,6 +15,6 @@ Adding example apps to Spiceworks
 4. Fill out the `App Name` and the `Namespace` (the short url where you want the app to appear)
 5. Set the `Full Page URL` to the location of the example app (by default, `http://localhost:3000/`)
 6. Turn on any additional `App Placements` where you want to see the example app, using the same URL as step 4
-7. Set the `App Permissions` (requires at least `Helpdesk Read` access)
+7. Set the `App Permissions` (depends on the example app--it's OK to enable all permissions if you're just playing around)
 8. `Save` the App
 9. You will be redirected to the example app inside of Spiceworks
