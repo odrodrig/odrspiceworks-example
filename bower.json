@@ -23,7 +23,8 @@
   },
   "dependencies": {
     "oasis.js": "https://github.com/spiceworks/oasis.js.git#6ba994aede777ae74dab5099b65fe0040470959d",
-    "rsvp": "~2.0.3"
+    "rsvp": "~2.0.3",
+    "sandblaster": "https://github.com/JamesMGreene/sandblaster.git#1.0.2"
   },
   "private": true,
   "description": "The Spiceworks JS SDK to be included in platform Apps",
