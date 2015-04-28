@@ -1,4 +1,4 @@
-/*! spiceworks-sdk - v0.1.0 - 2015-04-27
+/*! spiceworks-sdk - v0.1.0 - 2015-04-28
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 define("spiceworks-sdk", 
@@ -111,14 +111,20 @@ define("spiceworks-sdk/card",
     __exports__["default"] = Card;
   });
 define("spiceworks-sdk/login", 
-  ["rsvp","exports"],
-  function(__dependency1__, __exports__) {
+  ["rsvp","./card","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
     var RSVP = __dependency1__;
+    var Card = __dependency2__["default"];
 
     var accessTokens = {};
     var windowFeatures = "width=460,height=420,menubar=no,toolbar=no,status=no,scrollbars=no";
     var identityServer = "https://accounts.spiceworks.com";
+
+    var isEmbedded = (function(){
+      var result = sandblaster.detect();
+      return (result.framed && (result.sandboxed || result.sandboxed === null));
+    })();
 
     function messageReceiver(event) {
       if (event.source !== this.targetWindow) {
@@ -130,35 +136,53 @@ define("spiceworks-sdk/login",
       if (event.data.messageType !== 'access_token') {
         return;
       }
-      if (event.data.clientId !== this.clientId) {
+      if (event.data.clientId !== this.appUid) {
         return;
       }
       var token = event.data.accessToken;
       this.targetWindow.close();
 
       // cache
-      accessTokens[this.clientId] = token;
+      accessTokens[this.appUid] = token;
       // "return"
       if (this.deferred) {
         this.deferred.resolve(token);
       }
     }
 
-    function createIdentityUrl(clientId, path) {
+    function createIdentityUrl(appUid, path) {
       return (identityServer +
               path +
               '?response_type=token' +
-              '&client_id=' + clientId +
+              '&client_id=' + appUid +
               '&redirect_uri=' + encodeURIComponent('/oauth/callback'));
+    }
+
+    function loginWithAPI(instance) {
+      var service = (new Card()).services('login');
+      service.request('access_token', {oauth_uid: instance.appUid}).then(
+        function(token){
+          accessTokens[instance.appUid] = token.token;
+          instance.deferred.resolve(token.token);
+        },
+        function(error){
+          instance.deferred.reject(error);
+        }
+      );
+    }
+
+    function loginWithWindow(instance) {
+      var url = createIdentityUrl(instance.appUid, '/oauth/sign_in');
+      instance.targetWindow = window.open(url, null, windowFeatures);
     }
 
     function Login(args) {
       args = args || {};
-      if (typeof args.clientId === 'undefined') {
-        throw new Error("'clientId' must be provided in args");
+      if (typeof args.appUid === 'undefined') {
+        throw new Error("'appUid' must be provided in args");
       }
 
-      this.clientId = args.clientId;
+      this.appUid = args.appUid;
       this.targetWindow = null;
       this.deferred = null;
 
@@ -169,19 +193,23 @@ define("spiceworks-sdk/login",
 
       login: function() {
         this.deferred = RSVP.defer();
-        if (accessTokens[this.clientId]) {
-          this.deferred.resolve(accessTokens[this.clientId]);
+        if (accessTokens[this.appUid]) {
+          this.deferred.resolve(accessTokens[this.appUid]);
         }
         else {
-          var url = createIdentityUrl(this.clientId, '/oauth/sign_in');
-          this.targetWindow = window.open(url, null, windowFeatures);
+          if (isEmbedded){
+            loginWithAPI(this);
+          }
+          else {
+            loginWithWindow(this);
+          }
         }
         return this.deferred.promise;
       },
 
       create: function() {
         this.deferred = RSVP.defer();
-        var url = createIdentityUrl(this.clientId, '/oauth/users/new');
+        var url = createIdentityUrl(this.appUid, '/oauth/users/new');
         this.targetWindow = window.open(url, null, windowFeatures);
         return this.deferred.promise;
       },

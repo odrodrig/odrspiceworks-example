@@ -9,7 +9,8 @@ module.exports = function(grunt) {
     'bower_components/kamino.js/lib/kamino.js',
     'bower_components/MessageChannel.js/lib/message_channel.js',
     'bower_components/rsvp/rsvp.amd.js',
-    'bower_components/oasis.js/dist/oasis.amd.js'
+    'bower_components/oasis.js/dist/oasis.amd.js',
+    'bower_components/sandblaster/dist/sandblaster.js'
   ];
 
   // Project configuration.
