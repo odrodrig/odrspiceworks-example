@@ -1,7 +1,7 @@
 {
   "name": "spiceworks-sdk",
   "namespace": "SW",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "homepage": "http://developers.spiceworks.com",
   "author": "Spiceworks",
   "scripts": {
