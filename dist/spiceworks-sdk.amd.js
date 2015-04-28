@@ -120,18 +120,11 @@ define("spiceworks-sdk/login",
     var accessTokens = {};
     var windowFeatures = "width=460,height=420,menubar=no,toolbar=no,status=no,scrollbars=no";
     var identityServer = "https://accounts.spiceworks.com";
-    var checksEmbeddedPromise;
 
-    function checksIsEmbedded() {
-      if (typeof checksEmbeddedPromise === 'undefined') {
-        var service = (new Card()).services('login');
-        var deferred = RSVP.defer();
-        checksEmbeddedPromise = deferred.promise;
-        service.promise.then(function(){ deferred.resolve(true); }); // the connect promise
-        window.setTimeout(function(){ deferred.resolve(false); }, 750);
-      }
-      return checksEmbeddedPromise;
-    }
+    var isEmbedded = (function(){
+      var result = sandblaster.detect();
+      return (result.framed && (result.sandboxed || result.sandboxed === null));
+    })();
 
     function messageReceiver(event) {
       if (event.source !== this.targetWindow) {
@@ -204,15 +197,12 @@ define("spiceworks-sdk/login",
           this.deferred.resolve(accessTokens[this.clientId]);
         }
         else {
-          var that = this;
-          checksIsEmbedded().then(function(isEmbedded){
-            if (isEmbedded){
-              loginWithAPI(that);
-            }
-            else {
-              loginWithWindow(that);
-            }
-          });
+          if (isEmbedded){
+            loginWithAPI(this);
+          }
+          else {
+            loginWithWindow(this);
+          }
         }
         return this.deferred.promise;
       },
