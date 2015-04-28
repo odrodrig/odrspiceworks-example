@@ -4,6 +4,7 @@ import HelpdeskService from "helpdesk-service";
 import InventoryService from "inventory-service";
 import PeopleService from "people-service";
 import ReportingService from "reporting-service";
+import LoginService from "login-service";
 
 var oasis = new Oasis();
 oasis.autoInitializeSandbox();
@@ -14,5 +15,6 @@ export {
   HelpdeskService,
   InventoryService,
   PeopleService,
-  ReportingService
+  ReportingService,
+  LoginService
 };

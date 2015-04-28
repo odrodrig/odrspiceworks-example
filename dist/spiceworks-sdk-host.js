@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.0.2 - 2015-04-21
+/*! spiceworks-sdk - v0.0.2 - 2015-04-28
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 var define, require;
@@ -4185,6 +4185,23 @@ define("inventory-service",
 
     __exports__["default"] = InventoryService;
   });
+define("login-service", 
+  ["oasis","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var Oasis = __dependency1__["default"];
+
+    var LoginService = Oasis.Service.extend({
+      initialize: function(port) {
+        this.sandbox.loginProxyPort = port;
+      },
+      requests: {
+        access_token: null
+      },
+    });
+
+    __exports__["default"] = LoginService;
+  });
 define("people-service", 
   ["oasis","exports"],
   function(__dependency1__, __exports__) {
@@ -4223,8 +4240,8 @@ define("reporting-service",
     __exports__["default"] = ReportingService;
   });
 define("spiceworks-sdk-host", 
-  ["oasis","environment-service","helpdesk-service","inventory-service","people-service","reporting-service","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __exports__) {
+  ["oasis","environment-service","helpdesk-service","inventory-service","people-service","reporting-service","login-service","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __exports__) {
     "use strict";
     var Oasis = __dependency1__["default"];
     var EnvironmentService = __dependency2__["default"];
@@ -4232,6 +4249,7 @@ define("spiceworks-sdk-host",
     var InventoryService = __dependency4__["default"];
     var PeopleService = __dependency5__["default"];
     var ReportingService = __dependency6__["default"];
+    var LoginService = __dependency7__["default"];
 
     var oasis = new Oasis();
     oasis.autoInitializeSandbox();
@@ -4242,6 +4260,7 @@ define("spiceworks-sdk-host",
     __exports__.InventoryService = InventoryService;
     __exports__.PeopleService = PeopleService;
     __exports__.ReportingService = ReportingService;
+    __exports__.LoginService = LoginService;
   });
 window.SW = require("spiceworks-sdk-host");
 }(self));

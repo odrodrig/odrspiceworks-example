@@ -1,4 +1,4 @@
-/*! spiceworks-sdk - v0.0.2 - 2015-04-21
+/*! spiceworks-sdk - v0.0.2 - 2015-04-28
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 define("spiceworks-sdk", 
@@ -111,14 +111,27 @@ define("spiceworks-sdk/card",
     __exports__["default"] = Card;
   });
 define("spiceworks-sdk/login", 
-  ["rsvp","exports"],
-  function(__dependency1__, __exports__) {
+  ["rsvp","./card","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
     var RSVP = __dependency1__;
+    var Card = __dependency2__["default"];
 
     var accessTokens = {};
     var windowFeatures = "width=460,height=420,menubar=no,toolbar=no,status=no,scrollbars=no";
     var identityServer = "https://accounts.spiceworks.com";
+    var checksEmbeddedPromise;
+
+    function checksIsEmbedded() {
+      if (typeof checksEmbeddedPromise === 'undefined') {
+        var service = (new Card()).services('login');
+        var deferred = RSVP.defer();
+        checksEmbeddedPromise = deferred.promise;
+        service.promise.then(function(){ deferred.resolve(true); }); // the connect promise
+        window.setTimeout(function(){ deferred.resolve(false); }, 750);
+      }
+      return checksEmbeddedPromise;
+    }
 
     function messageReceiver(event) {
       if (event.source !== this.targetWindow) {
@@ -152,6 +165,24 @@ define("spiceworks-sdk/login",
               '&redirect_uri=' + encodeURIComponent('/oauth/callback'));
     }
 
+    function loginWithAPI(instance) {
+      var service = (new Card()).services('login');
+      service.request('access_token', {oauth_uid: instance.clientId}).then(
+        function(token){
+          accessTokens[instance.clientId] = token.token;
+          instance.deferred.resolve(token.token);
+        },
+        function(error){
+          instance.deferred.reject(error);
+        }
+      );
+    }
+
+    function loginWithWindow(instance) {
+      var url = createIdentityUrl(instance.clientId, '/oauth/sign_in');
+      instance.targetWindow = window.open(url, null, windowFeatures);
+    }
+
     function Login(args) {
       args = args || {};
       if (typeof args.clientId === 'undefined') {
@@ -173,8 +204,15 @@ define("spiceworks-sdk/login",
           this.deferred.resolve(accessTokens[this.clientId]);
         }
         else {
-          var url = createIdentityUrl(this.clientId, '/oauth/sign_in');
-          this.targetWindow = window.open(url, null, windowFeatures);
+          var that = this;
+          checksIsEmbedded().then(function(isEmbedded){
+            if (isEmbedded){
+              loginWithAPI(that);
+            }
+            else {
+              loginWithWindow(that);
+            }
+          });
         }
         return this.deferred.promise;
       },
