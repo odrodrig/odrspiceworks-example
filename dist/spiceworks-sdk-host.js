@@ -4581,7 +4581,7 @@ define("environment-service",
 
     var EnvironmentService = Oasis.Service.extend({
       initialize: function () {
-        this.send('activate', this.data);
+        this.send('activate', this.data());
       },
       events: {
         navigate: null
