@@ -6,7 +6,8 @@ import PeopleService from "people-service";
 import ReportingService from "reporting-service";
 import LoginService from "login-service";
 
-var oasis = new Oasis();
+self.Oasis = Oasis;
+var oasis = new self.Oasis();
 oasis.autoInitializeSandbox();
 
 export {
