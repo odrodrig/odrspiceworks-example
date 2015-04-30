@@ -1,5 +1,5 @@
 (function(global) {
-/*! spiceworks-sdk - v0.1.0 - 2015-04-29
+/*! spiceworks-sdk - v0.1.0 - 2015-04-30
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 var define, require;
@@ -1099,9 +1099,10 @@ function UUID(){}UUID.generate=function(){var a=UUID._gri,b=UUID._ha;return b(a(
           },
           data = Kamino.parse( messageEvent.data ),
           event = data.event,
-          ports = event.ports;
+          ports;
 
       if( event ) {
+        ports = event.ports;
         if( ports ) {
           for(var i=0; i< ports.length ; i++) {
             fakeEvent.ports.push( MessagePort.prototype._getPort( ports[i], messageEvent, copyEvents ) );
@@ -1110,6 +1111,8 @@ function UUID(){}UUID.generate=function(){var a=UUID._gri,b=UUID._ha;return b(a(
         fakeEvent.data = event.data;
         fakeEvent.source = messageEvent.source;
         fakeEvent.messageChannel = event.messageChannel;
+      } else {
+        return messageEvent;
       }
 
       return fakeEvent;

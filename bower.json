@@ -22,7 +22,7 @@
     "mocha": "~1.20.1"
   },
   "dependencies": {
-    "oasis.js": "https://github.com/spiceworks/oasis.js.git#6ba994aede777ae74dab5099b65fe0040470959d",
+    "oasis.js": "https://github.com/spiceworks/oasis.js.git#86e5f339a7a147e045a910ab7201500b146c779c",
     "rsvp": "~2.0.3",
     "sandblaster": "https://github.com/JamesMGreene/sandblaster.git#1.0.2"
   },

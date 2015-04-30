@@ -1,4 +1,4 @@
-/*! spiceworks-sdk - v0.1.0 - 2015-04-29
+/*! spiceworks-sdk - v0.1.0 - 2015-04-30
 * http://developers.spiceworks.com
 * Copyright (c) 2015 ; Licensed  */
 define("spiceworks-sdk", 
